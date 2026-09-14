@@ -1,0 +1,2165 @@
+/**
+ * OmniMail Admin Styles
+ * @package OmniMail
+ * @version 1.0.0
+ */
+
+:root {
+    --color-cyan: #00ffff;
+    --color-cyan-hover: #00e6e6;
+    --color-deep-cyan: #0a738c;
+    --color-midnight: #050714;
+    --color-dark-bg: #0b0f19;
+    --color-input-bg: #161b28;
+    --color-charcoal-blue: #0f1728;
+    --color-border-primary: #1e293b;
+    --color-border-dark: #04202b;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #ffffff;
+    --color-text-muted: #6b7280;
+    --color-red-accent: #ff3b5c;
+    --color-warning: #ffb900;
+    --shadow-cyan-sm: 0 0 10px rgba(0, 255, 255, 0.1);
+    --shadow-cyan-md: 0 0 20px rgba(0, 255, 255, 0.1);
+    --shadow-cyan-lg: 0 0 30px rgba(0, 255, 255, 0.25);
+}
+
+/* Page Wrapper */
+.omnimail-page-wrapper {
+    background: var(--color-midnight);
+    border: 1px solid var(--color-border-dark);
+    border-radius: 12px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: var(--shadow-cyan-md);
+}
+
+.omnimail-logo {
+    display: block;
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+    margin: 0 0 12px;
+}
+
+.omnimail-logo-inline {
+    max-width: 200px;
+    margin-bottom: 4px;
+}
+
+.omnimail-hero-brand .omnimail-logo {
+    margin-bottom: 14px;
+}
+
+.omnimail-hero-brand h1 {
+    margin-top: 0;
+}
+
+.omnimail-page-wrapper h1 {
+    color: var(--color-text-primary);
+    margin-bottom: 20px;
+}
+
+.omnimail-behavioral-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin: 18px 0 22px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.omnimail-overview-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(18, 25, 39, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 14px;
+    padding: 18px 20px;
+    min-height: 120px;
+    box-sizing: border-box;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.omnimail-overview-card-email {
+    border-color: rgba(56, 189, 248, 0.45);
+}
+
+.omnimail-overview-card-sms {
+    border-color: rgba(168, 85, 247, 0.45);
+}
+
+.omnimail-overview-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(59, 130, 246, 0.14));
+    border: 1px solid rgba(34, 211, 238, 0.35);
+    color: var(--color-cyan);
+    flex-shrink: 0;
+}
+
+.omnimail-overview-icon .dashicons {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+}
+
+.omnimail-overview-icon-sms {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(236, 72, 153, 0.12));
+    border-color: rgba(192, 132, 252, 0.45);
+    color: #f9a8d4;
+}
+
+.omnimail-overview-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.omnimail-overview-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+}
+
+.omnimail-overview-sub {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 6px;
+}
+
+.omnimail-overview-meta {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    text-transform: none;
+}
+
+.omnimail-overview-toggle {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.omnimail-overview-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.omnimail-overview-toggle-slider {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.35);
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+
+.omnimail-overview-toggle-slider::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 4px;
+    top: 4px;
+    border-radius: 50%;
+    background: #d1d5db;
+    transition: 0.3s ease;
+}
+
+.omnimail-overview-toggle input:checked + .omnimail-overview-toggle-slider {
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.9), rgba(6, 182, 212, 0.85));
+}
+
+.omnimail-overview-toggle input:checked + .omnimail-overview-toggle-slider::before {
+    transform: translateX(24px);
+    background: #ffffff;
+}
+
+.omnimail-behavioral-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(18, 56, 86, 0.7));
+    border: 1px solid rgba(34, 211, 238, 0.45);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 20px;
+}
+
+.omnimail-banner-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(34, 211, 238, 0.18);
+    border: 1px solid rgba(34, 211, 238, 0.5);
+    color: var(--color-cyan);
+    flex-shrink: 0;
+}
+
+.omnimail-banner-icon .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.omnimail-banner-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+}
+
+.omnimail-banner-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    background: transparent !important;
+    border: 1px solid var(--color-cyan) !important;
+    color: var(--color-cyan) !important;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+}
+
+.omnimail-banner-button:hover {
+    background: rgba(0, 255, 255, 0.1) !important;
+}
+
+.omnimail-dashboard h1,
+.omnimail-settings h1,
+.omnimail-logs h1 {
+    color: var(--color-text-primary) !important;
+}
+
+.omnimail-card {
+    background: var(--color-dark-bg);
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-cyan-sm);
+    color: var(--color-text-primary);
+    transition: all 0.3s ease;
+}
+
+.omnimail-card:hover {
+    box-shadow: var(--shadow-cyan-md);
+}
+
+.omnimail-card h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--color-border-primary);
+    color: var(--color-text-primary);
+}
+
+/* Status Cards */
+.omnimail-status-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.omnimail-status-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.omnimail-status-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, transparent 100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.omnimail-status-card:hover {
+    box-shadow: var(--shadow-cyan-md);
+    transform: translateY(-4px);
+}
+
+.omnimail-status-card:hover::before {
+    opacity: 1;
+}
+
+.omnimail-status-card-icon {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-charcoal-blue);
+    border-radius: 50%;
+    border: 2px solid var(--color-border-primary);
+    transition: all 0.3s ease;
+}
+
+.omnimail-status-card:hover .omnimail-status-card-icon {
+    border-color: var(--color-cyan);
+    box-shadow: var(--shadow-cyan-md);
+}
+
+.omnimail-status-card-icon .dashicons {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: var(--color-cyan);
+}
+
+.omnimail-status-card-content h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: var(--color-text-muted);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Improve readability on dark dashboard cards */
+.omnimail-dashboard .omnimail-status-card-content h3 {
+    color: var(--color-text-primary);
+}
+
+.omnimail-stat-number {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-cyan);
+    margin: 0;
+}
+
+/* Status Badges */
+.omnimail-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.omnimail-status-active {
+    background: rgba(0, 255, 255, 0.1);
+    color: var(--color-cyan);
+    border: 1px solid var(--color-cyan);
+}
+
+.omnimail-status-inactive {
+    background: rgba(255, 59, 92, 0.1);
+    color: var(--color-red-accent);
+    border: 1px solid var(--color-red-accent);
+}
+
+.omnimail-status-warning {
+    background: rgba(255, 193, 7, 0.1);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning);
+}
+
+/* Toggle Switch */
+.omnimail-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.omnimail-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.omnimail-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-border-primary);
+    transition: 0.4s;
+    border-radius: 30px;
+}
+
+.omnimail-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--color-text-muted);
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.omnimail-toggle input:checked + .omnimail-toggle-slider {
+    background-color: var(--color-deep-cyan);
+    box-shadow: var(--shadow-cyan-md);
+}
+
+.omnimail-toggle input:checked + .omnimail-toggle-slider:before {
+    transform: translateX(20px);
+    background-color: var(--color-cyan);
+}
+
+.omnimail-toggle input:disabled + .omnimail-toggle-slider {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* PRO badge / unlock (behavioral flows) */
+.omnimail-flow-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.omnimail-flow-title label {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.omnimail-pro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #f5c542;
+    color: #111827;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+    line-height: 1.4;
+}
+
+.omnimail-pro-badge .dashicons {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+    color: #111827;
+}
+
+.omnimail-flow-desc {
+    margin: 6px 0 0 !important;
+}
+
+.omnimail-flow-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.omnimail-pro-unlock {
+    color: #f5c542 !important;
+    font-weight: 700;
+    text-decoration: none !important;
+    font-size: 13px;
+}
+
+.omnimail-pro-unlock:hover {
+    color: #ffd76a !important;
+    text-decoration: underline !important;
+}
+
+.omnimail-pro-link {
+    color: #f5c542 !important;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.omnimail-pro-link:hover {
+    color: #ffd76a !important;
+}
+
+.omnimail-callout-pro {
+    border-color: #f5c542;
+    background: rgba(245, 197, 66, 0.08);
+    color: var(--color-text-secondary);
+}
+
+.omnimail-behavioral-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+    align-items: start;
+}
+
+.omnimail-flow-panel {
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border-primary);
+    border-radius: 12px;
+    padding: 18px;
+    min-width: 0;
+}
+
+.omnimail-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.omnimail-panel-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.omnimail-panel-header-icon {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-cyan);
+    flex-shrink: 0;
+}
+
+.omnimail-panel-header-icon .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.omnimail-panel-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    border: none;
+    padding: 0;
+}
+
+.omnimail-panel-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.12);
+    border: 1px solid rgba(34, 211, 238, 0.45);
+    color: var(--color-cyan);
+}
+
+.omnimail-panel-active-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.45);
+    color: #4ade80;
+    white-space: nowrap;
+}
+
+.omnimail-flows-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 18px 0 8px;
+}
+
+.omnimail-flow-card {
+    background: rgba(15, 23, 42, 0.35);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.omnimail-flow-card:last-child {
+    margin-bottom: 0;
+}
+
+.omnimail-flow-card:hover {
+    border-color: var(--color-deep-cyan);
+    box-shadow: var(--shadow-cyan-sm);
+}
+
+.omnimail-flow-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.omnimail-flow-card .omnimail-flow-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.omnimail-flow-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.omnimail-flow-card .omnimail-flow-desc {
+    color: #9ca3af !important;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+.omnimail-manage-btn-sm {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-input-bg) !important;
+    border: 1px solid var(--color-border-primary) !important;
+    color: var(--color-text-primary) !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.omnimail-manage-btn-sm:hover {
+    border-color: var(--color-cyan) !important;
+    color: var(--color-cyan) !important;
+}
+
+.omnimail-manage-btn-sm .dashicons {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    color: inherit;
+}
+
+.omnimail-manage-btn-sm:disabled,
+.omnimail-manage-btn-sm[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.omnimail-sms-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 18px;
+}
+
+.omnimail-sms-flow-card {
+    background: rgba(15, 23, 42, 0.4);
+}
+
+.omnimail-sms-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.omnimail-sms-message {
+    min-height: 22px;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.omnimail-sms-message.is-success {
+    color: #22c55e;
+}
+
+.omnimail-sms-message.is-error {
+    color: #f87171;
+}
+
+@media (max-width: 782px) {
+    .omnimail-behavioral-overview,
+    .omnimail-behavioral-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .omnimail-flows-grid,
+    .omnimail-sms-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .omnimail-flow-card-top {
+        flex-wrap: wrap;
+    }
+}
+
+/* API Key Field */
+.omnimail-api-key-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.omnimail-api-key-input {
+    flex: 1;
+    max-width: 400px;
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border-primary);
+    color: var(--color-text-primary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.omnimail-api-key-input:focus {
+    border-color: var(--color-cyan);
+    box-shadow: var(--shadow-cyan-sm);
+    outline: none;
+}
+
+.omnimail-toggle-visibility {
+    padding: 8px 12px;
+    min-width: auto;
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border-primary);
+    color: var(--color-text-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.omnimail-toggle-visibility:hover {
+    background: var(--color-charcoal-blue);
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+    transform: scale(1.05);
+}
+
+/* Quick Actions */
+.omnimail-quick-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.omnimail-quick-actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.omnimail-quick-actions .button-primary,
+.omnimail-settings .button-primary,
+.omnimail-card .button-primary {
+    background: var(--color-cyan);
+    border-color: var(--color-cyan);
+    color: var(--color-midnight);
+    font-weight: 600;
+    box-shadow: var(--shadow-cyan-sm);
+}
+
+.omnimail-quick-actions .button-primary:hover,
+.omnimail-settings .button-primary:hover,
+.omnimail-card .button-primary:hover {
+    background: var(--color-cyan-hover);
+    border-color: var(--color-cyan-hover);
+    box-shadow: var(--shadow-cyan-md);
+    transform: translateY(-2px);
+}
+
+.omnimail-quick-actions .button-secondary {
+    background: var(--color-input-bg);
+    border-color: var(--color-border-primary);
+    color: var(--color-text-primary);
+}
+
+.omnimail-quick-actions .button-secondary:hover {
+    background: var(--color-charcoal-blue);
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+    transform: translateY(-2px);
+}
+
+.omnimail-quick-actions .dashicons {
+    /* Keep icons small inside buttons */
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 1;
+    color: var(--color-cyan);
+}
+
+.omnimail-quick-actions .button-primary .dashicons {
+    /* Button-primary has cyan background; use midnight icon for contrast */
+    color: var(--color-midnight);
+}
+
+.omnimail-quick-actions .button-secondary .dashicons {
+    color: var(--color-cyan);
+}
+
+/* Setup Guide */
+.omnimail-setup-guide {
+    background: var(--color-charcoal-blue);
+    border-color: var(--color-deep-cyan);
+    box-shadow: var(--shadow-cyan-sm);
+}
+
+.omnimail-setup-guide h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-cyan);
+    border-bottom-color: var(--color-deep-cyan);
+}
+
+.omnimail-setup-steps {
+    margin: 15px 0 0 0;
+    padding-left: 20px;
+}
+
+.omnimail-setup-steps li {
+    margin-bottom: 15px;
+    color: var(--color-text-secondary);
+}
+
+.omnimail-setup-steps strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--color-text-primary);
+}
+
+/* Logs */
+.omnimail-logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.omnimail-logs-header h2 {
+    margin: 0;
+    padding: 0;
+    border: none;
+    color: var(--color-text-primary);
+}
+
+.omnimail-logs-count {
+    background: var(--color-input-bg);
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-cyan);
+    border: 1px solid var(--color-border-primary);
+}
+
+.omnimail-logs-table {
+    margin-top: 15px;
+    background: var(--color-charcoal-blue);
+    border: 1px solid var(--color-border-primary);
+}
+
+.omnimail-logs-table th {
+    background: var(--color-input-bg);
+    color: var(--color-text-primary);
+    border-bottom: 2px solid var(--color-border-primary);
+    padding: 12px;
+}
+
+.omnimail-logs-table td {
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border-primary);
+    padding: 12px;
+}
+
+.omnimail-logs-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.omnimail-logs-table tbody tr:hover {
+    background: rgba(0, 255, 255, 0.05);
+}
+
+.omnimail-log-type {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.omnimail-log-type-info {
+    background: rgba(0, 255, 255, 0.1);
+    color: var(--color-cyan);
+    border: 1px solid var(--color-cyan);
+}
+
+.omnimail-log-type-error {
+    background: rgba(255, 59, 92, 0.1);
+    color: var(--color-red-accent);
+    border: 1px solid var(--color-red-accent);
+}
+
+.omnimail-log-type-success {
+    background: rgba(0, 255, 255, 0.1);
+    color: var(--color-cyan);
+    border: 1px solid var(--color-cyan);
+}
+
+/* Filters */
+.omnimail-filters {
+    background: var(--color-charcoal-blue);
+    border: 1px solid var(--color-border-primary);
+}
+
+.omnimail-filter-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.omnimail-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.omnimail-filter-group label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text-primary);
+}
+
+.omnimail-filter-group select {
+    min-width: 150px;
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border-primary);
+    color: var(--color-text-primary);
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.omnimail-filter-group select:focus {
+    border-color: var(--color-cyan);
+    box-shadow: var(--shadow-cyan-sm);
+    outline: none;
+}
+
+.omnimail-filter-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.omnimail-filter-actions .button {
+    background: var(--color-input-bg);
+    border-color: var(--color-border-primary);
+    color: var(--color-text-primary);
+}
+
+.omnimail-filter-actions .button:hover {
+    background: var(--color-charcoal-blue);
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+}
+
+/* No Data */
+.omnimail-no-data,
+.omnimail-no-logs {
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: 40px 20px;
+}
+
+.omnimail-no-logs .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    opacity: 0.3;
+    color: var(--color-text-muted);
+}
+
+/* Info Card */
+.omnimail-info-card table,
+.omnimail-help-card {
+    background: var(--color-charcoal-blue);
+}
+
+.omnimail-info-card td {
+    padding: 10px;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border-primary);
+}
+
+.omnimail-info-card td strong {
+    color: var(--color-text-primary);
+}
+
+.omnimail-info-card code {
+    background: var(--color-input-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--color-cyan);
+}
+
+/* Form Table */
+.omnimail-settings .form-table th {
+    width: 200px;
+    color: var(--color-text-primary);
+}
+
+.omnimail-settings .form-table td {
+    color: var(--color-text-secondary);
+}
+
+.omnimail-settings .description {
+    color: var(--color-text-muted);
+}
+
+.omnimail-settings input[type="text"],
+.omnimail-settings input[type="password"] {
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border-primary);
+    color: var(--color-text-primary);
+}
+
+.omnimail-settings input[type="text"]:focus,
+.omnimail-settings input[type="password"]:focus {
+    border-color: var(--color-cyan);
+    box-shadow: var(--shadow-cyan-sm);
+}
+
+/* Recent Logs */
+.omnimail-recent-logs {
+    background: var(--color-charcoal-blue);
+    border: 1px solid var(--color-border-primary);
+}
+
+.omnimail-recent-logs th {
+    background: var(--color-input-bg);
+    color: var(--color-text-primary);
+    border-bottom: 2px solid var(--color-border-primary);
+    padding: 10px;
+}
+
+.omnimail-recent-logs td {
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border-primary);
+    padding: 10px;
+}
+
+.omnimail-view-all {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.omnimail-view-all a {
+    color: var(--color-cyan);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.omnimail-view-all a:hover {
+    color: var(--color-cyan-hover);
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .omnimail-status-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .omnimail-filter-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .omnimail-filter-actions {
+        margin-left: 0;
+    }
+
+    .omnimail-hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .omnimail-progress {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .omnimail-progress-line {
+        display: none;
+    }
+}
+
+/* Hero */
+.omnimail-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.omnimail-hero h1 {
+    margin: 0 0 8px 0;
+}
+
+.omnimail-hero-sub {
+    margin: 0;
+    color: var(--color-text-secondary);
+    max-width: 640px;
+    line-height: 1.5;
+    font-size: 15px;
+}
+
+.omnimail-dashboard .omnimail-hero-sub {
+    color: var(--color-text-primary);
+}
+
+.omnimail-hero-cta {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.omnimail-ticket-btn {
+    background: var(--color-cyan) !important;
+    color: var(--color-midnight) !important;
+    border-color: var(--color-cyan) !important;
+    font-weight: 600;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-cyan-sm);
+    transition: all 0.3s ease;
+}
+
+.omnimail-ticket-btn:hover,
+.omnimail-ticket-btn:focus {
+    background: var(--color-cyan-hover) !important;
+    border-color: var(--color-cyan-hover) !important;
+    color: var(--color-midnight) !important;
+    box-shadow: var(--shadow-cyan-md);
+    transform: translateY(-2px);
+}
+
+.omnimail-quick-actions .omnimail-ticket-btn .dashicons {
+    color: var(--color-midnight) !important;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 1;
+}
+
+/* Progress bar */
+.omnimail-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.omnimail-progress-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.omnimail-progress-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border-primary);
+    color: var(--color-text-secondary);
+}
+
+.omnimail-progress-step.is-current {
+    color: var(--color-text-primary);
+}
+
+.omnimail-progress-step.is-current .omnimail-progress-num {
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+    box-shadow: var(--shadow-cyan-sm);
+}
+
+.omnimail-progress-step.is-done {
+    color: var(--color-cyan);
+}
+
+.omnimail-progress-step.is-done .omnimail-progress-num {
+    background: rgba(0, 255, 255, 0.15);
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+}
+
+.omnimail-progress-line {
+    flex: 1;
+    min-width: 24px;
+    height: 2px;
+    background: var(--color-border-primary);
+    max-width: 80px;
+}
+
+.omnimail-progress-line.is-done {
+    background: var(--color-cyan);
+}
+
+/* How-to */
+.omnimail-howto-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-cyan);
+}
+
+.omnimail-setup-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 8px;
+}
+
+.omnimail-setup-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border-primary);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.omnimail-setup-step-num {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 255, 255, 0.12);
+    border: 1px solid var(--color-cyan);
+    color: var(--color-cyan);
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1;
+}
+
+.omnimail-setup-step-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.omnimail-setup-step-body h3 {
+    margin: 2px 0 8px;
+    color: var(--color-text-primary);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.omnimail-setup-step-body > p {
+    margin: 0 0 10px;
+    color: #9ca3af;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.omnimail-setup-step-body a {
+    color: var(--color-cyan);
+}
+
+.omnimail-setup-step-actions {
+    margin: 14px 0 0 !important;
+}
+
+.omnimail-setup-step-actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.omnimail-setup-step-actions .button-primary .dashicons {
+    color: var(--color-midnight);
+}
+
+.omnimail-setup-form {
+    margin-top: 14px;
+}
+
+.omnimail-howto-steps {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--color-text-secondary);
+}
+
+.omnimail-howto-steps li {
+    margin-bottom: 18px;
+}
+
+.omnimail-howto-steps strong {
+    display: block;
+    color: var(--color-text-primary);
+    margin-bottom: 6px;
+}
+
+.omnimail-howto-steps p {
+    margin: 0 0 8px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.omnimail-howto-steps a {
+    color: var(--color-cyan);
+}
+
+.omnimail-nested-steps {
+    margin: 10px 0 0;
+    padding-left: 20px;
+    color: var(--color-text-secondary);
+}
+
+.omnimail-nested-steps li {
+    margin-bottom: 8px;
+    list-style: decimal;
+}
+
+.omnimail-credential-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.omnimail-credential-card {
+    background: var(--color-charcoal-blue);
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
+    padding: 14px 16px;
+}
+
+.omnimail-credential-badge {
+    display: inline-block;
+    background: var(--color-cyan);
+    color: var(--color-midnight);
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 1.2;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.omnimail-credential-card p {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.omnimail-key-legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.omnimail-key-item {
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+}
+
+.omnimail-key-item code {
+    color: var(--color-cyan);
+    font-size: 13px;
+}
+
+.omnimail-callout {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.omnimail-callout-info {
+    background: rgba(0, 255, 255, 0.06);
+    border: 1px solid var(--color-deep-cyan);
+    color: var(--color-text-secondary);
+}
+
+.omnimail-callout strong {
+    color: var(--color-cyan);
+}
+
+.omnimail-guide-box {
+    margin: 12px 0;
+    padding: 12px 14px;
+    background: var(--color-charcoal-blue);
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
+}
+
+.omnimail-guide-box p {
+    margin: 0 0 8px;
+}
+
+.omnimail-steps-list {
+    margin: 0 0 0 1.2em;
+    padding: 0;
+    color: var(--color-text-muted);
+}
+
+.omnimail-steps-list li {
+    margin: 4px 0;
+}
+
+/* Fields */
+.omnimail-field-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.omnimail-field label {
+    display: block;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+}
+
+.omnimail-required {
+    color: var(--color-red-accent);
+}
+
+.omnimail-field input[type="text"],
+.omnimail-field input[type="password"] {
+    width: 100%;
+    max-width: 520px;
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border-primary);
+    color: var(--color-text-primary);
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+.omnimail-field .description {
+    margin: 8px 0 0;
+}
+
+.omnimail-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.omnimail-submit-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.omnimail-submit-row .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.omnimail-mono {
+    word-break: break-all;
+}
+
+.omnimail-checklist {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.omnimail-checklist li {
+    margin-bottom: 10px;
+}
+
+.omnimail-checklist a {
+    color: var(--color-cyan);
+}
+
+.omnimail-inline-notice {
+    margin: 0 0 16px 0 !important;
+}
+
+/* Onboarding steps on dashboard */
+.omnimail-onboarding-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.omnimail-onboard-step {
+    display: flex;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-primary);
+    background: var(--color-input-bg);
+}
+
+.omnimail-onboard-step.is-active {
+    border-color: var(--color-cyan);
+    box-shadow: var(--shadow-cyan-sm);
+}
+
+.omnimail-onboard-step.is-done {
+    opacity: 0.75;
+}
+
+.omnimail-onboard-num {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-charcoal-blue);
+    border: 1px solid var(--color-border-primary);
+    color: var(--color-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.omnimail-onboard-body h3 {
+    margin: 0 0 6px 0;
+    color: var(--color-text-primary);
+    font-size: 15px;
+}
+
+.omnimail-onboard-body p {
+    margin: 0 0 10px 0;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.omnimail-dashboard .omnimail-onboard-body p {
+    color: var(--color-text-primary);
+}
+
+.omnimail-empty-state {
+    text-align: center;
+    padding: 36px 24px;
+}
+
+/* Big icon shown at top of empty-state cards only */
+.omnimail-empty-state > .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--color-cyan);
+    margin-bottom: 12px;
+}
+
+.omnimail-empty-state h2 {
+    border: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+
+.omnimail-empty-state p {
+    color: var(--color-text-secondary);
+    max-width: 520px;
+    margin: 0 auto 18px;
+}
+
+.omnimail-empty-state .omnimail-quick-actions {
+    justify-content: center;
+}
+
+/* In empty-state action buttons, keep icons compact and visible */
+.omnimail-empty-state .omnimail-quick-actions .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 1;
+}
+
+.omnimail-empty-state .omnimail-quick-actions .button-primary .dashicons {
+    color: var(--color-midnight);
+}
+
+.omnimail-empty-state .omnimail-quick-actions .button-secondary .dashicons {
+    color: var(--color-cyan);
+}
+
+/* Force-fix readability and button icons in Behavioral Flows empty-state */
+.omnimail-settings .omnimail-empty-state h2,
+.omnimail-settings .omnimail-empty-state p,
+.omnimail-settings .omnimail-card .description {
+    color: #ffffff !important;
+}
+
+.omnimail-settings .omnimail-empty-state > .dashicons {
+    font-size: 34px !important;
+    width: 34px !important;
+    height: 34px !important;
+}
+
+.omnimail-settings .omnimail-empty-state .omnimail-quick-actions .dashicons {
+    font-size: 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+    line-height: 14px !important;
+    vertical-align: middle !important;
+}
+
+.omnimail-settings .omnimail-empty-state .omnimail-quick-actions .button-primary .dashicons {
+    color: #050714 !important;
+}
+
+.omnimail-settings .omnimail-empty-state .omnimail-quick-actions .button-secondary .dashicons {
+    color: #00ffff !important;
+}
+
+/* Absolute fallback overrides for Behavioral Flows page */
+.omnimail-settings .omnimail-empty-state h2,
+.omnimail-settings .omnimail-empty-state p,
+.omnimail-settings .omnimail-card p.description,
+.omnimail-settings .description {
+    color: #ffffff !important;
+}
+
+.omnimail-settings .omnimail-empty-state .button .dashicons {
+    font-size: 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+    line-height: 14px !important;
+}
+
+.omnimail-settings .omnimail-empty-state .button.button-primary .dashicons {
+    color: #050714 !important;
+}
+
+.omnimail-settings .omnimail-empty-state .button.button-secondary .dashicons {
+    color: #00ffff !important;
+}
+
+/* Shared modal shell (ticket + enhance flow) */
+.omnimail-modal-logs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 18, 36, 0.85);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.omnimail-modal-content {
+    background: #181e2a;
+    border-radius: 12px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+    color: #f6f8fa;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0, 210, 255, 0.45);
+}
+
+.omnimail-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid rgba(0, 210, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.omnimail-modal-header h3 {
+    color: #00e6fb;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+}
+
+.omnimail-modal-header h3 .dashicons {
+    color: #00ffff;
+}
+
+.omnimail-modal-body {
+    padding: 18px 24px 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.omnimail-modal-logs button.omnimail-modal-close {
+    background: none;
+    border: none;
+    color: #00e6fb;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+}
+
+.omnimail-modal-logs button.omnimail-modal-close:hover {
+    color: #fff;
+}
+
+/* Enhance Your Flow prompt */
+.omnimail-enhance-lead {
+    margin: 0 0 16px;
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.omnimail-enhance-benefits {
+    background: rgba(0, 210, 255, 0.1);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+
+.omnimail-enhance-benefits h4 {
+    margin: 0 0 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.omnimail-enhance-benefits ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.omnimail-enhance-benefits li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #d1d5db;
+    font-size: 13px;
+    line-height: 1.45;
+    margin-bottom: 8px;
+}
+
+.omnimail-enhance-benefits li:last-child {
+    margin-bottom: 0;
+}
+
+.omnimail-enhance-check {
+    color: #00ffff;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.omnimail-enhance-question {
+    margin: 0 0 18px;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.omnimail-enhance-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid rgba(0, 210, 255, 0.3);
+    padding-top: 16px;
+}
+
+.omnimail-enhance-actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.omnimail-enhance-actions .button-primary .dashicons {
+    color: var(--color-midnight);
+}
+
+.omnimail-flow-followups-row {
+    margin-top: 14px;
+}
+
+.omnimail-flow-followups-row .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.omnimail-followups-modal {
+    max-width: 720px;
+}
+
+.omnimail-followups-banner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    background: rgba(0, 210, 255, 0.08);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+
+.omnimail-followups-banner p {
+    margin: 6px 0 0;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.omnimail-followups-banner .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.omnimail-followups-empty {
+    text-align: center;
+    border: 2px dashed #2d3e50;
+    border-radius: 10px;
+    padding: 36px 20px;
+}
+
+.omnimail-followups-empty > .dashicons {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: #6b7280;
+    margin-bottom: 10px;
+}
+
+.omnimail-followups-empty .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1.2;
+}
+
+.omnimail-followups-empty .button .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    color: inherit;
+    line-height: 1;
+}
+
+.omnimail-followups-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.omnimail-followups-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.omnimail-followup-item,
+.omnimail-prebuilt-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #2d3e50;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.omnimail-followup-step {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0, 255, 255, 0.15);
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    color: #00ffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.omnimail-followup-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.omnimail-followup-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.omnimail-chip {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #1e293b;
+    color: #d1d5db;
+}
+
+.omnimail-chip-trigger {
+    background: rgba(168, 85, 247, 0.2);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+.omnimail-chip-action {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.omnimail-chip-arrow {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.omnimail-followup-subject {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.omnimail-followup-tag,
+.omnimail-prebuilt-step-desc {
+    margin-top: 6px;
+    color: #fbbf24;
+    font-size: 12px;
+}
+
+.omnimail-prebuilt-step-desc {
+    color: #9ca3af;
+}
+
+.omnimail-delete-followup {
+    color: #ff6b81 !important;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+}
+
+.omnimail-prebuilt-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 420px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.omnimail-prebuilt-group h4 {
+    margin: 0 0 8px;
+    color: #00ffff;
+    font-size: 14px;
+}
+
+.omnimail-prebuilt-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.omnimail-prebuilt-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.omnimail-prebuilt-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    text-align: left;
+    padding: 12px 14px;
+    border: 1px solid rgba(0, 255, 255, 0.25);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    color: #e5e7eb;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.omnimail-prebuilt-option:hover,
+.omnimail-prebuilt-option.is-selected {
+    border-color: #00ffff;
+    background: rgba(0, 210, 255, 0.12);
+}
+
+.omnimail-prebuilt-option strong {
+    color: #fff;
+    font-size: 13px;
+}
+
+.omnimail-prebuilt-option-desc {
+    font-size: 12px;
+    color: #9ca3af;
+    line-height: 1.4;
+}
+
+.omnimail-chip-recommended {
+    background: rgba(0, 210, 255, 0.2) !important;
+    color: #00ffff !important;
+}
+
+.omnimail-custom-modal .omnimail-modal-content {
+    max-width: 720px;
+}
+
+.omnimail-custom-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 14px;
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+.omnimail-custom-step {
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.omnimail-custom-step-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.omnimail-custom-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.omnimail-custom-step label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.omnimail-custom-step select,
+.omnimail-custom-step input,
+.omnimail-custom-step textarea {
+    width: 100%;
+}
+
+.omnimail-custom-email-fields,
+.omnimail-custom-tag-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.omnimail-followups-list-header > div {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 782px) {
+    .omnimail-prebuilt-options {
+        grid-template-columns: 1fr;
+    }
+
+    .omnimail-custom-grid {
+        grid-template-columns: 1fr;
+    }
+}

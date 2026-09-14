@@ -22,37 +22,31 @@ class OmniMail_API
   /**
    * Check whether the connected OmniMail account has an active PRO subscription.
    *
+   * IMPORTANT: This used to call a separate OmniVoice subscription endpoint
+   * (/stripe/connect/omnivoice-subscription). It no longer does that — SMS
+   * behavioral flows are now gated by the exact same "isPro" flag returned by
+   * the Email Behavioral Flows endpoint (/api/behavioral-flows/{connectionId}).
+   * In other words: if the OmniMail account has a PRO plan, SMS behavioral
+   * flows are unlocked too, no separate OmniVoice plan required.
+   *
    * @return bool
    */
   public static function has_pro_subscription()
   {
-    $api_base_url = defined('OMNIMAIL_API_BASE_URL') ? OMNIMAIL_API_BASE_URL : '';
     $connection_id = get_option('omnimail_connection_id', '');
 
-    if (empty($api_base_url) || empty($connection_id)) {
+    if (empty($connection_id)) {
       return false;
     }
 
-    $response = wp_remote_get($api_base_url . '/stripe/connect/omnivoice-subscription', array(
-      'timeout' => 20,
-      'headers' => array(
-        'Accept' => 'application/json',
-        'X-API-Key' => $connection_id,
-      ),
-    ));
+    $api = new self();
+    $result = $api->get_behavioral_flows();
 
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) < 200 || wp_remote_retrieve_response_code($response) >= 300) {
+    if (empty($result['success']) || empty($result['data']) || !is_array($result['data'])) {
       return false;
     }
 
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-    $subscription = is_array($body) && isset($body['data']) && is_array($body['data'])
-      ? $body['data']
-      : array();
-
-    return !empty($body['success'])
-      && strtolower((string) ($subscription['planType'] ?? '')) === 'pro'
-      && strtolower((string) ($subscription['status'] ?? '')) === 'active';
+    return !empty($result['data']['isPro']);
   }
 
   /**

@@ -503,6 +503,11 @@
         // BEHAVIORAL FLOWS PAGE
         // ========================================
 
+        // omnimailFlowsIsPro now drives BOTH the Email panel and the SMS panel.
+        // It comes exclusively from the Email Behavioral Flows response
+        // (omnimail_get_behavioral_flows -> data.isPro). There is no separate
+        // OmniVoice/SMS subscription check anymore — one OmniMail PRO plan
+        // unlocks both Email and SMS behavioral flows.
         var omnimailFlowsIsPro = true;
         var omnimailProUpgradeUrl = ($('#behavioral-flows-content').data('pro-url')) ||
             'https://omnimail-app.omninexttech.com/dashboard/mail-blaze/subscription';
@@ -545,12 +550,25 @@
                 .text(message || '');
         }
 
-        function showOmniVoiceSmsUpgrade() {
+        /**
+         * Gate the SMS panel using the same isPro flag as the Email panel.
+         * No separate OmniVoice subscription check is performed anymore.
+         */
+        function applySmsProGate(isPro) {
             $('#omnimail-sms-loading').hide();
             $('#omnimail-sms-grid').attr('aria-busy', 'false');
             $('#omnimail-sms-actions').prop('hidden', false);
-            setOmniVoiceSmsControlsEnabled(false);
-            $('#omnimail-sms-upgrade').show();
+
+            if (isPro) {
+                $('#omnimail-sms-upgrade').hide();
+                setOmniVoiceSmsControlsEnabled(true);
+                setOmniVoiceSmsMessage('', '');
+            } else {
+                $('.omnimail-sms-checkbox').prop('checked', false);
+                setOmniVoiceSmsControlsEnabled(false);
+                $('#omnimail-sms-upgrade').show();
+                setOmniVoiceSmsMessage('', '');
+            }
         }
 
         function loadOmniVoiceSmsFlows() {
@@ -574,52 +592,26 @@
                     nonce: omnimailAjax.nonce || ''
                 },
                 success: function (response) {
-                    $('#omnimail-sms-loading').hide();
-                    $('#omnimail-sms-grid').attr('aria-busy', 'false');
-
-                    if (!response.success) {
-                        var msg = (response.data && response.data.message) || '';
-                        // 403 / PRO message → show upgrade banner, leave controls disabled
-                        if (msg.indexOf('PRO') !== -1) {
-                            showOmniVoiceSmsUpgrade();
-                            return;
-                        }
-                        setOmniVoiceSmsMessage(msg || 'Unable to load SMS flows.', 'error');
-                        return;
+                    if (response.success) {
+                        applyOmniVoiceSmsSettings(response.data || {});
+                        omnimailSmsOriginalSettings = readOmniVoiceSmsSettings();
                     }
 
-                    applyOmniVoiceSmsSettings(response.data || {});
-                    omnimailSmsOriginalSettings = readOmniVoiceSmsSettings();
-                    setOmniVoiceSmsControlsEnabled(true);
-                    setOmniVoiceSmsMessage('', '');
+                    // Gating always follows the OmniMail PRO plan (isPro from
+                    // the Email Flows response), regardless of what this
+                    // endpoint itself returned.
+                    applySmsProGate(omnimailFlowsIsPro);
                 },
-                error: function (xhr) {
-                    $('#omnimail-sms-loading').hide();
-                    $('#omnimail-sms-grid').attr('aria-busy', 'false');
-
-                    if (xhr.status === 403) {
-                        showOmniVoiceSmsUpgrade();
-                        return;
+                error: function () {
+                    applySmsProGate(omnimailFlowsIsPro);
+                    if (omnimailFlowsIsPro) {
+                        setOmniVoiceSmsMessage('Unable to load SMS flow settings.', 'error');
                     }
-
-                    var message = 'Unable to load SMS flows.';
-                    if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
-                        message = xhr.responseJSON.data.message;
-                    }
-                    setOmniVoiceSmsMessage(message, 'error');
                 }
             });
         }
 
-        $('#omnimail-sms-enable-all').on('click', function () {
-            $('.omnimail-sms-checkbox').prop('checked', true);
-        });
-
-        $('#omnimail-sms-disable-all').on('click', function () {
-            $('.omnimail-sms-checkbox').prop('checked', false);
-        });
-
-        $('#omnimail-sms-save').on('click', function () {
+        function saveSmsFlows(onDone) {
             var settings = readOmniVoiceSmsSettings();
             var requestData = {};
 
@@ -628,7 +620,7 @@
             });
 
             setOmniVoiceSmsControlsEnabled(false);
-            $('#omnimail-sms-message').text('Saving SMS flow settings...');
+            setOmniVoiceSmsMessage('Saving SMS flow settings...', '');
 
             $.ajax({
                 url: omnimailAjax.ajaxurl,
@@ -644,11 +636,13 @@
                             (response.data && response.data.message) || 'Unable to update SMS flows.',
                             'error'
                         );
+                        if (typeof onDone === 'function') onDone(false);
                         return;
                     }
 
                     omnimailSmsOriginalSettings = readOmniVoiceSmsSettings();
                     setOmniVoiceSmsMessage('SMS flow settings saved.', 'success');
+                    if (typeof onDone === 'function') onDone(true);
                 },
                 error: function (xhr) {
                     applyOmniVoiceSmsSettings(omnimailSmsOriginalSettings);
@@ -657,11 +651,28 @@
                         message = xhr.responseJSON.data.message;
                     }
                     setOmniVoiceSmsMessage(message, 'error');
+                    if (typeof onDone === 'function') onDone(false);
                 },
                 complete: function () {
                     setOmniVoiceSmsControlsEnabled(true);
                 }
             });
+        }
+
+        // Enable All / Disable All for SMS now save immediately — no separate
+        // click on "Save Flow Settings" is required.
+        $('#omnimail-sms-enable-all').on('click', function () {
+            $('.omnimail-sms-checkbox').prop('checked', true);
+            saveSmsFlows();
+        });
+
+        $('#omnimail-sms-disable-all').on('click', function () {
+            $('.omnimail-sms-checkbox').prop('checked', false);
+            saveSmsFlows();
+        });
+
+        $('#omnimail-sms-save').on('click', function () {
+            saveSmsFlows();
         });
 
         function applyFlowProGate(isPro) {
@@ -670,6 +681,7 @@
             var $unlock = $('#behavioral-flows-content .omnimail-pro-unlock');
             var $banner = $('#omnimail-pro-locked-banner');
             var $enableAll = $('#enable-all-flows');
+            var $disableAll = $('#disable-all-flows');
             var $saveBtn = $('#save-flows-btn');
 
             if (omnimailFlowsIsPro) {
@@ -677,6 +689,7 @@
                 $unlock.hide();
                 $banner.hide();
                 $enableAll.prop('disabled', false);
+                $disableAll.prop('disabled', false);
                 $saveBtn.prop('disabled', false);
                 $('#behavioral-flows-content').removeClass('is-pro-locked');
             } else {
@@ -684,6 +697,7 @@
                 $unlock.show();
                 $banner.show();
                 $enableAll.prop('disabled', true);
+                $disableAll.prop('disabled', true);
                 $saveBtn.prop('disabled', true);
                 $('#behavioral-flows-content').addClass('is-pro-locked');
             }
@@ -740,7 +754,9 @@
                         applyFlowProGate(isPro);
                         flowsIgnoreToggleChange = false;
                         $('#behavioral-flows-content').fadeIn(400, function () {
-                            // Load SMS flows once the container is visible
+                            // Load SMS flow toggle states; gating uses the same
+                            // omnimailFlowsIsPro flag computed above — no
+                            // separate OmniVoice PRO check anymore.
                             loadOmniVoiceSmsFlows();
                         });
                     } else {
@@ -1350,6 +1366,49 @@
             }
         });
 
+        // Collect the current Email flow checkbox states into a settings object
+        function collectBehavioralFlowSettings() {
+            return {
+                cartAbandonmentEnabled: $('#flow_cart_abandonment').is(':checked'),
+                browseAbandonmentEnabled: $('#flow_browse_abandonment').is(':checked'),
+                checkoutAbandonmentEnabled: $('#flow_checkout_abandonment').is(':checked'),
+                wishlistReminderEnabled: $('#flow_wishlist_reminder').is(':checked'),
+                postPurchaseEnabled: $('#flow_post_purchase').is(':checked'),
+                reEngagementEnabled: $('#flow_re_engagement').is(':checked'),
+                backInStockEnabled: $('#flow_back_in_stock').is(':checked'),
+                priceDropEnabled: $('#flow_price_drop').is(':checked')
+            };
+        }
+
+        // Shared save routine used by the Save button AND by Enable All /
+        // Disable All, so those two buttons persist immediately without
+        // requiring an extra click on "Save Flow Settings".
+        function saveBehavioralFlows(onDone) {
+            var settings = collectBehavioralFlowSettings();
+
+            $.ajax({
+                url: omnimailAjax.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'omnimail_update_behavioral_flows',
+                    nonce: omnimailAjax.nonce,
+                    settings: JSON.stringify(settings)
+                },
+                success: function (response) {
+                    if (response.success) {
+                        if (typeof onDone === 'function') onDone(true, response);
+                    } else {
+                        showNotification((response.data && response.data.message) || 'Failed to save settings', 'error');
+                        if (typeof onDone === 'function') onDone(false, response);
+                    }
+                },
+                error: function () {
+                    showNotification('An error occurred while saving settings', 'error');
+                    if (typeof onDone === 'function') onDone(false, null);
+                }
+            });
+        }
+
         // Save behavioral flows
         $('#save-flows-btn').on('click', function (e) {
             e.preventDefault();
@@ -1365,45 +1424,16 @@
             button.prop('disabled', true);
             button.html('<span class="dashicons dashicons-update-alt" style="animation: rotation 1s infinite linear;"></span> Saving...');
 
-            // Collect settings
-            var settings = {
-                cartAbandonmentEnabled: $('#flow_cart_abandonment').is(':checked'),
-                browseAbandonmentEnabled: $('#flow_browse_abandonment').is(':checked'),
-                checkoutAbandonmentEnabled: $('#flow_checkout_abandonment').is(':checked'),
-                wishlistReminderEnabled: $('#flow_wishlist_reminder').is(':checked'),
-                postPurchaseEnabled: $('#flow_post_purchase').is(':checked'),
-                reEngagementEnabled: $('#flow_re_engagement').is(':checked'),
-                backInStockEnabled: $('#flow_back_in_stock').is(':checked'),
-                priceDropEnabled: $('#flow_price_drop').is(':checked')
-            };
-
-            $.ajax({
-                url: omnimailAjax.ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'omnimail_update_behavioral_flows',
-                    nonce: omnimailAjax.nonce,
-                    settings: JSON.stringify(settings)
-                },
-                success: function (response) {
-                    button.prop('disabled', false);
-                    button.html(originalHtml);
-
-                    if (response.success) {
-                        showNotification('Flow settings saved successfully!', 'success');
-                    } else {
-                        showNotification(response.data?.message || 'Failed to save settings', 'error');
-                    }
-                },
-                error: function () {
-                    button.prop('disabled', false);
-                    button.html(originalHtml);
-                    showNotification('An error occurred while saving settings', 'error');
+            saveBehavioralFlows(function (success) {
+                button.prop('disabled', false);
+                button.html(originalHtml);
+                if (success) {
+                    showNotification('Flow settings saved successfully!', 'success');
                 }
             });
         });
 
-        // Enable all flows
+        // Enable all flows — checks every toggle then saves immediately
         $('#enable-all-flows').on('click', function (e) {
             e.preventDefault();
 
@@ -1417,36 +1447,20 @@
             button.prop('disabled', true);
             button.html('<span class="dashicons dashicons-update-alt" style="animation: rotation 1s infinite linear;"></span> Enabling...');
 
-            $.ajax({
-                url: omnimailAjax.ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'omnimail_enable_all_flows',
-                    nonce: omnimailAjax.nonce
-                },
-                success: function (response) {
-                    button.prop('disabled', false);
-                    button.html(originalHtml);
+            flowsIgnoreToggleChange = true;
+            $('#behavioral-flows-content input[type="checkbox"][data-flow]').prop('checked', true);
+            flowsIgnoreToggleChange = false;
 
-                    if (response.success) {
-                        // Check all checkboxes
-                        flowsIgnoreToggleChange = true;
-                        $('input[data-flow]').prop('checked', true);
-                        flowsIgnoreToggleChange = false;
-                        showNotification('All flows enabled successfully!', 'success');
-                    } else {
-                        showNotification(response.data?.message || 'Failed to enable all flows', 'error');
-                    }
-                },
-                error: function () {
-                    button.prop('disabled', false);
-                    button.html(originalHtml);
-                    showNotification('An error occurred while enabling flows', 'error');
+            saveBehavioralFlows(function (success) {
+                button.prop('disabled', false);
+                button.html(originalHtml);
+                if (success) {
+                    showNotification('All flows enabled and saved successfully!', 'success');
                 }
             });
         });
 
-        // Disable all flows
+        // Disable all flows — unchecks every toggle then saves immediately
         $('#disable-all-flows').on('click', function (e) {
             e.preventDefault();
 
@@ -1459,31 +1473,15 @@
             button.prop('disabled', true);
             button.html('<span class="dashicons dashicons-update-alt" style="animation: rotation 1s infinite linear;"></span> Disabling...');
 
-            $.ajax({
-                url: omnimailAjax.ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'omnimail_disable_all_flows',
-                    nonce: omnimailAjax.nonce
-                },
-                success: function (response) {
-                    button.prop('disabled', false);
-                    button.html(originalHtml);
+            flowsIgnoreToggleChange = true;
+            $('#behavioral-flows-content input[type="checkbox"][data-flow]').prop('checked', false);
+            flowsIgnoreToggleChange = false;
 
-                    if (response.success) {
-                        // Uncheck all checkboxes
-                        flowsIgnoreToggleChange = true;
-                        $('input[data-flow]').prop('checked', false);
-                        flowsIgnoreToggleChange = false;
-                        showNotification('All flows disabled successfully!', 'success');
-                    } else {
-                        showNotification(response.data?.message || 'Failed to disable all flows', 'error');
-                    }
-                },
-                error: function () {
-                    button.prop('disabled', false);
-                    button.html(originalHtml);
-                    showNotification('An error occurred while disabling flows', 'error');
+            saveBehavioralFlows(function (success) {
+                button.prop('disabled', false);
+                button.html(originalHtml);
+                if (success) {
+                    showNotification('All flows disabled and saved successfully!', 'success');
                 }
             });
         });

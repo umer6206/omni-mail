@@ -149,43 +149,6 @@ $flows = array(
 
             <div id="behavioral-flows-content" style="display: none;" data-pro-url="<?php echo esc_url($pro_url); ?>">
 
-                <!-- Overview summary cards (visual only; counts/master toggles are updated by omnimail-behavioral-overview-ui script below) -->
-                <div class="omnimail-behavioral-overview">
-                    <div class="omnimail-overview-card omnimail-overview-card-email">
-                        <div class="omnimail-overview-icon">
-                            <span class="dashicons dashicons-email-alt"></span>
-                        </div>
-                        <div class="omnimail-overview-content">
-                            <div class="omnimail-overview-title"><?php _e('Email Behavioral Flows', 'omnimail'); ?></div>
-                            <div class="omnimail-overview-sub"><?php _e('Send automated emails based on customer behavior and actions.', 'omnimail'); ?></div>
-                            <div class="omnimail-overview-meta">
-                                <span id="omnimail-email-flows-count"><?php echo count($flows); ?></span> <?php _e('flows available', 'omnimail'); ?>
-                            </div>
-                        </div>
-                        <label class="omnimail-overview-toggle" title="<?php esc_attr_e('Enable or disable all Email flows', 'omnimail'); ?>">
-                            <input type="checkbox" id="omnimail-email-master-toggle">
-                            <span class="omnimail-overview-toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="omnimail-overview-card omnimail-overview-card-sms">
-                        <div class="omnimail-overview-icon omnimail-overview-icon-sms">
-                            <span class="dashicons dashicons-format-chat"></span>
-                        </div>
-                        <div class="omnimail-overview-content">
-                            <div class="omnimail-overview-title"><?php _e('SMS Behavioral Flows', 'omnimail'); ?></div>
-                            <div class="omnimail-overview-sub"><?php _e('Send automated SMS messages based on customer behavior.', 'omnimail'); ?></div>
-                            <div class="omnimail-overview-meta">
-                                <span id="omnimail-sms-flows-count"><?php echo count($flows); ?></span> <?php _e('flows available', 'omnimail'); ?>
-                            </div>
-                        </div>
-                        <label class="omnimail-overview-toggle" title="<?php esc_attr_e('Enable or disable all SMS flows', 'omnimail'); ?>">
-                            <input type="checkbox" id="omnimail-sms-master-toggle">
-                            <span class="omnimail-overview-toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-
                 <div class="omnimail-behavioral-banner">
                     <div class="omnimail-banner-icon">
                         <span class="dashicons dashicons-info-outline"></span>
@@ -207,7 +170,16 @@ $flows = array(
                                 <h2><?php _e('Email Flows', 'omnimail'); ?></h2>
                                 <span class="omnimail-panel-active-badge" id="omnimail-email-active-badge">8 <?php _e('Active', 'omnimail'); ?></span>
                             </div>
-                            <span class="omnimail-panel-badge">OmniMail</span>
+                            <div class="omnimail-panel-header-right" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <button type="button" id="enable-all-flows" class="button button-secondary omnimail-header-action-btn">
+                                    <span class="dashicons dashicons-yes-alt"></span>
+                                    <?php _e('Enable All', 'omnimail'); ?>
+                                </button>
+                                <button type="button" id="disable-all-flows" class="button button-secondary omnimail-header-action-btn">
+                                    <span class="dashicons dashicons-dismiss"></span>
+                                    <?php _e('Disable All', 'omnimail'); ?>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="omnimail-flows-grid">
@@ -254,14 +226,6 @@ $flows = array(
                         </div>
 
                         <p class="submit">
-                            <button type="button" id="enable-all-flows" class="button button-secondary">
-                                <span class="dashicons dashicons-yes-alt"></span>
-                                <?php _e('Enable All Flows', 'omnimail'); ?>
-                            </button>
-                            <button type="button" id="disable-all-flows" class="button button-secondary">
-                                <span class="dashicons dashicons-dismiss"></span>
-                                <?php _e('Disable All Flows', 'omnimail'); ?>
-                            </button>
                             <button type="button" id="save-flows-btn" class="button button-primary button-large">
                                 <span class="dashicons dashicons-yes"></span>
                                 <?php _e('Save Flow Settings', 'omnimail'); ?>
@@ -276,15 +240,24 @@ $flows = array(
                                 <h2><?php _e('SMS Flows', 'omnimail'); ?></h2>
                                 <span class="omnimail-panel-active-badge" id="omnimail-sms-active-badge">0 <?php _e('Active', 'omnimail'); ?></span>
                             </div>
-                            <span class="omnimail-panel-badge">OmniMail</span>
+                            <div class="omnimail-panel-header-right" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                <button type="button" id="omnimail-sms-enable-all" class="button button-secondary omnimail-header-action-btn" disabled>
+                                    <span class="dashicons dashicons-yes-alt"></span>
+                                    <?php _e('Enable All', 'omnimail'); ?>
+                                </button>
+                                <button type="button" id="omnimail-sms-disable-all" class="button button-secondary omnimail-header-action-btn" disabled>
+                                    <span class="dashicons dashicons-dismiss"></span>
+                                    <?php _e('Disable All', 'omnimail'); ?>
+                                </button>
+                            </div>
                         </div>
                         <p class="description">
-                            <?php _e('Use your OmniVoice PRO plan to control the SMS behavioral flows side-by-side with OmniMail email flows.', 'omnimail'); ?>
+                            <?php _e('Control the SMS behavioral flows side-by-side with OmniMail email flows.', 'omnimail'); ?>
                         </p>
 
                         <div id="omnimail-sms-loading" class="omnimail-sms-loading" style="display:none; text-align: center; padding: 24px 0;">
                             <span class="spinner is-active" style="float: none; margin: 0;"></span>
-                            <p><?php _e('Checking OmniVoice SMS flow status...', 'omnimail'); ?></p>
+                            <p><?php _e('Checking SMS flow status...', 'omnimail'); ?></p>
                         </div>
 
                         <div id="omnimail-sms-grid" class="omnimail-sms-grid" aria-busy="true">
@@ -298,10 +271,6 @@ $flows = array(
                                         <p class="description omnimail-flow-desc"><?php _e('Send an SMS after 1 hour if cart value is greater than $20.', 'omnimail'); ?></p>
                                     </div>
                                     <div class="omnimail-flow-actions">
-                                        <button type="button" class="button button-secondary omnimail-manage-btn-sm" disabled>
-                                            <span class="dashicons dashicons-admin-generic"></span>
-                                            <?php _e('Manage', 'omnimail'); ?>
-                                        </button>
                                         <label class="omnimail-toggle">
                                             <input type="checkbox" class="omnimail-sms-checkbox" data-flow-key="cartAbandonmentEnabled" disabled>
                                             <span class="omnimail-toggle-slider"></span>
@@ -320,10 +289,6 @@ $flows = array(
                                         <p class="description omnimail-flow-desc"><?php _e('Send an SMS after 24 hours if a product was viewed but not added to cart.', 'omnimail'); ?></p>
                                     </div>
                                     <div class="omnimail-flow-actions">
-                                        <button type="button" class="button button-secondary omnimail-manage-btn-sm" disabled>
-                                            <span class="dashicons dashicons-admin-generic"></span>
-                                            <?php _e('Manage', 'omnimail'); ?>
-                                        </button>
                                         <label class="omnimail-toggle">
                                             <input type="checkbox" class="omnimail-sms-checkbox" data-flow-key="browseAbandonmentEnabled" disabled>
                                             <span class="omnimail-toggle-slider"></span>
@@ -342,10 +307,6 @@ $flows = array(
                                         <p class="description omnimail-flow-desc"><?php _e('Send an SMS after 2 hours if checkout started but was not completed.', 'omnimail'); ?></p>
                                     </div>
                                     <div class="omnimail-flow-actions">
-                                        <button type="button" class="button button-secondary omnimail-manage-btn-sm" disabled>
-                                            <span class="dashicons dashicons-admin-generic"></span>
-                                            <?php _e('Manage', 'omnimail'); ?>
-                                        </button>
                                         <label class="omnimail-toggle">
                                             <input type="checkbox" class="omnimail-sms-checkbox" data-flow-key="checkoutAbandonmentEnabled" disabled>
                                             <span class="omnimail-toggle-slider"></span>
@@ -364,10 +325,6 @@ $flows = array(
                                         <p class="description omnimail-flow-desc"><?php _e('Send a reminder after 7 days.', 'omnimail'); ?></p>
                                     </div>
                                     <div class="omnimail-flow-actions">
-                                        <button type="button" class="button button-secondary omnimail-manage-btn-sm" disabled>
-                                            <span class="dashicons dashicons-admin-generic"></span>
-                                            <?php _e('Manage', 'omnimail'); ?>
-                                        </button>
                                         <label class="omnimail-toggle">
                                             <input type="checkbox" class="omnimail-sms-checkbox" data-flow-key="wishlistReminderEnabled" disabled>
                                             <span class="omnimail-toggle-slider"></span>
@@ -386,10 +343,6 @@ $flows = array(
                                         <p class="description omnimail-flow-desc"><?php _e('Send a thank-you and review request after 7 days.', 'omnimail'); ?></p>
                                     </div>
                                     <div class="omnimail-flow-actions">
-                                        <button type="button" class="button button-secondary omnimail-manage-btn-sm" disabled>
-                                            <span class="dashicons dashicons-admin-generic"></span>
-                                            <?php _e('Manage', 'omnimail'); ?>
-                                        </button>
                                         <label class="omnimail-toggle">
                                             <input type="checkbox" class="omnimail-sms-checkbox" data-flow-key="postPurchaseEnabled" disabled>
                                             <span class="omnimail-toggle-slider"></span>
@@ -408,10 +361,6 @@ $flows = array(
                                         <p class="description omnimail-flow-desc"><?php _e('Send an SMS after 30 days of no activity.', 'omnimail'); ?></p>
                                     </div>
                                     <div class="omnimail-flow-actions">
-                                        <button type="button" class="button button-secondary omnimail-manage-btn-sm" disabled>
-                                            <span class="dashicons dashicons-admin-generic"></span>
-                                            <?php _e('Manage', 'omnimail'); ?>
-                                        </button>
                                         <label class="omnimail-toggle">
                                             <input type="checkbox" class="omnimail-sms-checkbox" data-flow-key="reEngagementEnabled" disabled>
                                             <span class="omnimail-toggle-slider"></span>
@@ -430,10 +379,6 @@ $flows = array(
                                         <p class="description omnimail-flow-desc"><?php _e('Send immediately when a product is restocked.', 'omnimail'); ?></p>
                                     </div>
                                     <div class="omnimail-flow-actions">
-                                        <button type="button" class="button button-secondary omnimail-manage-btn-sm" disabled>
-                                            <span class="dashicons dashicons-admin-generic"></span>
-                                            <?php _e('Manage', 'omnimail'); ?>
-                                        </button>
                                         <label class="omnimail-toggle">
                                             <input type="checkbox" class="omnimail-sms-checkbox" data-flow-key="backInStockEnabled" disabled>
                                             <span class="omnimail-toggle-slider"></span>
@@ -452,10 +397,6 @@ $flows = array(
                                         <p class="description omnimail-flow-desc"><?php _e('Send when a viewed product goes on sale.', 'omnimail'); ?></p>
                                     </div>
                                     <div class="omnimail-flow-actions">
-                                        <button type="button" class="button button-secondary omnimail-manage-btn-sm" disabled>
-                                            <span class="dashicons dashicons-admin-generic"></span>
-                                            <?php _e('Manage', 'omnimail'); ?>
-                                        </button>
                                         <label class="omnimail-toggle">
                                             <input type="checkbox" class="omnimail-sms-checkbox" data-flow-key="priceDropEnabled" disabled>
                                             <span class="omnimail-toggle-slider"></span>
@@ -467,21 +408,13 @@ $flows = array(
 
                         <div id="omnimail-sms-upgrade" class="omnimail-callout omnimail-callout-pro" style="margin-top: 16px; display: none;">
                             <strong><?php _e('PRO required', 'omnimail'); ?></strong>
-                            <?php _e('Your OmniVoice plan does not include SMS behavioral flows yet.', 'omnimail'); ?>
-                            <a href="https://omnivoice-app.omninexttech.com/dashboard/billings/access" target="_blank" rel="noopener noreferrer" class="button button-primary" style="margin-left:10px;">
-                                <?php _e('Upgrade OmniVoice', 'omnimail'); ?>
+                            <?php _e('SMS behavioral flows require a PRO OmniMail plan.', 'omnimail'); ?>
+                            <a href="<?php echo esc_url($pro_url); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary" style="margin-left:10px;">
+                                <?php _e('Upgrade to PRO', 'omnimail'); ?>
                             </a>
                         </div>
 
                         <div id="omnimail-sms-actions" class="omnimail-sms-actions" hidden>
-                            <button type="button" id="omnimail-sms-enable-all" class="button button-secondary" disabled>
-                                <span class="dashicons dashicons-yes-alt"></span>
-                                <?php _e('Enable All Flows', 'omnimail'); ?>
-                            </button>
-                            <button type="button" id="omnimail-sms-disable-all" class="button button-secondary" disabled>
-                                <span class="dashicons dashicons-dismiss"></span>
-                                <?php _e('Disable All Flows', 'omnimail'); ?>
-                            </button>
                             <button type="button" id="omnimail-sms-save" class="button button-primary" disabled>
                                 <span class="dashicons dashicons-saved"></span>
                                 <?php _e('Save Flow Settings', 'omnimail'); ?>
@@ -519,7 +452,7 @@ $flows = array(
                 echo wp_kses(
                     sprintf(
                         /* translators: %s: subscription upgrade URL */
-                        __('Behavioral flows require a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniMail plan</a>.', 'omnimail'),
+                        __('Behavioral flows (Email and SMS) require a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniMail plan</a>.', 'omnimail'),
                         esc_url($pro_url)
                     ),
                     array(
@@ -716,13 +649,11 @@ $flows = array(
 
 <script>
 /**
- * omnimail-behavioral-overview-ui
- * Purely visual/additive script for the redesigned overview cards & "X Active" badges.
- * It does NOT replace or duplicate your existing behavioral-flows JS (loading data,
- * saving, follow-ups, etc.) — it only watches the checkboxes that script already
- * controls and (a) keeps the "Active" badges in sync, and (b) makes the two big
- * overview toggles a convenience shortcut for the existing
- * "Enable All / Disable All" + "Save" buttons for each panel.
+ * omnimail-behavioral-badges-ui
+ * Purely visual/additive script for the "X Active" badges shown in each
+ * panel header. It does NOT replace or duplicate the existing behavioral-flows
+ * JS (loading data, saving, follow-ups, etc.) — it only watches the checkboxes
+ * that script already controls and keeps the badges in sync.
  */
 (function () {
     function ready(fn) {
@@ -733,8 +664,6 @@ $flows = array(
     ready(function () {
         var emailBadge = document.getElementById('omnimail-email-active-badge');
         var smsBadge = document.getElementById('omnimail-sms-active-badge');
-        var emailMaster = document.getElementById('omnimail-email-master-toggle');
-        var smsMaster = document.getElementById('omnimail-sms-master-toggle');
 
         function updateBadge(selector, badgeEl, suffix) {
             if (!badgeEl) return;
@@ -774,26 +703,6 @@ $flows = array(
         }
         refreshEmailBadge();
         refreshSmsBadge();
-
-        // Master toggles: convenience shortcut that reuses the existing
-        // Enable All / Disable All / Save buttons so all existing save logic
-        // (AJAX calls, validation, PRO gating, etc.) stays untouched.
-        if (emailMaster) {
-            emailMaster.addEventListener('change', function () {
-                var btn = document.getElementById(emailMaster.checked ? 'enable-all-flows' : 'disable-all-flows');
-                if (btn) btn.click();
-                var saveBtn = document.getElementById('save-flows-btn');
-                if (saveBtn) saveBtn.click();
-            });
-        }
-        if (smsMaster) {
-            smsMaster.addEventListener('change', function () {
-                var btn = document.getElementById(smsMaster.checked ? 'omnimail-sms-enable-all' : 'omnimail-sms-disable-all');
-                if (btn && !btn.disabled) btn.click();
-                var saveBtn = document.getElementById('omnimail-sms-save');
-                if (saveBtn && !saveBtn.disabled) saveBtn.click();
-            });
-        }
     });
 })();
 </script>

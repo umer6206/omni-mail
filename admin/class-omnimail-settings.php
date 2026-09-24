@@ -19,8 +19,6 @@ class OmniMail_Settings
     add_action('wp_ajax_omnimail_test_email', array($this, 'ajax_test_email'));
     add_action('wp_ajax_omnimail_get_behavioral_flows', array($this, 'ajax_get_behavioral_flows'));
     add_action('wp_ajax_omnimail_update_behavioral_flows', array($this, 'ajax_update_behavioral_flows'));
-    add_action('wp_ajax_omnimail_get_sms_flows', array($this, 'ajax_get_sms_flows'));
-    add_action('wp_ajax_omnimail_update_sms_flows', array($this, 'ajax_update_sms_flows'));
     add_action('wp_ajax_omnimail_save_sms_contact', array($this, 'ajax_save_sms_contact'));
     add_action('wp_ajax_nopriv_omnimail_save_sms_contact', array($this, 'ajax_save_sms_contact'));
     add_action('wp_ajax_omnimail_enable_all_flows', array($this, 'ajax_enable_all_flows'));
@@ -288,89 +286,6 @@ class OmniMail_Settings
     } else {
       wp_send_json_error($result);
     }
-  }
-
-  /**
-   * AJAX: Get SMS behavioral-flow settings.
-   */
-  public function ajax_get_sms_flows()
-  {
-    check_ajax_referer('omnimail_nonce', 'nonce');
-
-    if (!current_user_can('manage_options')) {
-      wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')), 403);
-    }
-
-    if (!OmniMail_API::has_pro_subscription()) {
-      wp_send_json_error(array('message' => __('An active PRO OmniMail plan is required for SMS behavioral flows.', 'omnimail')), 403);
-    }
-
-    $api = new OmniMail_API();
-    $response = $api->get_sms_flows();
-
-    if (is_wp_error($response)) {
-      wp_send_json_error(array('message' => $response->get_error_message()), 502);
-    }
-
-    if (empty($response['success'])) {
-      wp_send_json_error(array('message' => $response['message'] ?? __('The SMS flow request failed.', 'omnimail')));
-    }
-
-    wp_send_json_success($response['data'] ?? array());
-  }
-
-  /**
-   * AJAX: Update SMS behavioral-flow settings.
-   */
-  public function ajax_update_sms_flows()
-  {
-    check_ajax_referer('omnimail_nonce', 'nonce');
-
-    if (!current_user_can('manage_options')) {
-      wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')), 403);
-    }
-
-    if (!OmniMail_API::has_pro_subscription()) {
-      wp_send_json_error(array('message' => __('An active PRO OmniMail plan is required for SMS behavioral flows.', 'omnimail')), 403);
-    }
-
-    $keys = array(
-      'cartAbandonmentEnabled',
-      'browseAbandonmentEnabled',
-      'checkoutAbandonmentEnabled',
-      'wishlistReminderEnabled',
-      'postPurchaseEnabled',
-      'reEngagementEnabled',
-      'backInStockEnabled',
-      'priceDropEnabled',
-    );
-
-    $settings = array();
-    foreach ($keys as $key) {
-      if (!isset($_POST[$key])) {
-        continue;
-      }
-
-      $value = sanitize_text_field(wp_unslash($_POST[$key]));
-      if (!in_array($value, array('true', 'false', '1', '0'), true)) {
-        wp_send_json_error(array('message' => sprintf(__('The %s value must be boolean.', 'omnimail'), $key)), 400);
-      }
-
-      $settings[$key] = in_array($value, array('true', '1'), true);
-    }
-
-    $api = new OmniMail_API();
-    $response = $api->update_sms_flows($settings);
-
-    if (is_wp_error($response)) {
-      wp_send_json_error(array('message' => $response->get_error_message()), 502);
-    }
-
-    if (empty($response['success'])) {
-      wp_send_json_error(array('message' => $response['message'] ?? __('The SMS flow request failed.', 'omnimail')));
-    }
-
-    wp_send_json_success($response['data'] ?? array());
   }
 
   /**

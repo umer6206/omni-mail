@@ -208,180 +208,6 @@ class OmniMail_API
   }
 
   /**
-   * Send a storefront behavioral event for the contact stored in the cookie.
-   */
-  public function send_sms_behavioral_event($event_type, $event_data)
-  {
-    $flow_by_event = array(
-      'added_to_cart' => 'cartAbandonmentEnabled',
-      'removed_from_cart' => 'cartAbandonmentEnabled',
-      'product_viewed' => 'browseAbandonmentEnabled',
-      'checkout_started' => 'checkoutAbandonmentEnabled',
-      'wishlist_item_added' => 'wishlistReminderEnabled',
-      'purchase_completed' => 'postPurchaseEnabled',
-      're_engagement' => 'reEngagementEnabled',
-      'back_in_stock' => 'backInStockEnabled',
-      'price_drop' => 'priceDropEnabled',
-    );
-
-    if (!isset($flow_by_event[$event_type])) {
-      return false;
-    }
-
-    if (!self::has_pro_subscription()) {
-      return false;
-    }
-
-    if (empty($this->connection_id)) {
-      return false;
-    }
-
-    $cookie_value = isset($_COOKIE['omnimail_sms_contact'])
-      ? rawurldecode(wp_unslash($_COOKIE['omnimail_sms_contact']))
-      : '';
-    $cookie_data = json_decode($cookie_value, true);
-    $contact_id = is_string($cookie_data)
-      ? sanitize_text_field($cookie_data)
-      : (is_array($cookie_data) && isset($cookie_data['id'])
-        ? sanitize_text_field((string) $cookie_data['id'])
-        : '');
-
-    if (!$contact_id) {
-      return false;
-    }
-
-    $flow_response = $this->request_sms_flows('GET');
-    if (is_wp_error($flow_response) || empty($flow_response['data'][$flow_by_event[$event_type]])) {
-      return false;
-    }
-
-    $url = $this->api_base_url . '/api/sms-behavioral-flows/' . rawurlencode($contact_id) . '/events';
-    $response = wp_remote_post($url, array(
-      'timeout' => 15,
-      'headers' => array(
-        'Accept' => 'application/json',
-        'Content-Type' => 'application/json',
-      ),
-      'body' => wp_json_encode(array(
-        'eventType' => $event_type,
-        'data' => is_array($event_data) ? $event_data : array(),
-      )),
-    ));
-
-    return !is_wp_error($response)
-      && wp_remote_retrieve_response_code($response) >= 200
-      && wp_remote_retrieve_response_code($response) < 300;
-  }
-
-  /**
-   * Broadcast a product-level SMS event.
-   */
-  public function send_sms_behavioral_broadcast($event_type, $product_data)
-  {
-    $flow_by_event = array(
-      'back_in_stock' => 'backInStockEnabled',
-      'price_drop' => 'priceDropEnabled',
-    );
-
-    if (!isset($flow_by_event[$event_type])) {
-      return false;
-    }
-
-    if (!self::has_pro_subscription()) {
-      return false;
-    }
-
-    if (empty($this->connection_id)) {
-      return false;
-    }
-
-    $flow_response = $this->request_sms_flows('GET');
-    if (is_wp_error($flow_response) || empty($flow_response['data'][$flow_by_event[$event_type]])) {
-      return false;
-    }
-
-    $response = wp_remote_post(
-      $this->api_base_url . '/api/sms-behavioral-flows/broadcast',
-      array(
-        'timeout' => 15,
-        'headers' => array(
-          'Accept' => 'application/json',
-          'Content-Type' => 'application/json',
-          'X-API-Key' => $this->api_key,
-        ),
-        'body' => wp_json_encode(array(
-          'connectionId' => $this->connection_id,
-          'eventType' => $event_type,
-          'data' => is_array($product_data) ? $product_data : array(),
-        )),
-      )
-    );
-
-    if (is_wp_error($response)) {
-      return false;
-    }
-
-    $status = wp_remote_retrieve_response_code($response);
-    return $status >= 200 && $status < 300;
-  }
-
-  private function request_sms_flows($method, $settings = array())
-  {
-    if (empty($this->connection_id)) {
-      return new WP_Error('missing_configuration', 'API Key and Connection ID are required.');
-    }
-
-    $url = $this->api_base_url . '/api/sms-behavioral-flows/' . rawurlencode($this->connection_id);
-    $args = array(
-      'method' => $method,
-      'timeout' => 30,
-      'headers' => array(
-        'Accept' => 'application/json',
-        'Content-Type' => 'application/json',
-        'X-API-Key' => $this->api_key,
-      ),
-    );
-
-    if ('PUT' === $method) {
-      $args['body'] = wp_json_encode($settings);
-    }
-
-    $response = wp_remote_request($url, $args);
-    if (is_wp_error($response)) {
-      return $response;
-    }
-
-    $status = wp_remote_retrieve_response_code($response);
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-    if ($status < 200 || $status >= 300 || !is_array($body)) {
-      return new WP_Error('sms_flows_request_failed', $body['message'] ?? sprintf('Backend returned HTTP %d.', $status), array('status' => $status));
-    }
-
-    return $body;
-  }
-
-  /**
-   * Get SMS behavioral-flow settings.
-   *
-   * @return array|WP_Error
-   */
-  public function get_sms_flows()
-  {
-    return $this->request_sms_flows('GET');
-  }
-
-  /**
-   * Update SMS behavioral-flow settings.
-   *
-   * @param array $settings
-   * @return array|WP_Error
-   */
-  public function update_sms_flows($settings = array())
-  {
-    return $this->request_sms_flows('PUT', $settings);
-  }
-
-  /**
    * Sync a batch of products to POST /product-service/sync
    * Backend upserts by externalId + connectionId (no duplicates per store).
    *
@@ -1183,6 +1009,12 @@ class OmniMail_API
       'site_url' => get_site_url()
     );
 
+    $contact_id = $this->get_sms_contact_id_from_cookie();
+    if ($contact_id !== '') {
+      $payload['contact_id'] = $contact_id;
+      $payload['data']['contact_id'] = $contact_id;
+    }
+
     $args = array(
       'method' => 'POST',
       'headers' => array(
@@ -1207,6 +1039,27 @@ class OmniMail_API
 
     $this->log_error('Event failed', wp_remote_retrieve_body($response));
     return false;
+  }
+
+  /**
+   * Read the contact identifier saved by the storefront SMS form.
+   */
+  private function get_sms_contact_id_from_cookie()
+  {
+    if (empty($_COOKIE['omnimail_sms_contact'])) {
+      return '';
+    }
+
+    $cookie_value = rawurldecode(wp_unslash($_COOKIE['omnimail_sms_contact']));
+    $cookie_data = json_decode($cookie_value, true);
+
+    if (is_string($cookie_data)) {
+      return sanitize_text_field($cookie_data);
+    }
+
+    return is_array($cookie_data) && isset($cookie_data['id'])
+      ? sanitize_text_field((string) $cookie_data['id'])
+      : '';
   }
 
   /**

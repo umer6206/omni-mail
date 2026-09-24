@@ -486,6 +486,38 @@
     flex-shrink: 0;
 }
 
+.omnimail-channel-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 52px;
+    color: var(--color-text-muted);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.omnimail-channel-toggle .omnimail-toggle {
+    width: 38px;
+    height: 21px;
+}
+
+.omnimail-channel-toggle .omnimail-toggle-slider:before {
+    width: 15px;
+    height: 15px;
+    left: 3px;
+    bottom: 3px;
+}
+
+.omnimail-channel-toggle .omnimail-toggle input:checked + .omnimail-toggle-slider:before {
+    transform: translateX(17px);
+}
+
+.omnimail-email-panel {
+    grid-column: 1 / -1;
+}
+
 .omnimail-pro-unlock {
     color: #f5c542 !important;
     font-weight: 700;
@@ -603,6 +635,21 @@
     margin: 18px 0 8px;
 }
 
+.omnimail-flow-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 52px 52px 82px;
+    gap: 12px;
+    padding: 0 16px 8px;
+    color: var(--color-text-muted);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.omnimail-flow-columns span:not(:first-child) {
+    text-align: center;
+}
+
 .omnimail-flow-card {
     background: rgba(15, 23, 42, 0.35);
     border: 1px solid rgba(148, 163, 184, 0.16);
@@ -676,51 +723,22 @@
     cursor: not-allowed;
 }
 
-.omnimail-sms-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin-top: 18px;
-}
-
-.omnimail-sms-flow-card {
-    background: rgba(15, 23, 42, 0.4);
-}
-
-.omnimail-sms-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 18px;
-}
-
-.omnimail-sms-message {
-    min-height: 22px;
-    margin-top: 12px;
-    font-size: 13px;
-}
-
-.omnimail-sms-message.is-success {
-    color: #22c55e;
-}
-
-.omnimail-sms-message.is-error {
-    color: #f87171;
-}
-
 @media (max-width: 782px) {
     .omnimail-behavioral-overview,
     .omnimail-behavioral-layout {
         grid-template-columns: 1fr;
     }
 
-    .omnimail-flows-grid,
-    .omnimail-sms-grid {
+    .omnimail-flows-grid {
         grid-template-columns: 1fr;
     }
 
     .omnimail-flow-card-top {
         flex-wrap: wrap;
+    }
+
+    .omnimail-flow-columns {
+        display: none;
     }
 }
 
@@ -1443,6 +1461,7 @@
     background: rgba(0, 255, 255, 0.06);
     border: 1px solid var(--color-deep-cyan);
     color: var(--color-text-secondary);
+    margin-bottom: 4px;
 }
 
 .omnimail-callout strong {

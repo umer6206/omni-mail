@@ -167,19 +167,17 @@ class OmniMail_WooCommerce
       ));
     }
 
-    // SMS behavioral event — payload matches OmniVoice exactly
-    $this->api->send_sms_behavioral_event('added_to_cart', array(
-      'productId'     => $product->get_id(),
-      'parentId'      => $product->get_parent_id() ?: $product->get_id(),
-      'variationId'   => $variation_id,
-      'productName'   => $product->get_name(),
-      'sku'           => $product->get_sku(),
-      'price'         => $product->get_price(),
-      'quantity'      => $quantity,
-      'cartTotal'     => WC()->cart->get_cart_contents_total(),
-      'cartItemCount' => WC()->cart->get_cart_contents_count(),
-      'url'           => home_url('/'),
-    ));
+    if (!is_user_logged_in()) {
+      $this->api->send_event('cart.item_added', array(
+        'productId' => $product->get_id(),
+        'variationId' => $variation_id,
+        'productName' => $product->get_name(),
+        'quantity' => $quantity,
+        'cartTotal' => WC()->cart->get_cart_contents_total(),
+        'cartItemCount' => WC()->cart->get_cart_contents_count(),
+      ));
+    }
+
   }
 
   /** Handle a native WooCommerce cart removal. */
@@ -205,17 +203,14 @@ class OmniMail_WooCommerce
     $product = $product_id ? wc_get_product($product_id) : null;
     if (!$product || !is_object($product)) return;
 
-    // SMS behavioral event — payload matches OmniVoice exactly
-    $this->api->send_sms_behavioral_event('removed_from_cart', array(
-      'productId'     => $product->get_id(),
-      'parentId'      => $product->get_parent_id() ?: $product->get_id(),
-      'variationId'   => $product->is_type('variation') ? $product->get_id() : '',
-      'productName'   => $product->get_name(),
-      'sku'           => $product->get_sku(),
-      'quantity'      => isset($cart_item['quantity']) ? $cart_item['quantity'] : 1,
+    $this->api->send_event('cart.item_removed', array(
+      'productId' => $product->get_id(),
+      'productName' => $product->get_name(),
+      'quantity' => isset($cart_item['quantity']) ? $cart_item['quantity'] : 1,
       'cartItemCount' => $cart->get_cart_contents_count(),
-      'cartTotal'     => $cart->get_cart_contents_total(),
+      'cartTotal' => $cart->get_cart_contents_total(),
     ));
+
   }
 
   /** Handle native WooCommerce page lifecycle events. */
@@ -231,28 +226,26 @@ class OmniMail_WooCommerce
       return;
     }
 
-    // SMS behavioral event — payload matches OmniVoice exactly
-    $this->api->send_sms_behavioral_event('product_viewed', array(
-      'productId'   => $product->get_id(),
-      'parentId'    => $product->get_parent_id() ?: $product->get_id(),
-      'variationId' => $product->is_type('variation') ? $product->get_id() : '',
+    $this->api->send_event('product.viewed', array(
+      'productId' => $product->get_id(),
       'productName' => $product->get_name(),
-      'sku'         => $product->get_sku(),
-      'price'       => $product->get_price(),
-      'url'         => get_permalink($product->get_id()),
+      'sku' => $product->get_sku(),
+      'price' => $product->get_price(),
+      'url' => get_permalink($product->get_id()),
     ));
+
   }
 
   public function handle_checkout_started()
   {
     if (!$this->api || !function_exists('WC') || !WC()->cart) return;
 
-    // SMS behavioral event — payload matches OmniVoice exactly
-    $this->api->send_sms_behavioral_event('checkout_started', array(
+    $this->api->send_event('checkout.started', array(
       'cartItemCount' => WC()->cart->get_cart_contents_count(),
-      'cartTotal'     => WC()->cart->get_cart_contents_total(),
-      'url'           => wc_get_checkout_url(),
+      'cartTotal' => WC()->cart->get_cart_contents_total(),
+      'url' => wc_get_checkout_url(),
     ));
+
   }
 
   public function handle_purchase_completed($order_id)
@@ -262,14 +255,14 @@ class OmniMail_WooCommerce
     $order = wc_get_order($order_id);
     if (!$order) return;
 
-    // SMS behavioral event — payload matches OmniVoice exactly
-    $this->api->send_sms_behavioral_event('purchase_completed', array(
-      'orderId'     => $order_id,
+    $this->api->send_event('purchase.completed', array(
+      'orderId' => $order_id,
       'orderNumber' => $order->get_order_number(),
-      'total'       => $order->get_total(),
-      'currency'    => $order->get_currency(),
-      'items'       => $this->get_order_items($order),
+      'total' => $order->get_total(),
+      'currency' => $order->get_currency(),
+      'items' => $this->get_order_items($order),
     ));
+
   }
 
   /**
@@ -460,15 +453,6 @@ class OmniMail_WooCommerce
         'stockQuantity' => $stock_qty,
       ));
 
-      // SMS broadcast — payload matches OmniVoice exactly
-      $this->api->send_sms_behavioral_broadcast('back_in_stock', array(
-        'productId'     => $product_id,
-        'parentId'      => $product->get_parent_id() ?: $product_id,
-        'productName'   => $product->get_name(),
-        'sku'           => $product->get_sku(),
-        'stockQuantity' => $stock_qty,
-        'url'           => get_permalink($product->get_parent_id() ?: $product_id),
-      ));
     }
   }
 
@@ -506,18 +490,6 @@ class OmniMail_WooCommerce
           'currency'           => get_woocommerce_currency(),
         ));
 
-        // SMS broadcast — payload matches OmniVoice exactly
-        $this->api->send_sms_behavioral_broadcast('price_drop', array(
-          'productId'          => $product_id,
-          'parentId'           => $product->get_parent_id() ?: $product_id,
-          'productName'        => $product->get_name(),
-          'sku'                => $product->get_sku(),
-          'currentPrice'       => $current_price,
-          'previousPrice'      => $previous_price,
-          'priceChangePercent' => round($price_change_percent, 2),
-          'currency'           => get_woocommerce_currency(),
-          'url'                => get_permalink($product->get_parent_id() ?: $product_id),
-        ));
       }
     }
   }

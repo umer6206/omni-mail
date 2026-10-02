@@ -157,24 +157,27 @@ class OmniMail_WooCommerce
     if (is_user_logged_in()) {
       $user = wp_get_current_user();
       $cart = WC()->cart;
-      $this->api->send_event('cart.item_added', array(
-        'productId'     => $product_id,
-        'variationId'   => $variation_id,
-        'quantity'      => $quantity,
-        'customerEmail' => $user->user_email,
-        'cartTotal'     => $cart->get_cart_contents_total(),
-        'cartItemCount' => $cart->get_cart_contents_count(),
+      $this->api->send_event('cart.item_added', array_merge(
+        $this->get_product_identity($product, $variation_id),
+        array(
+          'productName'   => $product->get_name(),
+          'quantity'      => $quantity,
+          'customerEmail' => $user->user_email,
+          'cartTotal'     => $cart->get_cart_contents_total(),
+          'cartItemCount' => $cart->get_cart_contents_count(),
+        )
       ));
     }
 
     if (!is_user_logged_in()) {
-      $this->api->send_event('cart.item_added', array(
-        'productId' => $product->get_id(),
-        'variationId' => $variation_id,
-        'productName' => $product->get_name(),
-        'quantity' => $quantity,
-        'cartTotal' => WC()->cart->get_cart_contents_total(),
-        'cartItemCount' => WC()->cart->get_cart_contents_count(),
+      $this->api->send_event('cart.item_added', array_merge(
+        $this->get_product_identity($product, $variation_id),
+        array(
+          'productName' => $product->get_name(),
+          'quantity' => $quantity,
+          'cartTotal' => WC()->cart->get_cart_contents_total(),
+          'cartItemCount' => WC()->cart->get_cart_contents_count(),
+        )
       ));
     }
 
@@ -203,12 +206,14 @@ class OmniMail_WooCommerce
     $product = $product_id ? wc_get_product($product_id) : null;
     if (!$product || !is_object($product)) return;
 
-    $this->api->send_event('cart.item_removed', array(
-      'productId' => $product->get_id(),
-      'productName' => $product->get_name(),
-      'quantity' => isset($cart_item['quantity']) ? $cart_item['quantity'] : 1,
-      'cartItemCount' => $cart->get_cart_contents_count(),
-      'cartTotal' => $cart->get_cart_contents_total(),
+    $this->api->send_event('cart.item_removed', array_merge(
+      $this->get_product_identity($product, isset($cart_item['variation_id']) ? $cart_item['variation_id'] : 0),
+      array(
+        'productName' => $product->get_name(),
+        'quantity' => isset($cart_item['quantity']) ? $cart_item['quantity'] : 1,
+        'cartItemCount' => $cart->get_cart_contents_count(),
+        'cartTotal' => $cart->get_cart_contents_total(),
+      )
     ));
 
   }
@@ -226,12 +231,14 @@ class OmniMail_WooCommerce
       return;
     }
 
-    $this->api->send_event('product.viewed', array(
-      'productId' => $product->get_id(),
-      'productName' => $product->get_name(),
-      'sku' => $product->get_sku(),
-      'price' => $product->get_price(),
-      'url' => get_permalink($product->get_id()),
+    $this->api->send_event('product.viewed', array_merge(
+      $this->get_product_identity($product),
+      array(
+        'productName' => $product->get_name(),
+        'sku' => $product->get_sku(),
+        'price' => $product->get_price(),
+        'url' => get_permalink($product->get_id()),
+      )
     ));
 
   }
@@ -438,19 +445,23 @@ class OmniMail_WooCommerce
     $this->stock_events_processed[$dedupe_key] = true;
 
     if ($stock_status === 'outofstock' && $previous_status !== 'outofstock') {
-      $this->api->send_event('product.out_of_stock', array(
-        'productId'   => $product_id,
-        'parentId'    => $product->get_parent_id() ?: $product_id,
-        'productName' => $product->get_name(),
-        'sku'         => $product->get_sku(),
-        'url'         => get_permalink($product->get_parent_id() ?: $product_id),
+      $this->api->send_event('product.out_of_stock', array_merge(
+        $this->get_product_identity($product),
+        array(
+          'parentId'    => $product->get_parent_id() ?: $product_id,
+          'productName' => $product->get_name(),
+          'sku'         => $product->get_sku(),
+          'url'         => get_permalink($product->get_parent_id() ?: $product_id),
+        )
       ));
     } elseif ($stock_status === 'instock' && $previous_status === 'outofstock') {
-      $this->api->send_event('product.back_in_stock', array(
-        'productId'   => $product_id,
-        'productName' => $product->get_name(),
-        'sku'         => $product->get_sku(),
-        'stockQuantity' => $stock_qty,
+      $this->api->send_event('product.back_in_stock', array_merge(
+        $this->get_product_identity($product),
+        array(
+          'productName'   => $product->get_name(),
+          'sku'           => $product->get_sku(),
+          'stockQuantity' => $stock_qty,
+        )
       ));
 
     }
@@ -480,14 +491,16 @@ class OmniMail_WooCommerce
       $price_change_percent = (($previous_price - $current_price) / $previous_price) * 100;
 
       if ($price_change_percent >= 5) {
-        $this->api->send_event('product.price_dropped', array(
-          'productId'          => $product_id,
-          'productName'        => $product->get_name(),
-          'sku'                => $product->get_sku(),
-          'currentPrice'       => $current_price,
-          'previousPrice'      => $previous_price,
-          'priceChangePercent' => round($price_change_percent, 2),
-          'currency'           => get_woocommerce_currency(),
+        $this->api->send_event('product.price_dropped', array_merge(
+          $this->get_product_identity($product),
+          array(
+            'productName'        => $product->get_name(),
+            'sku'                => $product->get_sku(),
+            'currentPrice'       => $current_price,
+            'previousPrice'      => $previous_price,
+            'priceChangePercent' => round($price_change_percent, 2),
+            'currency'           => get_woocommerce_currency(),
+          )
         ));
 
       }
@@ -511,6 +524,23 @@ class OmniMail_WooCommerce
   }
 
   /**
+   * Return the parent product ID and variation ID for product-related events.
+   */
+  private function get_product_identity($product, $variation_id = 0)
+  {
+    $product_id = $product->get_id();
+
+    if (!$variation_id && method_exists($product, 'is_type') && $product->is_type('variation')) {
+      $variation_id = $product_id;
+    }
+
+    return array(
+      'productId' => $product->get_parent_id() ?: $product_id,
+      'variationId' => $variation_id ?: null,
+    );
+  }
+
+  /**
    * Get order items
    */
   private function get_order_items($order)
@@ -523,6 +553,7 @@ class OmniMail_WooCommerce
       if (!$product) {
         $items[] = array(
           'productId'   => null,
+          'variationId' => null,
           'productName' => $item->get_name(),
           'quantity'    => $item->get_quantity(),
           'price'       => $item->get_total(),
@@ -531,13 +562,12 @@ class OmniMail_WooCommerce
         continue;
       }
 
-      $items[] = array(
-        'productId'   => $product->get_id(),
+      $items[] = array_merge($this->get_product_identity($product), array(
         'productName' => $item->get_name(),
         'quantity'    => $item->get_quantity(),
         'price'       => $item->get_total(),
         'sku'         => $product->get_sku(),
-      );
+      ));
     }
 
     return $items;

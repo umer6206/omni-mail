@@ -998,13 +998,35 @@ class OmniMail_API
       return false;
     }
 
+    $email = '';
+    foreach (array('customerEmail', 'email', 'user_email') as $email_key) {
+      if (!empty($event_data[$email_key])) {
+        $email = $event_data[$email_key];
+        break;
+      }
+    }
+
+    if (!$email && is_user_logged_in()) {
+      $user = wp_get_current_user();
+      $email = $user->user_email;
+    }
+
+    if (!$email && function_exists('WC')) {
+      $wc = WC();
+      if (isset($wc->customer) && is_object($wc->customer) && method_exists($wc->customer, 'get_email')) {
+        $email = $wc->customer->get_email();
+      }
+    }
+
+    $event_data['customerEmail'] = $email;
+
     $url = $this->api_base_url . "/api/integrations/wordpress/events/{$this->connection_id}";
 
     $payload = array(
       'event_type' => $event_type,
       'data' => $event_data,
       'source_id' => $event_data['orderId'] ?? $event_data['productId'] ?? null,
-      'user_email' => $event_data['customerEmail'] ?? $event_data['email'] ?? $event_data['user_email'] ?? null,
+      'user_email' => $email,
       'timestamp' => current_time('mysql'),
       'site_url' => get_site_url()
     );

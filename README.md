@@ -40,6 +40,8 @@ Integrate WooCommerce with OmniMail for intelligent email automation, SMTP confi
 
 The plugin automatically sends these WooCommerce events to your backend:
 
+Every event payload includes `customerEmail` (and the top-level `user_email`); product event and order-item payloads use the parent product as `productId` and include `variationId` when the item is a variation.
+
 ### Order Events
 - `order.created` - New order placed
 - `order.status_changed` - Order status updated

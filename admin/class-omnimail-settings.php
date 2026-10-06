@@ -18,6 +18,7 @@ class OmniMail_Settings
     add_action('wp_ajax_omnimail_save_woocommerce_credentials', array($this, 'ajax_save_woocommerce_credentials'));
     add_action('wp_ajax_omnimail_test_email', array($this, 'ajax_test_email'));
     add_action('wp_ajax_omnimail_get_behavioral_flows', array($this, 'ajax_get_behavioral_flows'));
+    add_action('wp_ajax_omnimail_get_behavioral_flow_templates', array($this, 'ajax_get_behavioral_flow_templates'));
     add_action('wp_ajax_omnimail_update_behavioral_flows', array($this, 'ajax_update_behavioral_flows'));
     add_action('wp_ajax_omnimail_save_sms_contact', array($this, 'ajax_save_sms_contact'));
     add_action('wp_ajax_nopriv_omnimail_save_sms_contact', array($this, 'ajax_save_sms_contact'));
@@ -289,6 +290,43 @@ class OmniMail_Settings
   }
 
   /**
+   * AJAX: Get templates for one behavioral flow.
+   */
+  public function ajax_get_behavioral_flow_templates()
+  {
+    check_ajax_referer('omnimail_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+      wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
+    }
+
+    $event_type = isset($_POST['eventType']) ? sanitize_text_field(wp_unslash($_POST['eventType'])) : '';
+    $allowed_event_types = array(
+      'cartAbandonment',
+      'browseAbandonment',
+      'checkoutAbandonment',
+      'wishlistReminder',
+      'postPurchase',
+      'reEngagement',
+      'backInStock',
+      'priceDrop',
+    );
+
+    if (!in_array($event_type, $allowed_event_types, true)) {
+      wp_send_json_error(array('message' => __('Invalid behavioral flow type.', 'omnimail')));
+    }
+
+    $api = new OmniMail_API();
+    $result = $api->get_behavioral_flow_templates($event_type);
+
+    if (!empty($result['success'])) {
+      wp_send_json_success($result);
+    }
+
+    wp_send_json_error($result);
+  }
+
+  /**
    * AJAX: Save a visitor phone number for SMS behavioral flows.
    */
   public function ajax_save_sms_contact()
@@ -332,10 +370,30 @@ class OmniMail_Settings
       wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
     }
 
-    $settings = isset($_POST['settings']) ? json_decode(stripslashes($_POST['settings']), true) : array();
+    $settings_json = isset($_POST['settings']) && is_string($_POST['settings'])
+      ? wp_unslash($_POST['settings'])
+      : '';
+    $settings = json_decode($settings_json, true);
 
-    if (empty($settings)) {
+    if (!is_array($settings) || empty($settings)) {
       wp_send_json_error(array('message' => __('No settings provided', 'omnimail')));
+    }
+
+    $template_flow_types = array(
+      'cartAbandonment',
+      'browseAbandonment',
+      'checkoutAbandonment',
+      'wishlistReminder',
+      'postPurchase',
+      'reEngagement',
+      'backInStock',
+      'priceDrop',
+    );
+    foreach ($template_flow_types as $flow_type) {
+      $template_key = $flow_type . 'TemplateId';
+      if (isset($settings[$template_key]) && is_string($settings[$template_key])) {
+        $settings[$template_key] = sanitize_text_field($settings[$template_key]);
+      }
     }
 
     $api = new OmniMail_API();

@@ -308,6 +308,56 @@ $flows = array(
     </div>
 </div>
 
+<!-- Behavioral email template picker -->
+<div id="omnimail-flow-templates-modal" class="omnimail-modal-logs" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="omnimail-flow-templates-title">
+  <div class="omnimail-modal-content omnimail-flow-templates-modal">
+    <div class="omnimail-modal-header">
+      <h3 id="omnimail-flow-templates-title">
+        <span class="dashicons dashicons-email-alt"></span>
+        <span id="omnimail-flow-templates-title-text"><?php _e('Choose an Email Template', 'omnimail'); ?></span>
+      </h3>
+      <button type="button" class="omnimail-modal-close" id="omnimail-flow-templates-close" aria-label="<?php esc_attr_e('Close', 'omnimail'); ?>">
+        <span class="dashicons dashicons-no"></span>
+      </button>
+    </div>
+    <div class="omnimail-modal-body">
+      <p class="description"><?php _e('Select a template for this email flow. Preview a template before choosing it.', 'omnimail'); ?></p>
+      <div class="omnimail-flow-template-actions">
+        <a id="omnimail-flow-create-template" class="button button-secondary" href="#" target="_blank" rel="noopener noreferrer">
+          <span class="dashicons dashicons-plus-alt2"></span>
+          <?php _e('Create a Template', 'omnimail'); ?>
+        </a>
+        <button type="button" class="button button-secondary" id="omnimail-flow-templates-refresh">
+          <span class="dashicons dashicons-update"></span>
+          <?php _e('Refresh', 'omnimail'); ?>
+        </button>
+      </div>
+      <div id="omnimail-flow-templates-loading" style="display:none;text-align:center;padding:20px;">
+        <span class="spinner is-active" style="float:none;margin:0;"></span>
+        <p><?php _e('Loading templates...', 'omnimail'); ?></p>
+      </div>
+      <p id="omnimail-flow-templates-error" class="omnimail-flow-template-error" style="display:none;"></p>
+      <div id="omnimail-flow-templates-list" class="omnimail-flow-templates-list"></div>
+      <div id="omnimail-flow-template-preview" class="omnimail-flow-template-preview" style="display:none;">
+        <div>
+          <strong id="omnimail-flow-template-preview-name"></strong>
+          <button type="button" class="button-link" id="omnimail-flow-template-preview-close"><?php _e('Close preview', 'omnimail'); ?></button>
+        </div>
+        <iframe title="<?php esc_attr_e('Email template preview', 'omnimail'); ?>" sandbox="" src="about:blank"></iframe>
+      </div>
+      <div class="omnimail-enhance-actions">
+        <button type="button" class="button button-secondary button-large" id="omnimail-flow-templates-cancel">
+          <?php _e('Cancel', 'omnimail'); ?>
+        </button>
+        <button type="button" class="button button-primary button-large" id="omnimail-flow-template-use" disabled>
+          <span class="dashicons dashicons-yes"></span>
+          <?php _e('Use Selected Template', 'omnimail'); ?>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Enhance Your Flow (follow-up sequences prompt) -->
 <div id="omnimail-enhance-flow-modal" class="omnimail-modal-logs" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="omnimail-enhance-flow-title">
   <div class="omnimail-modal-content omnimail-enhance-modal">

@@ -468,6 +468,50 @@ class OmniMail_API
   }
 
   /**
+   * Get templates available for a behavioral flow.
+   *
+   * @param string $event_type Behavioral flow event type.
+   * @return array
+   */
+  public function get_behavioral_flow_templates($event_type)
+  {
+    if (empty($this->connection_id)) {
+      return array(
+        'success' => false,
+        'message' => 'Connection ID is not configured. Please configure it in Settings.'
+      );
+    }
+
+    $response = $this->make_request(
+      'GET',
+      "/api/behavioral-flows/{$this->connection_id}/templates?eventType=" . rawurlencode($event_type)
+    );
+
+    if (is_wp_error($response)) {
+      return array(
+        'success' => false,
+        'message' => $response->get_error_message()
+      );
+    }
+
+    $status_code = wp_remote_retrieve_response_code($response);
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if ($status_code < 200 || $status_code >= 300 || !is_array($body) || empty($body['success'])) {
+      return array(
+        'success' => false,
+        'message' => isset($body['message']) ? sanitize_text_field($body['message']) : 'Unable to load templates.'
+      );
+    }
+
+    return array(
+      'success' => true,
+      'data' => isset($body['data']) && is_array($body['data']) ? $body['data'] : array(),
+      'message' => isset($body['message']) ? sanitize_text_field($body['message']) : ''
+    );
+  }
+
+  /**
    * Update behavioral flow settings
    */
   public function update_behavioral_flows($settings)

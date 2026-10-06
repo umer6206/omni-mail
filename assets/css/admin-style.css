@@ -1883,6 +1883,86 @@
     max-width: 720px;
 }
 
+.omnimail-flow-templates-modal {
+    max-width: 760px;
+}
+
+.omnimail-flow-template-actions,
+.omnimail-flow-template-card,
+.omnimail-flow-template-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.omnimail-flow-template-actions {
+    justify-content: space-between;
+    margin: 14px 0;
+}
+
+.omnimail-flow-templates-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    max-height: 310px;
+    overflow-y: auto;
+}
+
+.omnimail-flow-template-card {
+    justify-content: space-between;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #2d3e50;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.omnimail-flow-template-card.is-selected {
+    border-color: #00e6fb;
+    box-shadow: 0 0 0 1px rgba(0, 230, 251, 0.3);
+}
+
+.omnimail-flow-template-card-name {
+    overflow-wrap: anywhere;
+    color: #fff;
+}
+
+.omnimail-flow-template-card-actions {
+    flex-shrink: 0;
+}
+
+.omnimail-flow-template-card-actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.omnimail-flow-template-error {
+    color: #ff7b88;
+}
+
+.omnimail-flow-template-preview {
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid #2d3e50;
+    border-radius: 8px;
+}
+
+.omnimail-flow-template-preview > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.omnimail-flow-template-preview iframe {
+    display: block;
+    width: 100%;
+    height: 420px;
+    border: 1px solid #2d3e50;
+    background: #fff;
+}
+
 .omnimail-followups-banner {
     display: flex;
     align-items: flex-start;

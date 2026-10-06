@@ -512,6 +512,21 @@
         var omnimailProUpgradeUrl = ($('#behavioral-flows-content').data('pro-url')) ||
             'https://omnimail-app.omninexttech.com/dashboard/mail-blaze/subscription';
         var flowsIgnoreToggleChange = false;
+        var behavioralEmailFlowTypes = [
+            'cartAbandonment',
+            'browseAbandonment',
+            'checkoutAbandonment',
+            'wishlistReminder',
+            'postPurchase',
+            'reEngagement',
+            'backInStock',
+            'priceDrop'
+        ];
+        var behavioralTemplateIds = {};
+        var behavioralTemplatesById = {};
+        var selectedBehavioralTemplateId = '';
+        var pendingTemplateFlow = null;
+        var bulkEnableContext = null;
 
         // Load behavioral flows on page load
         if ($('#behavioral-flows-content').length) {
@@ -603,6 +618,11 @@
                         $('#flow_re_engagement_sms').prop('checked', !!(flows.smsReEngagement && flows.smsReEngagement.enabled));
                         $('#flow_back_in_stock_sms').prop('checked', !!(flows.smsBackInStock && flows.smsBackInStock.enabled));
                         $('#flow_price_drop_sms').prop('checked', !!(flows.smsPriceDrop && flows.smsPriceDrop.enabled));
+                        $.each(behavioralEmailFlowTypes, function (_, flowType) {
+                            behavioralTemplateIds[flowType] = flows[flowType] && flows[flowType].templateId
+                                ? String(flows[flowType].templateId)
+                                : '';
+                        });
                         applyFlowProGate(isPro);
                         flowsIgnoreToggleChange = false;
                         $('#behavioral-flows-content').fadeIn(400, function () {
@@ -685,6 +705,201 @@
 
         function closeModal($el) {
             $el.fadeOut(120);
+        }
+
+        function renderBehavioralTemplates(templates) {
+            var $list = $('#omnimail-flow-templates-list').empty();
+            behavioralTemplatesById = {};
+
+            if (!templates.length) {
+                $list.append(
+                    $('<p>').addClass('description').text('No templates were found for this event. Create one or refresh to try again.')
+                );
+                $('#omnimail-flow-template-use').prop('disabled', true);
+                return;
+            }
+
+            $.each(templates, function (_, template) {
+                if (!template || !template.id || !template.name) {
+                    return;
+                }
+
+                var id = String(template.id);
+                behavioralTemplatesById[id] = template;
+
+                var $card = $('<div>').addClass('omnimail-flow-template-card').attr('data-template-id', id);
+                var $name = $('<strong>').addClass('omnimail-flow-template-card-name').text(template.name);
+                var $actions = $('<div>').addClass('omnimail-flow-template-card-actions');
+                var $select = $('<button type="button">')
+                    .addClass('button button-secondary omnimail-flow-template-select')
+                    .append($('<span>').addClass('dashicons dashicons-yes'))
+                    .append(document.createTextNode(' Select'));
+                var $preview = $('<button type="button">')
+                    .addClass('button button-secondary omnimail-flow-template-preview-btn')
+                    .attr('aria-label', 'Preview ' + template.name)
+                    .append($('<span>').addClass('dashicons dashicons-visibility'));
+
+                $actions.append($select, $preview);
+                $card.append($name, $actions);
+                $list.append($card);
+            });
+
+            updateBehavioralTemplateSelection(selectedBehavioralTemplateId);
+        }
+
+        function updateBehavioralTemplateSelection(templateId) {
+            selectedBehavioralTemplateId = templateId || '';
+            $('#omnimail-flow-templates-list .omnimail-flow-template-card').each(function () {
+                var selected = String($(this).data('template-id')) === selectedBehavioralTemplateId;
+                $(this).toggleClass('is-selected', selected);
+            });
+            $('#omnimail-flow-template-use').prop('disabled', !selectedBehavioralTemplateId || !behavioralTemplatesById[selectedBehavioralTemplateId]);
+        }
+
+        function loadBehavioralTemplates(eventType) {
+            $('#omnimail-flow-templates-loading').show();
+            $('#omnimail-flow-templates-error').hide().text('');
+            $('#omnimail-flow-templates-list').empty();
+            $('#omnimail-flow-template-use').prop('disabled', true);
+            $('#omnimail-flow-template-preview').hide().find('iframe').attr('srcdoc', '');
+
+            $.ajax({
+                url: omnimailAjax.ajaxurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'omnimail_get_behavioral_flow_templates',
+                    nonce: omnimailAjax.nonce,
+                    eventType: eventType
+                }
+            }).done(function (response) {
+                if (!response.success) {
+                    $('#omnimail-flow-templates-error')
+                        .text((response.data && response.data.message) || 'Unable to load templates.')
+                        .show();
+                    return;
+                }
+
+                var result = response.data || {};
+                var templates = result.data;
+                if (!Array.isArray(templates)) {
+                    $('#omnimail-flow-templates-error').text('The template service returned an invalid response.').show();
+                    return;
+                }
+                renderBehavioralTemplates(templates);
+            }).fail(function (xhr) {
+                var message = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message;
+                $('#omnimail-flow-templates-error').text(message || 'Unable to load templates. Please try again.').show();
+            }).always(function () {
+                $('#omnimail-flow-templates-loading').hide();
+            });
+        }
+
+        function closeBehavioralTemplatePicker(cancelled) {
+            var pending = pendingTemplateFlow;
+            pendingTemplateFlow = null;
+            closeModal($('#omnimail-flow-templates-modal'));
+
+            if (pending && cancelled && typeof pending.onCancel === 'function') {
+                pending.onCancel();
+            }
+        }
+
+        function openBehavioralTemplatePicker(flowType, flowLabel, onSelected, onCancel) {
+            pendingTemplateFlow = {
+                type: flowType,
+                label: flowLabel,
+                onSelected: onSelected,
+                onCancel: onCancel
+            };
+            selectedBehavioralTemplateId = behavioralTemplateIds[flowType] || '';
+            $('#omnimail-flow-templates-title-text').text('Choose a template for ' + flowLabel);
+            $('#omnimail-flow-create-template').attr(
+                'href',
+                'https://omnimail-app.omninexttech.com/dashboard/mail-blaze/templates?eventType=' + encodeURIComponent(flowType)
+            );
+            $('#omnimail-flow-template-preview').hide().find('iframe').attr('srcdoc', '');
+            openModal($('#omnimail-flow-templates-modal'));
+            loadBehavioralTemplates(flowType);
+        }
+
+        function collectBehavioralFlowSettings() {
+            var settings = {};
+            $('#behavioral-flows-content input[type="checkbox"][data-flow]').each(function () {
+                settings[$(this).data('flow')] = $(this).is(':checked');
+            });
+            $.each(behavioralEmailFlowTypes, function (_, flowType) {
+                settings[flowType + 'TemplateId'] = behavioralTemplateIds[flowType] || null;
+            });
+            return settings;
+        }
+
+        function finishBulkEnable(success) {
+            var context = bulkEnableContext;
+            bulkEnableContext = null;
+            if (!context) {
+                return;
+            }
+            context.button.prop('disabled', false).html(context.originalHtml);
+            if (success) {
+                showNotification('All flows enabled and saved successfully!', 'success');
+            }
+        }
+
+        function restoreBulkEnableState() {
+            if (!bulkEnableContext) {
+                return;
+            }
+            flowsIgnoreToggleChange = true;
+            $.each(bulkEnableContext.checkedStates, function (selector, checked) {
+                $(selector).prop('checked', checked);
+            });
+            flowsIgnoreToggleChange = false;
+            behavioralTemplateIds = bulkEnableContext.templateIds;
+            finishBulkEnable(false);
+        }
+
+        function continueBulkEnable() {
+            if (!bulkEnableContext) {
+                return;
+            }
+
+            var nextFlowType = null;
+            while (bulkEnableContext.pendingTypes.length && !nextFlowType) {
+                var candidate = bulkEnableContext.pendingTypes.shift();
+                if (!behavioralTemplateIds[candidate]) {
+                    nextFlowType = candidate;
+                } else {
+                    $('#flow_' + candidate.replace(/[A-Z]/g, function (letter) {
+                        return '_' + letter.toLowerCase();
+                    })).prop('checked', true);
+                }
+            }
+
+            if (nextFlowType) {
+                var $toggle = $('#flow_' + nextFlowType.replace(/[A-Z]/g, function (letter) {
+                    return '_' + letter.toLowerCase();
+                }));
+                var flowLabel = $toggle.closest('.omnimail-flow-card').data('flow-label') || nextFlowType;
+                openBehavioralTemplatePicker(nextFlowType, flowLabel, function (templateId) {
+                    behavioralTemplateIds[nextFlowType] = templateId;
+                    $toggle.prop('checked', true);
+                    continueBulkEnable();
+                }, restoreBulkEnableState);
+                return;
+            }
+
+            flowsIgnoreToggleChange = true;
+            $('#behavioral-flows-content input[type="checkbox"][data-flow][data-channel="email"]').each(function () {
+                var flowType = $(this).closest('.omnimail-flow-card').data('flow-type');
+                $(this).prop('checked', !!behavioralTemplateIds[flowType]);
+            });
+            $('#behavioral-flows-content input[type="checkbox"][data-flow][data-channel="sms"]').prop('checked', true);
+            flowsIgnoreToggleChange = false;
+
+            saveBehavioralFlows(function (saved) {
+                finishBulkEnable(saved);
+            });
         }
 
         function triggerLabel(trigger) {
@@ -1015,11 +1230,74 @@
             }
             if ($(this).is(':checked')) {
                 var $card = $(this).closest('.omnimail-flow-card');
+                var flowType = $(this).data('channel') === 'email'
+                    ? ($card.data('flow-type') || '')
+                    : '';
+                if (flowType) {
+                    var $toggle = $(this);
+                    var flowLabel = $card.data('flow-label') || '';
+                    $toggle.prop('checked', false);
+                    openBehavioralTemplatePicker(flowType, flowLabel, function (templateId) {
+                        behavioralTemplateIds[flowType] = templateId;
+                        $toggle.prop('checked', true);
+                        openEnhanceFlowModal(flowType, flowLabel);
+                    }, function () {
+                        $toggle.prop('checked', false);
+                    });
+                    return;
+                }
                 openEnhanceFlowModal(
                     $(this).data('flow-type') || $card.data('flow-type'),
                     $card.data('flow-label') || ''
                 );
             }
+        });
+
+        $(document).on('click', '.omnimail-flow-template-select', function (e) {
+            e.preventDefault();
+            updateBehavioralTemplateSelection(String($(this).closest('.omnimail-flow-template-card').data('template-id')));
+        });
+
+        $(document).on('click', '.omnimail-flow-template-preview-btn', function (e) {
+            e.preventDefault();
+            var id = String($(this).closest('.omnimail-flow-template-card').data('template-id'));
+            var template = behavioralTemplatesById[id];
+            if (!template) {
+                return;
+            }
+            $('#omnimail-flow-template-preview-name').text(template.name);
+            $('#omnimail-flow-template-preview iframe').attr('srcdoc', template.template || '');
+            $('#omnimail-flow-template-preview').show();
+        });
+
+        $(document).on('click', '#omnimail-flow-template-preview-close', function (e) {
+            e.preventDefault();
+            $('#omnimail-flow-template-preview').hide().find('iframe').attr('srcdoc', '');
+        });
+
+        $(document).on('click', '#omnimail-flow-templates-refresh', function (e) {
+            e.preventDefault();
+            if (pendingTemplateFlow) {
+                loadBehavioralTemplates(pendingTemplateFlow.type);
+            }
+        });
+
+        $(document).on('click', '#omnimail-flow-template-use', function (e) {
+            e.preventDefault();
+            if (!pendingTemplateFlow || !selectedBehavioralTemplateId || !behavioralTemplatesById[selectedBehavioralTemplateId]) {
+                return;
+            }
+            var pending = pendingTemplateFlow;
+            var selectedId = selectedBehavioralTemplateId;
+            closeBehavioralTemplatePicker(false);
+            if (typeof pending.onSelected === 'function') {
+                pending.onSelected(selectedId);
+            }
+        });
+
+        $(document).on('click', '#omnimail-flow-templates-close, #omnimail-flow-templates-cancel', function (e) {
+            e.preventDefault();
+            closeBehavioralTemplatePicker(true);
         });
 
         $(document).on('click', '#omnimail-enhance-flow-close, #omnimail-enhance-flow-later', function (e) {
@@ -1193,9 +1471,13 @@
             });
         });
 
-        $(document).on('click', '#omnimail-enhance-flow-modal, #omnimail-followups-modal, #omnimail-prebuilt-modal, #omnimail-custom-modal', function (e) {
+        $(document).on('click', '#omnimail-flow-templates-modal, #omnimail-enhance-flow-modal, #omnimail-followups-modal, #omnimail-prebuilt-modal, #omnimail-custom-modal', function (e) {
             if (e.target === this) {
-                closeModal($(this));
+                if ($(this).is('#omnimail-flow-templates-modal')) {
+                    closeBehavioralTemplatePicker(true);
+                } else {
+                    closeModal($(this));
+                }
             }
         });
 
@@ -1203,7 +1485,9 @@
             if (e.key !== 'Escape') {
                 return;
             }
-            if ($('#omnimail-custom-modal').is(':visible')) {
+            if ($('#omnimail-flow-templates-modal').is(':visible')) {
+                closeBehavioralTemplatePicker(true);
+            } else if ($('#omnimail-custom-modal').is(':visible')) {
                 closeModal($('#omnimail-custom-modal'));
             } else if ($('#omnimail-prebuilt-modal').is(':visible')) {
                 closeModal($('#omnimail-prebuilt-modal'));
@@ -1213,15 +1497,6 @@
                 closeEnhanceFlowModal();
             }
         });
-
-        // Collect both channel states into the unified FlowSettings payload.
-        function collectBehavioralFlowSettings() {
-            var settings = {};
-            $('#behavioral-flows-content input[type="checkbox"][data-flow]').each(function () {
-                settings[$(this).data('flow')] = $(this).is(':checked');
-            });
-            return settings;
-        }
 
         // Shared save routine used by the Save button AND by Enable All /
         // Disable All, so those two buttons persist immediately without
@@ -1288,19 +1563,20 @@
             var button = $(this);
             var originalHtml = button.html();
             button.prop('disabled', true);
-            button.html('<span class="dashicons dashicons-update-alt" style="animation: rotation 1s infinite linear;"></span> Enabling...');
+            button.html('<span class="dashicons dashicons-update-alt" style="animation: rotation 1s infinite linear;"></span> Choose Templates...');
 
-            flowsIgnoreToggleChange = true;
-            $('#behavioral-flows-content input[type="checkbox"][data-flow]').prop('checked', true);
-            flowsIgnoreToggleChange = false;
-
-            saveBehavioralFlows(function (success) {
-                button.prop('disabled', false);
-                button.html(originalHtml);
-                if (success) {
-                    showNotification('All flows enabled and saved successfully!', 'success');
-                }
+            var checkedStates = {};
+            $('#behavioral-flows-content input[type="checkbox"][data-flow]').each(function () {
+                checkedStates['#' + this.id] = $(this).is(':checked');
             });
+            bulkEnableContext = {
+                button: button,
+                originalHtml: originalHtml,
+                checkedStates: checkedStates,
+                templateIds: $.extend({}, behavioralTemplateIds),
+                pendingTypes: behavioralEmailFlowTypes.slice()
+            };
+            continueBulkEnable();
         });
 
         // Disable all flows — unchecks every toggle then saves immediately

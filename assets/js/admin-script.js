@@ -707,6 +707,14 @@
             $el.fadeOut(120);
         }
 
+        function clearBehavioralTemplatePreview() {
+            var frame = $('#omnimail-flow-template-preview iframe')[0];
+            if (frame) {
+                frame.removeAttribute('src');
+                frame.srcdoc = '';
+            }
+        }
+
         function renderBehavioralTemplates(templates) {
             var $list = $('#omnimail-flow-templates-list').empty();
             behavioralTemplatesById = {};
@@ -761,7 +769,8 @@
             $('#omnimail-flow-templates-error').hide().text('');
             $('#omnimail-flow-templates-list').empty();
             $('#omnimail-flow-template-use').prop('disabled', true);
-            $('#omnimail-flow-template-preview').hide().find('iframe').attr('srcdoc', '');
+            $('#omnimail-flow-template-preview').hide();
+            clearBehavioralTemplatePreview();
 
             $.ajax({
                 url: omnimailAjax.ajaxurl,
@@ -818,7 +827,8 @@
                 'href',
                 'https://omnimail-app.omninexttech.com/dashboard/mail-blaze/templates?eventType=' + encodeURIComponent(flowType)
             );
-            $('#omnimail-flow-template-preview').hide().find('iframe').attr('srcdoc', '');
+            $('#omnimail-flow-template-preview').hide();
+            clearBehavioralTemplatePreview();
             openModal($('#omnimail-flow-templates-modal'));
             loadBehavioralTemplates(flowType);
         }
@@ -1265,14 +1275,24 @@
             if (!template) {
                 return;
             }
+
+            var $wrap = $('#omnimail-flow-template-preview');
+            var frame = $wrap.find('iframe')[0];
+            if (!frame) {
+                return;
+            }
+
             $('#omnimail-flow-template-preview-name').text(template.name);
-            $('#omnimail-flow-template-preview iframe').attr('srcdoc', template.template || '');
-            $('#omnimail-flow-template-preview').show();
+            $wrap.show();
+            frame.removeAttribute('src');
+            frame.srcdoc = template.template || '';
+            $wrap[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
 
         $(document).on('click', '#omnimail-flow-template-preview-close', function (e) {
             e.preventDefault();
-            $('#omnimail-flow-template-preview').hide().find('iframe').attr('srcdoc', '');
+            $('#omnimail-flow-template-preview').hide();
+            clearBehavioralTemplatePreview();
         });
 
         $(document).on('click', '#omnimail-flow-templates-refresh', function (e) {

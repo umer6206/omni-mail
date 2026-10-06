@@ -343,7 +343,7 @@ $flows = array(
           <strong id="omnimail-flow-template-preview-name"></strong>
           <button type="button" class="button-link" id="omnimail-flow-template-preview-close"><?php _e('Close preview', 'omnimail'); ?></button>
         </div>
-        <iframe title="<?php esc_attr_e('Email template preview', 'omnimail'); ?>" sandbox="" src="about:blank"></iframe>
+        <iframe title="<?php esc_attr_e('Email template preview', 'omnimail'); ?>" sandbox=""></iframe>
       </div>
       <div class="omnimail-enhance-actions">
         <button type="button" class="button button-secondary button-large" id="omnimail-flow-templates-cancel">

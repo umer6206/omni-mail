@@ -15,7 +15,7 @@ $api_key = get_option('omnimail_api_key', '');
 $is_configured = !empty($connection_id) && !empty($api_key);
 $pro_url = defined('OMNIMAIL_SUBSCRIPTION_URL')
     ? OMNIMAIL_SUBSCRIPTION_URL
-    : 'https://omnimail-app.omninexttech.com/dashboard/mail-blaze/subscription';
+    : 'https://omninextmail-app.omninexttech.com/dashboard/mail-blaze/subscription';
 
 $flows = array(
     array(
@@ -103,7 +103,7 @@ $flows = array(
                     <?php _e('You need a Connection ID and API Key from the OmniMail app before you can manage these flows.', 'omnimail'); ?>
                 </p>
                 <div class="omnimail-quick-actions">
-                    <a href="<?php echo esc_url(defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : 'https://omnimail-app.omninexttech.com/dashboard/email-plugin-connection'); ?>"
+                    <a href="<?php echo esc_url(defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : 'https://omninextmail-app.omninexttech.com/dashboard/email-plugin-connection'); ?>"
                         target="_blank" rel="noopener noreferrer" class="button button-secondary button-large">
                         <span class="dashicons dashicons-external"></span>
                         <?php _e('Get credentials in OmniMail', 'omnimail'); ?>
@@ -127,7 +127,7 @@ $flows = array(
                 echo wp_kses(
                     sprintf(
                         /* translators: %s: subscription upgrade URL */
-                        __('These emails also need: (1) email/SMTP configured on your OmniMail connection, and (2) a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniMail plan</a>.', 'omnimail'),
+                        __('These emails also need: (1) email/SMTP configured on your OmniNextMail connection, and (2) a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniNextMail plan</a>.', 'omnimail'),
                         esc_url($pro_url)
                     ),
                     array(
@@ -179,22 +179,11 @@ $flows = array(
                                 <span class="omnimail-panel-active-badge" id="omnimail-email-active-badge">0 <?php _e('Active', 'omnimail'); ?></span>
                             </div>
                             <div class="omnimail-panel-header-right" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                                <button type="button" id="enable-all-flows" class="button button-secondary omnimail-header-action-btn">
-                                    <span class="dashicons dashicons-yes-alt"></span>
-                                    <?php _e('Enable All', 'omnimail'); ?>
-                                </button>
                                 <button type="button" id="disable-all-flows" class="button button-secondary omnimail-header-action-btn">
                                     <span class="dashicons dashicons-dismiss"></span>
                                     <?php _e('Disable All', 'omnimail'); ?>
                                 </button>
                             </div>
-                        </div>
-
-                        <div class="omnimail-flow-columns" aria-hidden="true">
-                            <span><?php _e('Flow', 'omnimail'); ?></span>
-                            <span><?php _e('Email', 'omnimail'); ?></span>
-                            <span><?php _e('SMS', 'omnimail'); ?></span>
-                            <span><?php _e('Settings', 'omnimail'); ?></span>
                         </div>
 
                         <div class="omnimail-flows-grid">
@@ -290,7 +279,7 @@ $flows = array(
                 echo wp_kses(
                     sprintf(
                         /* translators: %s: subscription upgrade URL */
-                        __('Behavioral flows (Email and SMS) require a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniMail plan</a>.', 'omnimail'),
+                        __('Behavioral flows (Email and SMS) require a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniNextMail plan</a>.', 'omnimail'),
                         esc_url($pro_url)
                     ),
                     array(

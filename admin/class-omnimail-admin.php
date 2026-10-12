@@ -68,10 +68,10 @@ class OmniMail_Admin
       'connectionId' => OmniMail_Settings::get_connection_id(),
       'connectionsUrl' => defined('OMNIMAIL_CONNECTIONS_URL')
         ? OMNIMAIL_CONNECTIONS_URL
-        : 'https://omnimail-app.omninexttech.com/dashboard/email-plugin-connection',
+        : 'https://omninextmail-app.omninexttech.com/dashboard/email-plugin-connection',
       'stripeConnectUrl' => defined('OMNIMAIL_STRIPE_CONNECT_URL')
         ? OMNIMAIL_STRIPE_CONNECT_URL
-        : 'https://omnimail-app.omninexttech.com/dashboard/billings/stripe-connect',
+        : 'https://omninextmail-app.omninexttech.com/dashboard/billings/stripe-connect',
       'isConfigured' => OmniMail_Settings::is_configured() ? '1' : '0',
       'hasWooCredentials' => OmniMail_Settings::has_woocommerce_credentials() ? '1' : '0',
       'savingWooCredentialsText' => __('Saving & Connecting...', 'omnimail'),
@@ -100,8 +100,8 @@ class OmniMail_Admin
 
     // Main menu page
     add_menu_page(
-      __('OmniMail', 'omnimail'),
-      __('OmniMail', 'omnimail'),
+      __('OmniNextMail', 'omnimail'),
+      __('OmniNextMail', 'omnimail'),
       'manage_options',
       'omnimail',
       array($this, 'display_dashboard_page'),

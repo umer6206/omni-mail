@@ -26,7 +26,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
         <h2><?php _e('Connect OmniMail to view emails', 'omnimail'); ?></h2>
         <p><?php _e('Once connected, sent and failed emails from your behavioral flows will show up here.', 'omnimail'); ?></p>
         <div class="omnimail-quick-actions">
-          <a href="<?php echo esc_url(defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : 'https://omnimail-app.omninexttech.com/dashboard/email-plugin-connection'); ?>"
+          <a href="<?php echo esc_url(defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : 'https://omninextmail-app.omninexttech.com/dashboard/email-plugin-connection'); ?>"
             target="_blank" rel="noopener noreferrer" class="button button-secondary button-large">
             <span class="dashicons dashicons-external"></span>
             <?php _e('Get credentials', 'omnimail'); ?>

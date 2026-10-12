@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: OmniMail
- * Plugin URI: https://omnimail-app.omninexttech.com
- * Description: Integrate WooCommerce with OmniMail for intelligent email automation, SMTP configuration, and event tracking.
+ * Plugin Name: OmniNextMail
+ * Plugin URI: https://omninextmail-app.omninexttech.com
+ * Description: Integrate WooCommerce with OmniNextMail for intelligent email automation, SMTP configuration, and event tracking.
  * Version: 1.0.37
  * Author: Naveed
- * Author URI: https://omninexttech.com
+ * Author URI: https://omninextmail-app.omninexttech.com
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: omnimail
@@ -30,7 +30,7 @@ define('OMNIMAIL_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('OMNIMAIL_PLUGIN_BASENAME', plugin_basename(__FILE__));
 define('OMNIMAIL_API_BASE_URL', 'https://backend.omninexttech.com');
 // define('OMNIMAIL_API_BASE_URL', 'https://7ddgj060-8085.inc1.devtunnels.ms');
-define('OMNIMAIL_APP_URL', 'https://omnimail-app.omninexttech.com');
+define('OMNIMAIL_APP_URL', 'https://omninextmail-app.omninexttech.com');
 define('OMNIMAIL_CONNECTIONS_URL', OMNIMAIL_APP_URL . '/dashboard/email-plugin-connection');
 define('OMNIMAIL_SUBSCRIPTION_URL', OMNIMAIL_APP_URL . '/dashboard/mail-blaze/subscription');
 define('OMNIMAIL_KNOWLEDGE_BASE_URL', OMNIMAIL_APP_URL . '/dashboard/mail-blaze/knowledgebase');

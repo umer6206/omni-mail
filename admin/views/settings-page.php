@@ -26,15 +26,15 @@ $woo_active = class_exists('WooCommerce');
 $wc_keys_url = admin_url('admin.php?page=wc-settings&tab=advanced&section=keys');
 $step1_done = $is_configured;
 $step2_done = $enabled === '1';
-$platform_url = defined('OMNIMAIL_APP_URL') ? OMNIMAIL_APP_URL : 'https://omnimail-app.omninexttech.com';
+$platform_url = defined('OMNIMAIL_APP_URL') ? OMNIMAIL_APP_URL : 'https://omninextmail-app.omninexttech.com';
 $connections_url = defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : $platform_url . '/dashboard/email-plugin-connection';
 $dashboard_url = $platform_url . '/dashboard';
 $pro_url = defined('OMNIMAIL_SUBSCRIPTION_URL')
     ? OMNIMAIL_SUBSCRIPTION_URL
-    : 'https://omnimail-app.omninexttech.com/dashboard/mail-blaze/subscription';
+    : 'https://omninextmail-app.omninexttech.com/dashboard/mail-blaze/subscription';
 $knowledge_base_url = defined('OMNIMAIL_KNOWLEDGE_BASE_URL')
     ? OMNIMAIL_KNOWLEDGE_BASE_URL
-    : 'https://omnimail-app.omninexttech.com/dashboard/mail-blaze/knowledgebase';
+    : 'https://omninextmail-app.omninexttech.com/dashboard/mail-blaze/knowledgebase';
 $connect_url = $platform_url . '/dashboard/mail-blaze/connect';
 $stripe_connect_url = defined('OMNIMAIL_STRIPE_CONNECT_URL')
     ? OMNIMAIL_STRIPE_CONNECT_URL
@@ -47,9 +47,9 @@ $platform_host = preg_replace('#^https?://#', '', $platform_url);
         <div class="omnimail-hero">
             <div class="omnimail-hero-brand">
                 <img src="<?php echo esc_url(OMNIMAIL_LOGO_URL); ?>" alt="<?php esc_attr_e('OmniMail', 'omnimail'); ?>" class="omnimail-logo">
-                <h1><?php _e('Set up OmniMail', 'omnimail'); ?></h1>
+                <h1><?php _e('Set up OmniNextMail', 'omnimail'); ?></h1>
                 <p class="omnimail-hero-sub">
-                    <?php _e('Connect this WooCommerce store to your OmniMail account in a few simple steps. No coding required.', 'omnimail'); ?>
+                    <?php _e('Connect this WooCommerce store to your OmniNextMail account in a few simple steps. No coding required.', 'omnimail'); ?>
                 </p>
             </div>
             <a href="<?php echo esc_url($connections_url); ?>" target="_blank" rel="noopener noreferrer"
@@ -114,7 +114,7 @@ $platform_host = preg_replace('#^https?://#', '', $platform_url);
                     <div class="omnimail-setup-step-num">2</div>
                     <div class="omnimail-setup-step-body">
                         <h3><?php _e('Add your credentials', 'omnimail'); ?></h3>
-                        <p><?php _e('Create an API Key and Connection ID from Plugin Secret, then enter both values below. Enable OmniMail and click Test Connection.', 'omnimail'); ?></p>
+                        <p><?php _e('Create an API Key and Connection ID from Plugin Secret, then enter both values below. Enable OmniNextMail and click Test Connection.', 'omnimail'); ?></p>
 
                         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="omnimail-settings-form" class="omnimail-setup-form">
                             <input type="hidden" name="action" value="omnimail_save_settings">
@@ -159,7 +159,7 @@ $platform_host = preg_replace('#^https?://#', '', $platform_url);
                                             <span class="omnimail-toggle-slider"></span>
                                         </label>
                                         <span class="description">
-                                            <?php _e('When ON, WooCommerce events (orders, carts, etc.) are sent to OmniMail.', 'omnimail'); ?>
+                                            <?php _e('When ON, WooCommerce events (orders, carts, etc.) are sent to OmniNextMail.', 'omnimail'); ?>
                                         </span>
                                     </div>
                                 </div>
@@ -309,7 +309,7 @@ $platform_host = preg_replace('#^https?://#', '', $platform_url);
                     <div class="omnimail-setup-step-num">4</div>
                     <div class="omnimail-setup-step-body">
                         <h3><?php _e('Connect your email provider', 'omnimail'); ?></h3>
-                        <p><?php _e('Connect AWS SES, Mailgun, SMTP, or another provider so OmniMail can send automated emails from your store.', 'omnimail'); ?></p>
+                        <p><?php _e('Connect AWS SES, Mailgun, SMTP, or another provider so OmniNextMail can send automated emails from your store.', 'omnimail'); ?></p>
                         <p class="omnimail-setup-step-actions">
                             <a href="<?php echo esc_url($connect_url); ?>" target="_blank" rel="noopener noreferrer"
                                 class="button button-primary">
@@ -330,7 +330,7 @@ $platform_host = preg_replace('#^https?://#', '', $platform_url);
                             echo wp_kses(
                                 sprintf(
                                     /* translators: %s: subscription upgrade URL */
-                                    __('Use a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniMail plan</a> if you want cart abandonment and other automated emails.', 'omnimail'),
+                                    __('Use a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniNextMail plan</a> if you want cart abandonment and other automated emails.', 'omnimail'),
                                     esc_url($pro_url)
                                 ),
                                 array(

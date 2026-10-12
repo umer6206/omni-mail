@@ -24,7 +24,7 @@ Integrate WooCommerce with OmniMail for intelligent email automation, SMTP confi
 
 ### Getting API Credentials
 
-1. Log in to [OmniMail Platform](https://omnimail-app.omninexttech.com)
+1. Log in to [OmniMail Platform](https://omninextmail-app.omninexttech.com)
 2. Go to **Integrations > Connections**
 3. Create a new connection or select existing one
 4. Copy the **API Key** and **Connection ID**
@@ -79,7 +79,7 @@ The plugin integrates with these backend endpoints:
 ## Support
 
 For support, visit:
-- Platform: https://omnimail-app.omninexttech.com
+- Platform: https://omninextmail-app.omninexttech.com
 - Email: support@omninexttech.com
 
 ## Author

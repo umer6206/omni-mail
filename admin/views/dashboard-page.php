@@ -13,7 +13,7 @@ if (!defined('WPINC')) {
 $enabled = OmniMail_Settings::is_enabled();
 $configured = OmniMail_Settings::is_configured();
 $ready = $enabled && $configured;
-$platform_url = defined('OMNIMAIL_APP_URL') ? OMNIMAIL_APP_URL : 'https://omnimail-app.omninexttech.com';
+$platform_url = defined('OMNIMAIL_APP_URL') ? OMNIMAIL_APP_URL : 'https://omninextmail-app.omninexttech.com';
 $connections_url = defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : $platform_url;
 $settings_url = admin_url('admin.php?page=omnimail-settings');
 ?>
@@ -22,13 +22,13 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
     <div class="omnimail-page-wrapper">
         <div class="omnimail-hero">
             <div class="omnimail-hero-brand">
-                <img src="<?php echo esc_url(OMNIMAIL_LOGO_URL); ?>" alt="<?php esc_attr_e('OmniMail', 'omnimail'); ?>" class="omnimail-logo">
+                <img src="<?php echo esc_url(OMNIMAIL_LOGO_URL); ?>" alt="<?php esc_attr_e('OmniNextMail', 'omnimail'); ?>" class="omnimail-logo">
                 <p class="omnimail-hero-sub">
                     <?php
                     if ($ready) {
                         _e('Your store is connected. Automated emails follow your Behavioral Flows settings.', 'omnimail');
                     } else {
-                        _e('Connect this store to OmniMail so abandoned carts and orders can trigger emails automatically.', 'omnimail');
+                        _e('Connect this store to OmniNextMail so abandoned carts and orders can trigger emails automatically.', 'omnimail');
                     }
                     ?>
                 </p>

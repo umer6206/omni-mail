@@ -671,6 +671,8 @@
         // Enhance Your Flow prompt (same pattern as OmniMail app)
         var currentFollowupFlowType = null;
         var currentFollowupFlowLabel = '';
+        var currentManageFlowType = null;
+        var currentManageFlowLabel = '';
         var selectedPrebuiltSequenceId = null;
         var customSequenceSteps = [];
         var currentLoadedFollowups = [];
@@ -705,6 +707,15 @@
 
         function closeModal($el) {
             $el.fadeOut(120);
+        }
+
+        function openManageFlowModal(flowType, flowLabel) {
+            if (!flowType) {
+                return;
+            }
+            currentManageFlowType = flowType;
+            currentManageFlowLabel = flowLabel || flowType;
+            openModal($('#omnimail-manage-flow-modal'));
         }
 
         function clearBehavioralTemplatePreview() {
@@ -1339,7 +1350,30 @@
                 return;
             }
             var $card = $(this).closest('.omnimail-flow-card');
-            openFollowupsModal($card.data('flow-type'), $card.data('flow-label'));
+            openManageFlowModal($card.data('flow-type'), $card.data('flow-label'));
+        });
+
+        $(document).on('click', '#omnimail-manage-flow-close, #omnimail-manage-flow-cancel', function (e) {
+            e.preventDefault();
+            closeModal($('#omnimail-manage-flow-modal'));
+        });
+
+        $(document).on('click', '#omnimail-manage-sequence', function (e) {
+            e.preventDefault();
+            var flowType = currentManageFlowType;
+            var flowLabel = currentManageFlowLabel;
+            closeModal($('#omnimail-manage-flow-modal'));
+            openFollowupsModal(flowType, flowLabel);
+        });
+
+        $(document).on('click', '#omnimail-manage-template', function (e) {
+            e.preventDefault();
+            var flowType = currentManageFlowType;
+            var flowLabel = currentManageFlowLabel;
+            closeModal($('#omnimail-manage-flow-modal'));
+            openBehavioralTemplatePicker(flowType, flowLabel, function (templateId) {
+                behavioralTemplateIds[flowType] = templateId;
+            });
         });
 
         $(document).on('click', '#omnimail-followups-close', function (e) {
@@ -1491,9 +1525,11 @@
             });
         });
 
-        $(document).on('click', '#omnimail-flow-templates-modal, #omnimail-enhance-flow-modal, #omnimail-followups-modal, #omnimail-prebuilt-modal, #omnimail-custom-modal', function (e) {
+        $(document).on('click', '#omnimail-manage-flow-modal, #omnimail-flow-templates-modal, #omnimail-enhance-flow-modal, #omnimail-followups-modal, #omnimail-prebuilt-modal, #omnimail-custom-modal', function (e) {
             if (e.target === this) {
-                if ($(this).is('#omnimail-flow-templates-modal')) {
+                if ($(this).is('#omnimail-manage-flow-modal')) {
+                    closeModal($(this));
+                } else if ($(this).is('#omnimail-flow-templates-modal')) {
                     closeBehavioralTemplatePicker(true);
                 } else {
                     closeModal($(this));
@@ -1505,7 +1541,9 @@
             if (e.key !== 'Escape') {
                 return;
             }
-            if ($('#omnimail-flow-templates-modal').is(':visible')) {
+            if ($('#omnimail-manage-flow-modal').is(':visible')) {
+                closeModal($('#omnimail-manage-flow-modal'));
+            } else if ($('#omnimail-flow-templates-modal').is(':visible')) {
                 closeBehavioralTemplatePicker(true);
             } else if ($('#omnimail-custom-modal').is(':visible')) {
                 closeModal($('#omnimail-custom-modal'));

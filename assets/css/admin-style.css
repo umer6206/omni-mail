@@ -1869,6 +1869,52 @@
     color: var(--color-midnight);
 }
 
+.omnimail-manage-flow-modal {
+    max-width: 520px;
+}
+
+.omnimail-manage-flow-options {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.omnimail-modal-logs .omnimail-manage-flow-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(0, 210, 255, 0.08);
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+}
+
+.omnimail-modal-logs .omnimail-manage-flow-option:hover,
+.omnimail-modal-logs .omnimail-manage-flow-option:focus {
+    border-color: #00e6fb;
+    background: rgba(0, 210, 255, 0.16);
+}
+
+.omnimail-manage-flow-option > .dashicons {
+    flex: 0 0 auto;
+    color: #00e6fb;
+}
+
+.omnimail-manage-flow-option strong,
+.omnimail-manage-flow-option-description {
+    display: block;
+}
+
+.omnimail-manage-flow-option-description {
+    margin-top: 4px;
+    color: #c3cad5;
+    font-size: 13px;
+}
+
 .omnimail-flow-followups-row {
     margin-top: 14px;
 }

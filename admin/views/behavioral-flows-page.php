@@ -297,6 +297,45 @@ $flows = array(
     </div>
 </div>
 
+<!-- Manage behavioral flow options -->
+<div id="omnimail-manage-flow-modal" class="omnimail-modal-logs" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="omnimail-manage-flow-title">
+  <div class="omnimail-modal-content omnimail-manage-flow-modal">
+    <div class="omnimail-modal-header">
+      <h3 id="omnimail-manage-flow-title">
+        <span class="dashicons dashicons-admin-settings"></span>
+        <?php _e('Manage Flow', 'omnimail'); ?>
+      </h3>
+      <button type="button" class="omnimail-modal-close" id="omnimail-manage-flow-close" aria-label="<?php esc_attr_e('Close', 'omnimail'); ?>">
+        <span class="dashicons dashicons-no"></span>
+      </button>
+    </div>
+    <div class="omnimail-modal-body">
+      <p class="omnimail-enhance-question"><?php _e('Choose what you want to manage for this flow.', 'omnimail'); ?></p>
+      <div class="omnimail-manage-flow-options">
+        <button type="button" class="omnimail-manage-flow-option" id="omnimail-manage-sequence">
+          <span class="dashicons dashicons-randomize"></span>
+          <span>
+            <strong><?php _e('Sequence Flow', 'omnimail'); ?></strong>
+            <span class="omnimail-manage-flow-option-description"><?php _e('View and manage follow-up sequences.', 'omnimail'); ?></span>
+          </span>
+        </button>
+        <button type="button" class="omnimail-manage-flow-option" id="omnimail-manage-template">
+          <span class="dashicons dashicons-email-alt"></span>
+          <span>
+            <strong><?php _e('Template Selection Flow', 'omnimail'); ?></strong>
+            <span class="omnimail-manage-flow-option-description"><?php _e('Choose the email template used by this flow.', 'omnimail'); ?></span>
+          </span>
+        </button>
+      </div>
+      <div class="omnimail-enhance-actions">
+        <button type="button" class="button button-secondary button-large" id="omnimail-manage-flow-cancel">
+          <?php _e('Cancel', 'omnimail'); ?>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Behavioral email template picker -->
 <div id="omnimail-flow-templates-modal" class="omnimail-modal-logs" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="omnimail-flow-templates-title">
   <div class="omnimail-modal-content omnimail-flow-templates-modal">

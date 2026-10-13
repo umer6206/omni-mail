@@ -6,6 +6,10 @@
  * @subpackage OmniMail/admin
  */
 
+if (!defined('ABSPATH')) {
+  exit;
+}
+
 class OmniMail_Settings
 {
   public function __construct()
@@ -38,9 +42,26 @@ class OmniMail_Settings
    */
   public function register_settings()
   {
-    register_setting('omnimail_settings', 'omnimail_enabled');
-    register_setting('omnimail_settings', 'omnimail_api_key');
-    register_setting('omnimail_settings', 'omnimail_connection_id');
+    register_setting('omnimail_settings', 'omnimail_enabled', array(
+      'sanitize_callback' => array(__CLASS__, 'sanitize_enabled_setting'),
+    ));
+    register_setting('omnimail_settings', 'omnimail_api_key', array(
+      'sanitize_callback' => 'sanitize_text_field',
+    ));
+    register_setting('omnimail_settings', 'omnimail_connection_id', array(
+      'sanitize_callback' => 'sanitize_text_field',
+    ));
+  }
+
+  /**
+   * Sanitize the plugin enabled option.
+   *
+   * @param mixed $value Submitted option value.
+   * @return string
+   */
+  public static function sanitize_enabled_setting($value)
+  {
+    return in_array((string) $value, array('1', '0'), true) ? (string) $value : '0';
   }
 
   /**
@@ -50,7 +71,7 @@ class OmniMail_Settings
   {
     // Check user capabilities
     if (!current_user_can('manage_options')) {
-      wp_die(__('You do not have sufficient permissions to access this page.', 'omnimail'));
+      wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'omnimail'));
     }
 
     // Check nonce
@@ -61,18 +82,19 @@ class OmniMail_Settings
     update_option('omnimail_enabled', $enabled);
 
     // Sanitize and save API key
-    $api_key = isset($_POST['omnimail_api_key']) ? sanitize_text_field($_POST['omnimail_api_key']) : '';
+    $api_key = isset($_POST['omnimail_api_key']) ? sanitize_text_field(wp_unslash($_POST['omnimail_api_key'])) : '';
     update_option('omnimail_api_key', $api_key);
 
     // Sanitize and save Connection ID
-    $connection_id = isset($_POST['omnimail_connection_id']) ? sanitize_text_field($_POST['omnimail_connection_id']) : '';
+    $connection_id = isset($_POST['omnimail_connection_id']) ? sanitize_text_field(wp_unslash($_POST['omnimail_connection_id'])) : '';
     update_option('omnimail_connection_id', $connection_id);
 
     // Redirect back with success message
-    wp_redirect(add_query_arg(
+    wp_safe_redirect(add_query_arg(
       array(
         'page' => 'omnimail-settings',
-        'settings-updated' => 'true'
+        'settings-updated' => 'true',
+        '_omnimail_nonce' => wp_create_nonce('omnimail_settings_updated'),
       ),
       admin_url('admin.php')
     ));
@@ -128,7 +150,7 @@ class OmniMail_Settings
       wp_send_json_error(array('message' => __('Save WooCommerce REST API credentials before synchronizing products.', 'omnimail')));
     }
 
-    $batch = max(0, intval(isset($_POST['batch']) ? $_POST['batch'] : 0));
+    $batch = isset($_POST['batch']) ? absint(wp_unslash($_POST['batch'])) : 0;
     $batch_size = 5;
 
     $total = (int) wp_count_posts('product')->publish;
@@ -234,7 +256,8 @@ class OmniMail_Settings
       'total'     => $total,
       'synced'    => $synced_so_far,
       'message'   => sprintf(
-        __('Synced %d of %d products…', 'omnimail'),
+        /* translators: 1: number of products synced, 2: total number of products. */
+        __('Synced %1$d of %2$d products…', 'omnimail'),
         $synced_so_far,
         $total
       ),
@@ -252,7 +275,7 @@ class OmniMail_Settings
       wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
     }
 
-    $test_email = isset($_POST['test_email']) ? sanitize_email($_POST['test_email']) : '';
+    $test_email = isset($_POST['test_email']) ? sanitize_email(wp_unslash($_POST['test_email'])) : '';
 
     if (empty($test_email) || !is_email($test_email)) {
       wp_send_json_error(array('message' => __('Invalid email address', 'omnimail')));
@@ -341,13 +364,17 @@ class OmniMail_Settings
 
     $phone_number = isset($_POST['phoneNumber']) ? sanitize_text_field(wp_unslash($_POST['phoneNumber'])) : '';
     $contact_uuid = isset($_POST['uuid']) ? sanitize_text_field(wp_unslash($_POST['uuid'])) : '';
-    $browser_details = isset($_POST['browserDetails']) && is_string($_POST['browserDetails'])
-      ? json_decode(wp_unslash($_POST['browserDetails']), true)
+    $browser_details_json = isset($_POST['browserDetails']) && is_string($_POST['browserDetails'])
+      ? wp_unslash($_POST['browserDetails']) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON is decoded and its known fields are sanitized below.
+      : '';
+    $browser_details = $browser_details_json !== ''
+      ? json_decode($browser_details_json, true)
       : array();
 
     if (!is_array($browser_details)) {
-      $browser_details = array();
+      wp_send_json_error(array('message' => __('Invalid browser details.', 'omnimail')));
     }
+    $browser_details = $this->sanitize_browser_details($browser_details);
 
     $api = new OmniMail_API();
     $result = $api->save_sms_contact($phone_number, $contact_uuid, $browser_details);
@@ -371,7 +398,7 @@ class OmniMail_Settings
     }
 
     $settings_json = isset($_POST['settings']) && is_string($_POST['settings'])
-      ? wp_unslash($_POST['settings'])
+      ? wp_unslash($_POST['settings']) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON is decoded and allow-listed by sanitize_behavioral_flow_settings().
       : '';
     $settings = json_decode($settings_json, true);
 
@@ -379,21 +406,9 @@ class OmniMail_Settings
       wp_send_json_error(array('message' => __('No settings provided', 'omnimail')));
     }
 
-    $template_flow_types = array(
-      'cartAbandonment',
-      'browseAbandonment',
-      'checkoutAbandonment',
-      'wishlistReminder',
-      'postPurchase',
-      'reEngagement',
-      'backInStock',
-      'priceDrop',
-    );
-    foreach ($template_flow_types as $flow_type) {
-      $template_key = $flow_type . 'TemplateId';
-      if (isset($settings[$template_key]) && is_string($settings[$template_key])) {
-        $settings[$template_key] = sanitize_text_field($settings[$template_key]);
-      }
+    $settings = $this->sanitize_behavioral_flow_settings($settings);
+    if (empty($settings)) {
+      wp_send_json_error(array('message' => __('No valid settings provided', 'omnimail')));
     }
 
     $api = new OmniMail_API();
@@ -404,6 +419,162 @@ class OmniMail_Settings
     } else {
       wp_send_json_error($result);
     }
+  }
+
+  /**
+   * Sanitize the structured browser details received from the storefront.
+   *
+   * @param array $details Decoded browser details.
+   * @return array
+   */
+  private function sanitize_browser_details($details)
+  {
+    $sanitized = array(
+      'userAgent' => isset($details['userAgent']) && is_scalar($details['userAgent'])
+        ? sanitize_text_field((string) $details['userAgent'])
+        : '',
+      'language' => isset($details['language']) && is_scalar($details['language'])
+        ? sanitize_text_field((string) $details['language'])
+        : '',
+      'languages' => array(),
+      'platform' => isset($details['platform']) && is_scalar($details['platform'])
+        ? sanitize_text_field((string) $details['platform'])
+        : '',
+      'screen' => array(),
+      'timezone' => isset($details['timezone']) && is_scalar($details['timezone'])
+        ? sanitize_text_field((string) $details['timezone'])
+        : '',
+      'url' => isset($details['url']) && is_scalar($details['url'])
+        ? esc_url_raw((string) $details['url'])
+        : '',
+      'referrer' => isset($details['referrer']) && is_scalar($details['referrer'])
+        ? esc_url_raw((string) $details['referrer'])
+        : '',
+    );
+
+    if (isset($details['languages']) && is_array($details['languages'])) {
+      foreach ($details['languages'] as $language) {
+        if (is_scalar($language)) {
+          $sanitized['languages'][] = sanitize_text_field((string) $language);
+        }
+      }
+    }
+
+    if (isset($details['screen']) && is_array($details['screen'])) {
+      foreach (array('width', 'height') as $dimension) {
+        if (isset($details['screen'][$dimension]) && is_numeric($details['screen'][$dimension])) {
+          $sanitized['screen'][$dimension] = absint($details['screen'][$dimension]);
+        }
+      }
+      if (isset($details['screen']['pixelRatio']) && is_numeric($details['screen']['pixelRatio'])) {
+        $sanitized['screen']['pixelRatio'] = (float) $details['screen']['pixelRatio'];
+      }
+    }
+
+    return $sanitized;
+  }
+
+  /**
+   * Sanitize submitted behavioral flow settings by their known option keys.
+   *
+   * @param array $settings Decoded flow settings.
+   * @return array
+   */
+  private function sanitize_behavioral_flow_settings($settings)
+  {
+    $flow_types = array(
+      'cartAbandonment',
+      'browseAbandonment',
+      'checkoutAbandonment',
+      'wishlistReminder',
+      'postPurchase',
+      'reEngagement',
+      'backInStock',
+      'priceDrop',
+    );
+    $sanitized = array();
+
+    foreach ($flow_types as $flow_type) {
+      foreach (array($flow_type . 'Enabled', 'sms' . ucfirst($flow_type) . 'Enabled') as $key) {
+        if (array_key_exists($key, $settings)) {
+          $sanitized[$key] = rest_sanitize_boolean($settings[$key]);
+        }
+      }
+
+      $template_key = $flow_type . 'TemplateId';
+      if (array_key_exists($template_key, $settings)) {
+        $sanitized[$template_key] = is_string($settings[$template_key])
+          ? sanitize_text_field($settings[$template_key])
+          : null;
+      }
+    }
+
+    return $sanitized;
+  }
+
+  /**
+   * Sanitize follow-up steps, including email HTML and weekday schedules.
+   *
+   * @param array $steps Decoded follow-up steps.
+   * @return array|WP_Error
+   */
+  private function sanitize_followup_steps($steps)
+  {
+    $allowed_text_fields = array(
+      'trigger',
+      'actionType',
+      'followupEmailSubject',
+      'sequenceType',
+      'stepDescription',
+      'followupTag',
+    );
+    $sanitized = array();
+
+    foreach ($steps as $step) {
+      if (!is_array($step)) {
+        return new WP_Error('omnimail_invalid_followup', __('Invalid follow-up step.', 'omnimail'));
+      }
+
+      $clean_step = array();
+      foreach ($allowed_text_fields as $field) {
+        if (isset($step[$field]) && is_scalar($step[$field])) {
+          $clean_step[$field] = sanitize_text_field((string) $step[$field]);
+        }
+      }
+
+      if (isset($step['followupEmailContent']) && is_string($step['followupEmailContent'])) {
+        $clean_step['followupEmailContent'] = wp_kses_post($step['followupEmailContent']);
+      }
+      if (isset($step['delayDays']) && is_numeric($step['delayDays'])) {
+        $clean_step['delayDays'] = absint($step['delayDays']);
+      }
+
+      if (isset($step['activeDaySchedules']) && is_array($step['activeDaySchedules'])) {
+        $clean_step['activeDaySchedules'] = array();
+        foreach ($step['activeDaySchedules'] as $schedule) {
+          if (!is_array($schedule)) {
+            continue;
+          }
+          $clean_schedule = array();
+          if (isset($schedule['day']) && is_numeric($schedule['day'])) {
+            $clean_schedule['day'] = absint($schedule['day']);
+          }
+          if (isset($schedule['timeWindow']) && is_array($schedule['timeWindow'])) {
+            $clean_schedule['timeWindow'] = array();
+            foreach (array('startHour', 'startMinute', 'endHour', 'endMinute') as $time_field) {
+              if (isset($schedule['timeWindow'][$time_field]) && is_numeric($schedule['timeWindow'][$time_field])) {
+                $clean_schedule['timeWindow'][$time_field] = absint($schedule['timeWindow'][$time_field]);
+              }
+            }
+          }
+          $clean_step['activeDaySchedules'][] = $clean_schedule;
+        }
+      }
+
+      $sanitized[] = $clean_step;
+    }
+
+    return $sanitized;
   }
 
   /**
@@ -512,7 +683,9 @@ class OmniMail_Settings
     }
 
     $flow_type = isset($_POST['flow_type']) ? sanitize_text_field(wp_unslash($_POST['flow_type'])) : '';
-    $followups_raw = isset($_POST['followups']) ? wp_unslash($_POST['followups']) : '';
+    $followups_raw = isset($_POST['followups']) && is_string($_POST['followups'])
+      ? wp_unslash($_POST['followups']) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON is decoded and each known step field is sanitized below.
+      : '';
     $followups = json_decode($followups_raw, true);
 
     if ($flow_type === '') {
@@ -522,6 +695,10 @@ class OmniMail_Settings
     // Empty array is valid: "None" clears existing follow-ups for this flow.
     if (!is_array($followups)) {
       wp_send_json_error(array('message' => __('Invalid follow-up payload', 'omnimail')));
+    }
+    $followups = $this->sanitize_followup_steps($followups);
+    if (is_wp_error($followups)) {
+      wp_send_json_error(array('message' => $followups->get_error_message()));
     }
 
     $api = new OmniMail_API();
@@ -688,6 +865,7 @@ class OmniMail_Settings
     $consumer_key = 'ck_' . wc_rand_hash();
     $consumer_secret = 'cs_' . wc_rand_hash();
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- WooCommerce has no public API for creating REST keys; insert using its documented table schema.
     $inserted = $wpdb->insert(
       $wpdb->prefix . 'woocommerce_api_keys',
       array(
@@ -788,8 +966,8 @@ class OmniMail_Settings
   {
     check_ajax_referer('omnimail_nonce', 'nonce');
 
-    $auto_reply_page = isset($_POST['auto_reply_page']) ? intval($_POST['auto_reply_page']) : 1;
-    $auto_reply_limit = isset($_POST['auto_reply_limit']) ? intval($_POST['auto_reply_limit']) : 10;
+    $auto_reply_page = isset($_POST['auto_reply_page']) ? absint(wp_unslash($_POST['auto_reply_page'])) : 1;
+    $auto_reply_limit = isset($_POST['auto_reply_limit']) ? absint(wp_unslash($_POST['auto_reply_limit'])) : 10;
 
     $api = new OmniMail_API();
     $result = $api->get_email_stats($auto_reply_page, $auto_reply_limit);
@@ -808,8 +986,8 @@ class OmniMail_Settings
   {
     check_ajax_referer('omnimail_nonce', 'nonce');
 
-    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
-    $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 10;
+    $page = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
+    $limit = isset($_POST['limit']) ? absint(wp_unslash($_POST['limit'])) : 10;
 
     $api = new OmniMail_API();
     $result = $api->get_auto_replies($page, $limit);
@@ -828,9 +1006,9 @@ class OmniMail_Settings
   {
     check_ajax_referer('omnimail_nonce', 'nonce');
 
-    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
-    $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 20;
-    $email_type = isset($_POST['email_type']) ? sanitize_text_field($_POST['email_type']) : '';
+    $page = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
+    $limit = isset($_POST['limit']) ? absint(wp_unslash($_POST['limit'])) : 20;
+    $email_type = isset($_POST['email_type']) ? sanitize_text_field(wp_unslash($_POST['email_type'])) : '';
 
     $api = new OmniMail_API();
     $result = $api->get_all_emails($page, $limit, $email_type);

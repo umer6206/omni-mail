@@ -10,12 +10,12 @@ if (!defined('WPINC')) {
     die;
 }
 
-$enabled = OmniMail_Settings::is_enabled();
-$configured = OmniMail_Settings::is_configured();
-$ready = $enabled && $configured;
-$platform_url = defined('OMNIMAIL_APP_URL') ? OMNIMAIL_APP_URL : 'https://omninextmail-app.omninexttech.com';
-$connections_url = defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : $platform_url;
-$settings_url = admin_url('admin.php?page=omnimail-settings');
+$omnimail_enabled = OmniMail_Settings::is_enabled();
+$omnimail_configured = OmniMail_Settings::is_configured();
+$omnimail_ready = $omnimail_enabled && $omnimail_configured;
+$omnimail_platform_url = defined('OMNIMAIL_APP_URL') ? OMNIMAIL_APP_URL : 'https://omninextmail-app.omninexttech.com';
+$omnimail_connections_url = defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : $omnimail_platform_url;
+$omnimail_settings_url = admin_url('admin.php?page=omnimail-settings');
 ?>
 
 <div class="wrap omnimail-dashboard">
@@ -25,29 +25,29 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                 <img src="<?php echo esc_url(OMNIMAIL_LOGO_URL); ?>" alt="<?php esc_attr_e('OmniNextMail', 'omnimail'); ?>" class="omnimail-logo">
                 <p class="omnimail-hero-sub">
                     <?php
-                    if ($ready) {
-                        _e('Your store is connected. Automated emails follow your Behavioral Flows settings.', 'omnimail');
+                    if ($omnimail_ready) {
+                        esc_html_e('Your store is connected. Automated emails follow your Behavioral Flows settings.', 'omnimail');
                     } else {
-                        _e('Connect this store to OmniNextMail so abandoned carts and orders can trigger emails automatically.', 'omnimail');
+                        esc_html_e('Connect this store to OmniNextMail so abandoned carts and orders can trigger emails automatically.', 'omnimail');
                     }
                     ?>
                 </p>
             </div>
-            <?php if (!$configured): ?>
-                <a href="<?php echo esc_url($settings_url); ?>" class="button button-primary button-large omnimail-hero-cta">
+            <?php if (!$omnimail_configured): ?>
+                <a href="<?php echo esc_url($omnimail_settings_url); ?>" class="button button-primary button-large omnimail-hero-cta">
                     <span class="dashicons dashicons-admin-settings"></span>
-                    <?php _e('Start setup (2 minutes)', 'omnimail'); ?>
+                    <?php esc_html_e('Start setup (2 minutes)', 'omnimail'); ?>
                 </a>
-            <?php elseif (!$enabled): ?>
-                <a href="<?php echo esc_url($settings_url); ?>" class="button button-primary button-large omnimail-hero-cta">
+            <?php elseif (!$omnimail_enabled): ?>
+                <a href="<?php echo esc_url($omnimail_settings_url); ?>" class="button button-primary button-large omnimail-hero-cta">
                     <span class="dashicons dashicons-controls-play"></span>
-                    <?php _e('Enable OmniMail in Settings', 'omnimail'); ?>
+                    <?php esc_html_e('Enable OmniMail in Settings', 'omnimail'); ?>
                 </a>
             <?php else: ?>
                 <a href="<?php echo esc_url(admin_url('admin.php?page=omnimail-behavioral-flows')); ?>"
                     class="button button-primary button-large omnimail-hero-cta">
                     <span class="dashicons dashicons-randomize"></span>
-                    <?php _e('Manage email flows', 'omnimail'); ?>
+                    <?php esc_html_e('Manage email flows', 'omnimail'); ?>
                 </a>
             <?php endif; ?>
         </div>
@@ -59,16 +59,16 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                     <span class="dashicons dashicons-admin-plugins"></span>
                 </div>
                 <div class="omnimail-status-card-content">
-                    <h3><?php _e('Plugin', 'omnimail'); ?></h3>
-                    <?php if ($enabled): ?>
+                    <h3><?php esc_html_e('Plugin', 'omnimail'); ?></h3>
+                    <?php if ($omnimail_enabled): ?>
                         <p class="omnimail-status omnimail-status-active">
                             <span class="dashicons dashicons-yes-alt"></span>
-                            <?php _e('Enabled', 'omnimail'); ?>
+                            <?php esc_html_e('Enabled', 'omnimail'); ?>
                         </p>
                     <?php else: ?>
                         <p class="omnimail-status omnimail-status-inactive">
                             <span class="dashicons dashicons-dismiss"></span>
-                            <?php _e('Disabled', 'omnimail'); ?>
+                            <?php esc_html_e('Disabled', 'omnimail'); ?>
                         </p>
                     <?php endif; ?>
                 </div>
@@ -79,16 +79,16 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                     <span class="dashicons dashicons-admin-network"></span>
                 </div>
                 <div class="omnimail-status-card-content">
-                    <h3><?php _e('Connection', 'omnimail'); ?></h3>
-                    <?php if ($configured): ?>
+                    <h3><?php esc_html_e('Connection', 'omnimail'); ?></h3>
+                    <?php if ($omnimail_configured): ?>
                         <p class="omnimail-status omnimail-status-active">
                             <span class="dashicons dashicons-yes-alt"></span>
-                            <?php _e('Configured', 'omnimail'); ?>
+                            <?php esc_html_e('Configured', 'omnimail'); ?>
                         </p>
                     <?php else: ?>
                         <p class="omnimail-status omnimail-status-warning">
                             <span class="dashicons dashicons-warning"></span>
-                            <?php _e('Needs setup', 'omnimail'); ?>
+                            <?php esc_html_e('Needs setup', 'omnimail'); ?>
                         </p>
                     <?php endif; ?>
                 </div>
@@ -99,16 +99,16 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                     <span class="dashicons dashicons-email"></span>
                 </div>
                 <div class="omnimail-status-card-content">
-                    <h3><?php _e('Overall', 'omnimail'); ?></h3>
-                    <?php if ($ready): ?>
+                    <h3><?php esc_html_e('Overall', 'omnimail'); ?></h3>
+                    <?php if ($omnimail_ready): ?>
                         <p class="omnimail-status omnimail-status-active">
                             <span class="dashicons dashicons-yes-alt"></span>
-                            <?php _e('Ready', 'omnimail'); ?>
+                            <?php esc_html_e('Ready', 'omnimail'); ?>
                         </p>
                     <?php else: ?>
                         <p class="omnimail-status omnimail-status-warning">
                             <span class="dashicons dashicons-clock"></span>
-                            <?php _e('Finish setup', 'omnimail'); ?>
+                            <?php esc_html_e('Finish setup', 'omnimail'); ?>
                         </p>
                     <?php endif; ?>
                 </div>
@@ -119,7 +119,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                     <span class="dashicons dashicons-wordpress"></span>
                 </div>
                 <div class="omnimail-status-card-content">
-                    <h3><?php _e('Version', 'omnimail'); ?></h3>
+                    <h3><?php esc_html_e('Version', 'omnimail'); ?></h3>
                     <p class="omnimail-stat-number">
                         <?php echo esc_html(OMNIMAIL_VERSION); ?>
                     </p>
@@ -129,47 +129,47 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
 
         <!-- Quick Actions -->
         <div class="omnimail-card">
-            <h2><?php _e('Quick actions', 'omnimail'); ?></h2>
+            <h2><?php esc_html_e('Quick actions', 'omnimail'); ?></h2>
             <div class="omnimail-quick-actions">
-                <a href="<?php echo esc_url($settings_url); ?>" class="button button-primary button-large">
+                <a href="<?php echo esc_url($omnimail_settings_url); ?>" class="button button-primary button-large">
                     <span class="dashicons dashicons-admin-settings"></span>
-                    <?php echo $configured ? esc_html__('Settings', 'omnimail') : esc_html__('Connect store', 'omnimail'); ?>
+                    <?php echo $omnimail_configured ? esc_html__('Settings', 'omnimail') : esc_html__('Connect store', 'omnimail'); ?>
                 </a>
-                <a href="<?php echo esc_url($connections_url); ?>" target="_blank" rel="noopener noreferrer"
+                <a href="<?php echo esc_url($omnimail_connections_url); ?>" target="_blank" rel="noopener noreferrer"
                     class="button button-secondary button-large">
                     <span class="dashicons dashicons-external"></span>
-                    <?php _e('Email Plugin Connection', 'omnimail'); ?>
+                    <?php esc_html_e('Email Plugin Connection', 'omnimail'); ?>
                 </a>
                 <a href="<?php echo esc_url(admin_url('admin.php?page=omnimail-behavioral-flows')); ?>"
                     class="button button-secondary button-large">
                     <span class="dashicons dashicons-randomize"></span>
-                    <?php _e('Behavioral Flows', 'omnimail'); ?>
+                    <?php esc_html_e('Behavioral Flows', 'omnimail'); ?>
                 </a>
                 <a href="<?php echo esc_url(admin_url('admin.php?page=omnimail-email-stats')); ?>"
                     class="button button-secondary button-large">
                     <span class="dashicons dashicons-chart-bar"></span>
-                    <?php _e('Email Statistics', 'omnimail'); ?>
+                    <?php esc_html_e('Email Statistics', 'omnimail'); ?>
                 </a>
                 <button type="button" id="omnimail-raise-ticket-btn" class="button button-primary button-large omnimail-ticket-btn">
                     <span class="dashicons dashicons-sos" aria-hidden="true"></span>
-                    <?php _e('Raise Ticket', 'omnimail'); ?>
+                    <?php esc_html_e('Raise Ticket', 'omnimail'); ?>
                 </button>
             </div>
         </div>
 
-        <?php if ($configured): ?>
+        <?php if ($omnimail_configured): ?>
             <!-- Email overview stats -->
             <div id="omnimail-dashboard-stats" data-configured="1">
                 <div id="omnimail-dash-stats-loading" class="omnimail-card" style="text-align:center;padding:28px;">
                     <span class="spinner is-active" style="float:none;margin:0;"></span>
-                    <p><?php _e('Loading email statistics...', 'omnimail'); ?></p>
+                    <p><?php esc_html_e('Loading email statistics...', 'omnimail'); ?></p>
                 </div>
 
                 <div id="omnimail-dash-stats-error" class="omnimail-card" style="display:none;">
                     <p id="omnimail-dash-stats-error-message" style="margin:0;color:#ff6b81;"></p>
                     <p style="margin:12px 0 0;">
                         <a href="<?php echo esc_url(admin_url('admin.php?page=omnimail-settings')); ?>" class="button button-secondary">
-                            <?php _e('Check Settings', 'omnimail'); ?>
+                            <?php esc_html_e('Check Settings', 'omnimail'); ?>
                         </a>
                     </p>
                 </div>
@@ -181,7 +181,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-email-alt"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('Total Sent', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('Total Sent', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number" id="dash-stat-total-sent">0</p>
                             </div>
                         </div>
@@ -190,7 +190,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-calendar-alt"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('Sent Today', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('Sent Today', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number" id="dash-stat-sent-today">0</p>
                             </div>
                         </div>
@@ -199,7 +199,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-chart-line"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('This Week', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('This Week', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number" id="dash-stat-sent-week">0</p>
                             </div>
                         </div>
@@ -208,7 +208,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-chart-bar"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('This Month', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('This Month', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number" id="dash-stat-sent-month">0</p>
                             </div>
                         </div>
@@ -217,7 +217,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-visibility"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('Opened', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('Opened', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number" id="dash-stat-opened">0</p>
                             </div>
                         </div>
@@ -226,7 +226,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-admin-links"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('Clicked', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('Clicked', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number" id="dash-stat-clicked">0</p>
                             </div>
                         </div>
@@ -235,7 +235,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-chart-area"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('Open Rate', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('Open Rate', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number"><span id="dash-stat-open-rate">0</span>%</p>
                             </div>
                         </div>
@@ -244,7 +244,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-performance"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('Click Rate', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('Click Rate', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number"><span id="dash-stat-click-rate">0</span>%</p>
                             </div>
                         </div>
@@ -253,7 +253,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-warning"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('Bounced', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('Bounced', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number" id="dash-stat-bounced">0</p>
                             </div>
                         </div>
@@ -262,7 +262,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
                                 <span class="dashicons dashicons-dismiss"></span>
                             </div>
                             <div class="omnimail-status-card-content">
-                                <h3><?php _e('Unsubscribed', 'omnimail'); ?></h3>
+                                <h3><?php esc_html_e('Unsubscribed', 'omnimail'); ?></h3>
                                 <p class="omnimail-stat-number" id="dash-stat-unsubscribed">0</p>
                             </div>
                         </div>
@@ -270,29 +270,29 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
 
                     <div class="omnimail-card">
                         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-                            <h2 style="margin:0;"><?php _e('Latest emails', 'omnimail'); ?></h2>
+                            <h2 style="margin:0;"><?php esc_html_e('Latest emails', 'omnimail'); ?></h2>
                             <a href="<?php echo esc_url(admin_url('admin.php?page=omnimail-email-stats')); ?>" class="button button-secondary">
                                 <span class="dashicons dashicons-chart-bar"></span>
-                                <?php _e('Full statistics', 'omnimail'); ?>
+                                <?php esc_html_e('Full statistics', 'omnimail'); ?>
                             </a>
                         </div>
                         <table class="wp-list-table widefat fixed striped">
                             <thead>
                                 <tr>
-                                    <th><?php _e('Type', 'omnimail'); ?></th>
-                                    <th><?php _e('Subject', 'omnimail'); ?></th>
-                                    <th><?php _e('Recipient', 'omnimail'); ?></th>
-                                    <th><?php _e('Sent At', 'omnimail'); ?></th>
-                                    <th><?php _e('Opened', 'omnimail'); ?></th>
-                                    <th><?php _e('Clicked', 'omnimail'); ?></th>
-                                    <th><?php _e('Bounced', 'omnimail'); ?></th>
-                                    <th><?php _e('Unsubscribed', 'omnimail'); ?></th>
-                                    <th><?php _e('Status', 'omnimail'); ?></th>
+                                    <th><?php esc_html_e('Type', 'omnimail'); ?></th>
+                                    <th><?php esc_html_e('Subject', 'omnimail'); ?></th>
+                                    <th><?php esc_html_e('Recipient', 'omnimail'); ?></th>
+                                    <th><?php esc_html_e('Sent At', 'omnimail'); ?></th>
+                                    <th><?php esc_html_e('Opened', 'omnimail'); ?></th>
+                                    <th><?php esc_html_e('Clicked', 'omnimail'); ?></th>
+                                    <th><?php esc_html_e('Bounced', 'omnimail'); ?></th>
+                                    <th><?php esc_html_e('Unsubscribed', 'omnimail'); ?></th>
+                                    <th><?php esc_html_e('Status', 'omnimail'); ?></th>
                                 </tr>
                             </thead>
                             <tbody id="dash-recent-emails-tbody">
                                 <tr>
-                                    <td colspan="9" style="text-align:center;"><?php _e('Loading...', 'omnimail'); ?></td>
+                                    <td colspan="9" style="text-align:center;"><?php esc_html_e('Loading...', 'omnimail'); ?></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -301,18 +301,18 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
             </div>
         <?php else: ?>
             <div class="omnimail-card">
-                <h2><?php _e('Email activity', 'omnimail'); ?></h2>
-                <p><?php _e('Connect your store in Settings to see email totals and the latest messages here.', 'omnimail'); ?></p>
-                <a href="<?php echo esc_url($settings_url); ?>" class="button button-primary">
+                <h2><?php esc_html_e('Email activity', 'omnimail'); ?></h2>
+                <p><?php esc_html_e('Connect your store in Settings to see email totals and the latest messages here.', 'omnimail'); ?></p>
+                <a href="<?php echo esc_url($omnimail_settings_url); ?>" class="button button-primary">
                     <span class="dashicons dashicons-admin-settings"></span>
-                    <?php _e('Open Settings', 'omnimail'); ?>
+                    <?php esc_html_e('Open Settings', 'omnimail'); ?>
                 </a>
             </div>
         <?php endif; ?>
 
         <?php
-        $omni_suite_exclude = 'mail';
-        $omni_suite_assets_url = OMNIMAIL_PLUGIN_URL . 'assets/';
+        $omnimail_suite_exclude = 'mail';
+        $omnimail_suite_assets_url = OMNIMAIL_PLUGIN_URL . 'assets/';
         require OMNIMAIL_PLUGIN_DIR . 'admin/views/partials/more-from-us.php';
         ?>
     </div>
@@ -382,7 +382,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
 <div id="omnimail-ticket-modal" class="omnimail-modal-logs" style="display: none;">
   <div class="omnimail-modal-content">
     <div class="omnimail-modal-header">
-      <h3><?php _e('Raise Support Ticket', 'omnimail'); ?></h3>
+      <h3><?php esc_html_e('Raise Support Ticket', 'omnimail'); ?></h3>
       <button type="button" class="omnimail-modal-close" id="close-ticket-modal">
         <span class="dashicons dashicons-no"></span>
       </button>
@@ -392,7 +392,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
 
       <form id="omnimail-ticket-form">
         <div class="ticket-auto-subject-box" style="background: #1e293b; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #2d3e50;">
-           <label style="display: block; font-size: 10px; color: var(--color-cyan); letter-spacing: 1px; margin-bottom: 8px; font-weight: bold;"><?php _e('AUTO-GENERATED SUBJECT', 'omnimail'); ?></label>
+           <label style="display: block; font-size: 10px; color: var(--color-cyan); letter-spacing: 1px; margin-bottom: 8px; font-weight: bold;"><?php esc_html_e('AUTO-GENERATED SUBJECT', 'omnimail'); ?></label>
            <div class="subject-display" style="display: flex; justify-content: space-between; align-items: center;">
              <span id="generated-subject-text" style="font-size: 18px; color: var(--color-cyan); font-weight: bold;">TKT-630058-OmniMail</span>
              <button type="button" id="copy-subject-btn" style="background: none; border: none; color: var(--color-cyan); cursor: pointer; padding: 5px;">
@@ -402,38 +402,38 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
         </div>
 
         <div class="omnimail-form-group" style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php _e('Subject', 'omnimail'); ?> <span style="color: #ff3b5c;">*</span></label>
+          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php esc_html_e('Subject', 'omnimail'); ?> <span style="color: #ff3b5c;">*</span></label>
           <input type="text" id="ticket-subject" name="subject" required readonly style="width: 100%; background: #0f1728; border: 1px solid #1e293b; color: #fff; padding: 10px; border-radius: 4px;">
         </div>
 
         <input type="hidden" id="ticket-type" name="type" value="General Inquiry">
 
         <div class="omnimail-form-group" style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php _e('Priority', 'omnimail'); ?> <span style="color: #ff3b5c;">*</span></label>
+          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php esc_html_e('Priority', 'omnimail'); ?> <span style="color: #ff3b5c;">*</span></label>
           <select id="ticket-priority" name="priority" required style="width: 100%; background: #0f1728; border: 1px solid #1e293b; color: #fff; padding: 10px; border-radius: 4px;">
-            <option value="Low"><?php _e('Low', 'omnimail'); ?></option>
-            <option value="Medium" selected><?php _e('Medium', 'omnimail'); ?></option>
-            <option value="High"><?php _e('High', 'omnimail'); ?></option>
+            <option value="Low"><?php esc_html_e('Low', 'omnimail'); ?></option>
+            <option value="Medium" selected><?php esc_html_e('Medium', 'omnimail'); ?></option>
+            <option value="High"><?php esc_html_e('High', 'omnimail'); ?></option>
           </select>
         </div>
 
         <div class="omnimail-form-group" style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php _e('Loom Link', 'omnimail'); ?></label>
+          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php esc_html_e('Loom Link', 'omnimail'); ?></label>
           <input type="url" id="ticket-loom" name="loomLink" placeholder="https://www.loom.com/share/..." style="width: 100%; background: #0f1728; border: 1px solid #1e293b; color: #fff; padding: 10px; border-radius: 4px;">
-          <small style="color: #9ca3af; font-size: 12px; display: block; margin-top: 5px;"><?php _e('Optional: Add a Loom video link for additional context', 'omnimail'); ?></small>
+          <small style="color: #9ca3af; font-size: 12px; display: block; margin-top: 5px;"><?php esc_html_e('Optional: Add a Loom video link for additional context', 'omnimail'); ?></small>
         </div>
 
         <div class="omnimail-form-group" style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php _e('Description', 'omnimail'); ?> <span style="color: #ff3b5c;">*</span></label>
+          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php esc_html_e('Description', 'omnimail'); ?> <span style="color: #ff3b5c;">*</span></label>
           <textarea id="ticket-description" name="description" rows="4" placeholder="<?php esc_attr_e('Describe your issue in detail...', 'omnimail'); ?>" required style="width: 100%; background: #0f1728; border: 1px solid #1e293b; color: #fff; padding: 10px; border-radius: 4px; resize: vertical;"></textarea>
         </div>
 
         <div class="omnimail-form-group" style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php _e('Attachments (Optional)', 'omnimail'); ?></label>
+          <label style="display: block; margin-bottom: 5px; color: #fff; font-size: 14px;"><?php esc_html_e('Attachments (Optional)', 'omnimail'); ?></label>
           <div id="ticket-upload-area" style="background: rgba(0, 255, 255, 0.05); border: 2px dashed #0a738c; border-radius: 8px; padding: 25px; text-align: center; cursor: pointer; transition: all 0.2s;">
              <span class="dashicons dashicons-upload" style="font-size: 40px; width: 40px; height: 40px; color: var(--color-cyan); margin-bottom: 10px;"></span>
-             <h3 style="margin: 0; color: #fff; font-size: 18px;"><?php _e('Click to Upload Files', 'omnimail'); ?></h3>
-             <p style="margin: 5px 0 0 0; color: #9ca3af; font-size: 12px;"><?php _e('Supported formats (PDF, DOC, Images and Videos)', 'omnimail'); ?></p>
+             <h3 style="margin: 0; color: #fff; font-size: 18px;"><?php esc_html_e('Click to Upload Files', 'omnimail'); ?></h3>
+             <p style="margin: 5px 0 0 0; color: #9ca3af; font-size: 12px;"><?php esc_html_e('Supported formats (PDF, DOC, Images and Videos)', 'omnimail'); ?></p>
              <input type="file" id="ticket-files" name="attachments[]" multiple style="display: none;">
           </div>
           <div id="selected-files-list" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
@@ -441,7 +441,7 @@ $settings_url = admin_url('admin.php?page=omnimail-settings');
 
         <div class="ticket-form-actions" style="border-top: 1px solid #232b3b; padding-top: 20px; text-align: right;">
           <button type="button" id="submit-ticket-btn" class="button button-primary button-large" style="background: var(--color-cyan); color: var(--color-midnight); border: none; font-weight: 600; padding: 0 30px;">
-            <?php _e('Submit Ticket', 'omnimail'); ?>
+            <?php esc_html_e('Submit Ticket', 'omnimail'); ?>
           </button>
         </div>
       </form>

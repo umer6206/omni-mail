@@ -221,23 +221,23 @@ class OmniMail_WooCommerce
   /** Handle native WooCommerce page lifecycle events. */
   public function handle_product_viewed()
   {
-    global $product;
+    $omnimail_product = isset($GLOBALS['product']) ? $GLOBALS['product'] : null;
 
-    if (!$product && function_exists('wc_get_product')) {
-      $product = wc_get_product(get_the_ID());
+    if (!$omnimail_product && function_exists('wc_get_product')) {
+      $omnimail_product = wc_get_product(get_the_ID());
     }
 
-    if (!$this->api || !$product || !is_object($product)) {
+    if (!$this->api || !$omnimail_product || !is_object($omnimail_product)) {
       return;
     }
 
     $this->api->send_event('product.viewed', array_merge(
-      $this->get_product_identity($product),
+      $this->get_product_identity($omnimail_product),
       array(
-        'productName' => $product->get_name(),
-        'sku' => $product->get_sku(),
-        'price' => $product->get_price(),
-        'url' => get_permalink($product->get_id()),
+        'productName' => $omnimail_product->get_name(),
+        'sku' => $omnimail_product->get_sku(),
+        'price' => $omnimail_product->get_price(),
+        'url' => get_permalink($omnimail_product->get_id()),
       )
     ));
 
@@ -305,7 +305,7 @@ class OmniMail_WooCommerce
     update_user_meta($user->ID, '_omnimail_cart_data', array(
       'items' => $cart_items,
       'total' => $cart->get_cart_contents_total(),
-      'timestamp' => current_time('timestamp'),
+      'timestamp' => current_time('timestamp', true),
       'user_email' => $user->user_email,
     ));
   }
@@ -318,13 +318,14 @@ class OmniMail_WooCommerce
     global $wpdb;
 
     // Get all users with cart data
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Query live cart metadata in one pass; caching it risks delaying abandonment processing.
     $results = $wpdb->get_results(
       "SELECT user_id, meta_value 
        FROM {$wpdb->usermeta} 
        WHERE meta_key = '_omnimail_cart_data'"
     );
 
-    $current_time = current_time('timestamp');
+    $current_time = current_time('timestamp', true);
     $abandonment_threshold = 30 * 60; // 30 minutes
 
     foreach ($results as $result) {
@@ -345,7 +346,7 @@ class OmniMail_WooCommerce
         // Check if user has completed an order since cart was created
         $recent_orders = wc_get_orders(array(
           'customer_id' => $user->ID,
-          'date_created' => '>' . date('Y-m-d H:i:s', $cart_data['timestamp']),
+          'date_created' => '>' . gmdate('Y-m-d H:i:s', $cart_data['timestamp']),
           'limit' => 1,
         ));
 
@@ -367,7 +368,7 @@ class OmniMail_WooCommerce
           'user_email' => $user->user_email,
           'cart_items' => $cart_data['items'],
           'cart_total' => $cart_data['total'],
-          'abandoned_at' => date('c', $cart_data['timestamp']),
+          'abandoned_at' => gmdate('c', $cart_data['timestamp']),
           'time_elapsed_minutes' => round($time_elapsed / 60),
         ));
 

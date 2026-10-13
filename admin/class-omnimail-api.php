@@ -68,20 +68,21 @@ class OmniMail_API
       'event_type' => 'connection_test',
       'data' => array(
         'test' => true,
-        'message' => 'Connection test from OmniVoice plugin',
+        'message' => 'Connection test from OmniNextMail plugin',
         'site_url' => get_site_url(),
         'timestamp' => current_time('mysql')
       ),
       'source_id' => 'test',
-      'user_email' => 'user@example.com',
+      'user_email' => sanitize_email(get_option('admin_email')),
     );
 
     $args = array(
       'method' => 'POST',
       'headers' => array(
-        'Content-Type' => 'application/json'
+        'Content-Type' => 'application/json',
+        'X-API-Key' => $this->api_key
       ),
-      'body' => json_encode($payload),
+      'body' => wp_json_encode($payload),
       'timeout' => 30
     );
 
@@ -801,7 +802,6 @@ class OmniMail_API
   public function get_email_stats($auto_reply_page = 1, $auto_reply_limit = 10)
   {
     if (empty($this->connection_id)) {
-      error_log('OmniMail API: Connection ID is empty');
       return array(
         'success' => false,
         'message' => 'Connection ID is not configured.'
@@ -814,9 +814,6 @@ class OmniMail_API
     $url = $this->api_base_url . "/api/integrations/wordpress/connections/{$this->connection_id}/email-stats"
       . "?autoReplyPage={$auto_reply_page}&autoReplyLimit={$auto_reply_limit}";
     
-    error_log('OmniMail API: Calling URL: ' . $url);
-    error_log('OmniMail API: API Key: ' . substr($this->api_key, 0, 10) . '...');
-
     $args = array(
       'method' => 'GET',
       'headers' => array(
@@ -829,7 +826,6 @@ class OmniMail_API
     $response = wp_remote_request($url, $args);
 
     if (is_wp_error($response)) {
-      error_log('OmniMail API: WP Error: ' . $response->get_error_message());
       return array(
         'success' => false,
         'message' => $response->get_error_message()
@@ -839,9 +835,6 @@ class OmniMail_API
     $status_code = wp_remote_retrieve_response_code($response);
     $body = json_decode(wp_remote_retrieve_body($response), true);
     
-    error_log('OmniMail API: Status Code: ' . $status_code);
-    error_log('OmniMail API: Response Body: ' . wp_remote_retrieve_body($response));
-
     return array(
       'success' => $status_code >= 200 && $status_code < 300,
       'data' => $body,
@@ -1112,10 +1105,12 @@ class OmniMail_API
    */
   private function get_sms_contact_id_from_cookie()
   {
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- The decoded contact ID is sanitized before use below.
     if (empty($_COOKIE['omnimail_sms_contact'])) {
       return '';
     }
 
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Decode the URL-encoded JSON cookie, then sanitize the contact ID before returning it.
     $cookie_value = rawurldecode(wp_unslash($_COOKIE['omnimail_sms_contact']));
     $cookie_data = json_decode($cookie_value, true);
 
@@ -1159,6 +1154,7 @@ class OmniMail_API
     global $wpdb;
     $table_name = $wpdb->prefix . 'omnimail_logs';
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- This plugin-owned log table has no WordPress query API.
     $wpdb->insert(
       $table_name,
       array(
@@ -1178,6 +1174,7 @@ class OmniMail_API
     global $wpdb;
     $table_name = $wpdb->prefix . 'omnimail_logs';
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- This plugin-owned log table has no WordPress query API.
     $wpdb->insert(
       $table_name,
       array(

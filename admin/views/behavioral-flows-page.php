@@ -10,14 +10,14 @@ if (!defined('WPINC')) {
     die;
 }
 
-$connection_id = get_option('omnimail_connection_id', '');
-$api_key = get_option('omnimail_api_key', '');
-$is_configured = !empty($connection_id) && !empty($api_key);
-$pro_url = defined('OMNIMAIL_SUBSCRIPTION_URL')
+$omnimail_connection_id = get_option('omnimail_connection_id', '');
+$omnimail_api_key = get_option('omnimail_api_key', '');
+$omnimail_is_configured = !empty($omnimail_connection_id) && !empty($omnimail_api_key);
+$omnimail_pro_url = defined('OMNIMAIL_SUBSCRIPTION_URL')
     ? OMNIMAIL_SUBSCRIPTION_URL
     : 'https://omninextmail-app.omninexttech.com/dashboard/mail-blaze/subscription';
 
-$flows = array(
+$omnimail_flows = array(
     array(
         'id' => 'flow_cart_abandonment',
         'data' => 'cartAbandonmentEnabled',
@@ -89,38 +89,38 @@ $flows = array(
     <div class="omnimail-page-wrapper">
         <h1>
             <img src="<?php echo esc_url(OMNIMAIL_LOGO_URL); ?>" alt="<?php esc_attr_e('OmniMail', 'omnimail'); ?>" class="omnimail-logo omnimail-logo-inline">
-            <span class="screen-reader-text"><?php _e('Behavioral Email Flows', 'omnimail'); ?></span>
+            <span class="screen-reader-text"><?php esc_html_e('Behavioral Email Flows', 'omnimail'); ?></span>
         </h1>
         <p class="omnimail-hero-sub" style="margin-top:-6px;margin-bottom:18px;">
-            <?php _e('Automation Flows', 'omnimail'); ?>
+            <?php esc_html_e('Automation Flows', 'omnimail'); ?>
         </p>
 
-        <?php if (!$is_configured): ?>
+        <?php if (!$omnimail_is_configured): ?>
             <div class="omnimail-card omnimail-empty-state">
                 <span class="dashicons dashicons-admin-network"></span>
-                <h2><?php _e('Connect OmniMail first', 'omnimail'); ?></h2>
+                <h2><?php esc_html_e('Connect OmniMail first', 'omnimail'); ?></h2>
                 <p>
-                    <?php _e('You need a Connection ID and API Key from the OmniMail app before you can manage these flows.', 'omnimail'); ?>
+                    <?php esc_html_e('You need a Connection ID and API Key from the OmniMail app before you can manage these flows.', 'omnimail'); ?>
                 </p>
                 <div class="omnimail-quick-actions">
                     <a href="<?php echo esc_url(defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : 'https://omninextmail-app.omninexttech.com/dashboard/email-plugin-connection'); ?>"
                         target="_blank" rel="noopener noreferrer" class="button button-secondary button-large">
                         <span class="dashicons dashicons-external"></span>
-                        <?php _e('Get credentials in OmniMail', 'omnimail'); ?>
+                        <?php esc_html_e('Get credentials in OmniMail', 'omnimail'); ?>
                     </a>
                     <a href="<?php echo esc_url(admin_url('admin.php?page=omnimail-settings')); ?>"
                         class="button button-primary button-large">
                         <span class="dashicons dashicons-admin-settings"></span>
-                        <?php _e('Paste them in Settings', 'omnimail'); ?>
+                        <?php esc_html_e('Paste them in Settings', 'omnimail'); ?>
                     </a>
                 </div>
             </div>
         <?php endif; ?>
 
         <div class="omnimail-card">
-            <h2><?php _e('Automated Email Flows', 'omnimail'); ?></h2>
+            <h2><?php esc_html_e('Automated Email Flows', 'omnimail'); ?></h2>
             <p class="description">
-                <?php _e('Control which automated emails are sent to your customers based on their behavior.', 'omnimail'); ?>
+                <?php esc_html_e('Control which automated emails are sent to your customers based on their behavior.', 'omnimail'); ?>
             </p>
             <div class="omnimail-callout omnimail-callout-info" style="margin-top: 12px;">
                 <?php
@@ -128,7 +128,7 @@ $flows = array(
                     sprintf(
                         /* translators: %s: subscription upgrade URL */
                         __('These emails also need: (1) email/SMTP configured on your OmniNextMail connection, and (2) a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniNextMail plan</a>.', 'omnimail'),
-                        esc_url($pro_url)
+                        esc_url($omnimail_pro_url)
                     ),
                     array(
                         'a' => array(
@@ -143,29 +143,29 @@ $flows = array(
             </div>
 
             <div id="omnimail-pro-locked-banner" class="omnimail-callout omnimail-callout-pro" style="display:none;margin-top:12px;">
-                <strong><?php _e('PRO required', 'omnimail'); ?></strong>
-                <?php _e('Your plan does not include behavioral flows. Upgrade to PRO to enable them.', 'omnimail'); ?>
-                <a href="<?php echo esc_url($pro_url); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary" style="margin-left:10px;">
-                    <?php _e('Upgrade to PRO', 'omnimail'); ?>
+                <strong><?php esc_html_e('PRO required', 'omnimail'); ?></strong>
+                <?php esc_html_e('Your plan does not include behavioral flows. Upgrade to PRO to enable them.', 'omnimail'); ?>
+                <a href="<?php echo esc_url($omnimail_pro_url); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary" style="margin-left:10px;">
+                    <?php esc_html_e('Upgrade to PRO', 'omnimail'); ?>
                 </a>
             </div>
 
             <div id="behavioral-flows-loading" style="text-align: center; padding: 40px;">
                 <span class="spinner is-active" style="float: none; margin: 0;"></span>
-                <p><?php _e('Loading flow settings...', 'omnimail'); ?></p>
+                <p><?php esc_html_e('Loading flow settings...', 'omnimail'); ?></p>
             </div>
 
-            <div id="behavioral-flows-content" style="display: none;" data-pro-url="<?php echo esc_url($pro_url); ?>">
+            <div id="behavioral-flows-content" style="display: none;" data-pro-url="<?php echo esc_url($omnimail_pro_url); ?>">
 
                 <div class="omnimail-behavioral-banner">
                     <div class="omnimail-banner-icon">
                         <span class="dashicons dashicons-info-outline"></span>
                     </div>
                     <div class="omnimail-banner-text">
-                        <?php _e('Use Email flows, SMS flows, or both together to create a comprehensive communication strategy.', 'omnimail'); ?>
+                        <?php esc_html_e('Use Email flows, SMS flows, or both together to create a comprehensive communication strategy.', 'omnimail'); ?>
                     </div>
-                    <a href="<?php echo esc_url($pro_url); ?>" target="_blank" rel="noopener noreferrer" class="omnimail-banner-button">
-                        <?php _e('Learn More', 'omnimail'); ?>
+                    <a href="<?php echo esc_url($omnimail_pro_url); ?>" target="_blank" rel="noopener noreferrer" class="omnimail-banner-button">
+                        <?php esc_html_e('Learn More', 'omnimail'); ?>
                         <span class="dashicons dashicons-external"></span>
                     </a>
                 </div>
@@ -175,66 +175,66 @@ $flows = array(
                         <div class="omnimail-panel-header">
                             <div class="omnimail-panel-header-left">
                                 <span class="omnimail-panel-header-icon"><span class="dashicons dashicons-email-alt"></span></span>
-                                <h2><?php _e('Automation Flows', 'omnimail'); ?></h2>
-                                <span class="omnimail-panel-active-badge" id="omnimail-email-active-badge">0 <?php _e('Active', 'omnimail'); ?></span>
+                                <h2><?php esc_html_e('Automation Flows', 'omnimail'); ?></h2>
+                                <span class="omnimail-panel-active-badge" id="omnimail-email-active-badge">0 <?php esc_html_e('Active', 'omnimail'); ?></span>
                             </div>
                             <div class="omnimail-panel-header-right" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                                 <button type="button" id="disable-all-flows" class="button button-secondary omnimail-header-action-btn">
                                     <span class="dashicons dashicons-dismiss"></span>
-                                    <?php _e('Disable All', 'omnimail'); ?>
+                                    <?php esc_html_e('Disable All', 'omnimail'); ?>
                                 </button>
                             </div>
                         </div>
 
                         <div class="omnimail-flows-grid">
-                            <?php foreach ($flows as $flow): ?>
-                                <div class="omnimail-flow-card" data-flow-type="<?php echo esc_attr($flow['type']); ?>" data-flow-label="<?php echo esc_attr($flow['label']); ?>">
+                            <?php foreach ($omnimail_flows as $omnimail_flow): ?>
+                                <div class="omnimail-flow-card" data-flow-type="<?php echo esc_attr($omnimail_flow['type']); ?>" data-flow-label="<?php echo esc_attr($omnimail_flow['label']); ?>">
                                     <div class="omnimail-flow-card-top">
                                         <div class="omnimail-flow-info">
                                             <div class="omnimail-flow-title">
-                                                <label for="<?php echo esc_attr($flow['id']); ?>">
-                                                    <?php echo esc_html($flow['label']); ?>
+                                                <label for="<?php echo esc_attr($omnimail_flow['id']); ?>">
+                                                    <?php echo esc_html($omnimail_flow['label']); ?>
                                                 </label>
                                                 <span class="omnimail-pro-badge" title="<?php esc_attr_e('Requires PRO plan', 'omnimail'); ?>">
                                                     <span class="dashicons dashicons-lock"></span>
-                                                    <?php _e('PRO', 'omnimail'); ?>
+                                                    <?php esc_html_e('PRO', 'omnimail'); ?>
                                                 </span>
-                                                <a href="<?php echo esc_url($pro_url); ?>"
+                                                <a href="<?php echo esc_url($omnimail_pro_url); ?>"
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     class="omnimail-pro-unlock"
                                                     style="display:none;">
-                                                    <?php _e('Unlock', 'omnimail'); ?>
+                                                    <?php esc_html_e('Unlock', 'omnimail'); ?>
                                                 </a>
                                             </div>
                                             <p class="description omnimail-flow-desc">
-                                                <?php echo esc_html($flow['desc']); ?>
+                                                <?php echo esc_html($omnimail_flow['desc']); ?>
                                             </p>
                                         </div>
                                         <div class="omnimail-flow-actions">
                                             <div class="omnimail-channel-toggle">
-                                                <span><?php _e('Email', 'omnimail'); ?></span>
+                                                <span><?php esc_html_e('Email', 'omnimail'); ?></span>
                                                 <label class="omnimail-toggle">
                                                     <input type="checkbox"
-                                                        id="<?php echo esc_attr($flow['id']); ?>"
-                                                           data-flow="<?php echo esc_attr($flow['data']); ?>"
+                                                        id="<?php echo esc_attr($omnimail_flow['id']); ?>"
+                                                           data-flow="<?php echo esc_attr($omnimail_flow['data']); ?>"
                                                            data-channel="email">
                                                     <span class="omnimail-toggle-slider"></span>
                                                 </label>
                                             </div>
                                             <div class="omnimail-channel-toggle">
-                                                <span><?php _e('SMS', 'omnimail'); ?></span>
+                                                <span><?php esc_html_e('SMS', 'omnimail'); ?></span>
                                                 <label class="omnimail-toggle">
                                                     <input type="checkbox"
-                                                        id="<?php echo esc_attr($flow['id']); ?>_sms"
-                                                           data-flow="<?php echo esc_attr($flow['sms_data']); ?>"
+                                                        id="<?php echo esc_attr($omnimail_flow['id']); ?>_sms"
+                                                           data-flow="<?php echo esc_attr($omnimail_flow['sms_data']); ?>"
                                                            data-channel="sms">
                                                     <span class="omnimail-toggle-slider"></span>
                                                 </label>
                                             </div>
                                             <button type="button" class="button button-secondary omnimail-manage-btn-sm omnimail-manage-followups-btn">
                                                 <span class="dashicons dashicons-admin-generic"></span>
-                                                <?php _e('Manage', 'omnimail'); ?>
+                                                <?php esc_html_e('Manage', 'omnimail'); ?>
                                             </button>
                                         </div>
                                     </div>
@@ -245,7 +245,7 @@ $flows = array(
                         <p class="submit">
                             <button type="button" id="save-flows-btn" class="button button-primary button-large">
                                 <span class="dashicons dashicons-yes"></span>
-                                <?php _e('Save Flow Settings', 'omnimail'); ?>
+                                <?php esc_html_e('Save Flow Settings', 'omnimail'); ?>
                             </button>
                         </p>
                     </div>
@@ -261,26 +261,26 @@ $flows = array(
         </div>
 
         <div class="omnimail-card omnimail-help-card">
-            <h2><?php _e('About Behavioral Flows', 'omnimail'); ?></h2>
-            <p><?php _e('Behavioral flows are automated emails triggered by customer actions:', 'omnimail'); ?></p>
+            <h2><?php esc_html_e('About Behavioral Flows', 'omnimail'); ?></h2>
+            <p><?php esc_html_e('Behavioral flows are automated emails triggered by customer actions:', 'omnimail'); ?></p>
             <ul style="list-style: disc; margin-left: 20px;">
-                <li><strong><?php _e('Cart Abandonment:', 'omnimail'); ?></strong> <?php _e('Recover lost sales by reminding customers about items left in their cart', 'omnimail'); ?></li>
-                <li><strong><?php _e('Browse Abandonment:', 'omnimail'); ?></strong> <?php _e('Re-engage customers who viewed products but didn\'t add them to cart', 'omnimail'); ?></li>
-                <li><strong><?php _e('Checkout Abandonment:', 'omnimail'); ?></strong> <?php _e('Capture customers who started checkout but didn\'t complete', 'omnimail'); ?></li>
-                <li><strong><?php _e('Wishlist Reminder:', 'omnimail'); ?></strong> <?php _e('Remind customers about products they saved for later', 'omnimail'); ?></li>
-                <li><strong><?php _e('Post-Purchase:', 'omnimail'); ?></strong> <?php _e('Thank customers and request reviews after purchase', 'omnimail'); ?></li>
-                <li><strong><?php _e('Re-engagement:', 'omnimail'); ?></strong> <?php _e('Win back inactive customers', 'omnimail'); ?></li>
-                <li><strong><?php _e('Back in Stock:', 'omnimail'); ?></strong> <?php _e('Notify customers when out-of-stock products are available', 'omnimail'); ?></li>
-                <li><strong><?php _e('Price Drop:', 'omnimail'); ?></strong> <?php _e('Alert customers when products they viewed go on sale', 'omnimail'); ?></li>
+                <li><strong><?php esc_html_e('Cart Abandonment:', 'omnimail'); ?></strong> <?php esc_html_e('Recover lost sales by reminding customers about items left in their cart', 'omnimail'); ?></li>
+                <li><strong><?php esc_html_e('Browse Abandonment:', 'omnimail'); ?></strong> <?php esc_html_e('Re-engage customers who viewed products but didn\'t add them to cart', 'omnimail'); ?></li>
+                <li><strong><?php esc_html_e('Checkout Abandonment:', 'omnimail'); ?></strong> <?php esc_html_e('Capture customers who started checkout but didn\'t complete', 'omnimail'); ?></li>
+                <li><strong><?php esc_html_e('Wishlist Reminder:', 'omnimail'); ?></strong> <?php esc_html_e('Remind customers about products they saved for later', 'omnimail'); ?></li>
+                <li><strong><?php esc_html_e('Post-Purchase:', 'omnimail'); ?></strong> <?php esc_html_e('Thank customers and request reviews after purchase', 'omnimail'); ?></li>
+                <li><strong><?php esc_html_e('Re-engagement:', 'omnimail'); ?></strong> <?php esc_html_e('Win back inactive customers', 'omnimail'); ?></li>
+                <li><strong><?php esc_html_e('Back in Stock:', 'omnimail'); ?></strong> <?php esc_html_e('Notify customers when out-of-stock products are available', 'omnimail'); ?></li>
+                <li><strong><?php esc_html_e('Price Drop:', 'omnimail'); ?></strong> <?php esc_html_e('Alert customers when products they viewed go on sale', 'omnimail'); ?></li>
             </ul>
             <p>
-                <strong><?php _e('Tier Requirement:', 'omnimail'); ?></strong>
+                <strong><?php esc_html_e('Tier Requirement:', 'omnimail'); ?></strong>
                 <?php
                 echo wp_kses(
                     sprintf(
                         /* translators: %s: subscription upgrade URL */
                         __('Behavioral flows (Email and SMS) require a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniNextMail plan</a>.', 'omnimail'),
-                        esc_url($pro_url)
+                        esc_url($omnimail_pro_url)
                     ),
                     array(
                         'a' => array(
@@ -303,33 +303,33 @@ $flows = array(
     <div class="omnimail-modal-header">
       <h3 id="omnimail-manage-flow-title">
         <span class="dashicons dashicons-admin-settings"></span>
-        <?php _e('Manage Flow', 'omnimail'); ?>
+        <?php esc_html_e('Manage Flow', 'omnimail'); ?>
       </h3>
       <button type="button" class="omnimail-modal-close" id="omnimail-manage-flow-close" aria-label="<?php esc_attr_e('Close', 'omnimail'); ?>">
         <span class="dashicons dashicons-no"></span>
       </button>
     </div>
     <div class="omnimail-modal-body">
-      <p class="omnimail-enhance-question"><?php _e('Choose what you want to manage for this flow.', 'omnimail'); ?></p>
+      <p class="omnimail-enhance-question"><?php esc_html_e('Choose what you want to manage for this flow.', 'omnimail'); ?></p>
       <div class="omnimail-manage-flow-options">
         <button type="button" class="omnimail-manage-flow-option" id="omnimail-manage-sequence">
           <span class="dashicons dashicons-randomize"></span>
           <span>
-            <strong><?php _e('Sequence Flow', 'omnimail'); ?></strong>
-            <span class="omnimail-manage-flow-option-description"><?php _e('View and manage follow-up sequences.', 'omnimail'); ?></span>
+            <strong><?php esc_html_e('Sequence Flow', 'omnimail'); ?></strong>
+            <span class="omnimail-manage-flow-option-description"><?php esc_html_e('View and manage follow-up sequences.', 'omnimail'); ?></span>
           </span>
         </button>
         <button type="button" class="omnimail-manage-flow-option" id="omnimail-manage-template">
           <span class="dashicons dashicons-email-alt"></span>
           <span>
-            <strong><?php _e('Template Selection Flow', 'omnimail'); ?></strong>
-            <span class="omnimail-manage-flow-option-description"><?php _e('Choose the email template used by this flow.', 'omnimail'); ?></span>
+            <strong><?php esc_html_e('Template Selection Flow', 'omnimail'); ?></strong>
+            <span class="omnimail-manage-flow-option-description"><?php esc_html_e('Choose the email template used by this flow.', 'omnimail'); ?></span>
           </span>
         </button>
       </div>
       <div class="omnimail-enhance-actions">
         <button type="button" class="button button-secondary button-large" id="omnimail-manage-flow-cancel">
-          <?php _e('Cancel', 'omnimail'); ?>
+          <?php esc_html_e('Cancel', 'omnimail'); ?>
         </button>
       </div>
     </div>
@@ -342,44 +342,44 @@ $flows = array(
     <div class="omnimail-modal-header">
       <h3 id="omnimail-flow-templates-title">
         <span class="dashicons dashicons-email-alt"></span>
-        <span id="omnimail-flow-templates-title-text"><?php _e('Choose an Email Template', 'omnimail'); ?></span>
+        <span id="omnimail-flow-templates-title-text"><?php esc_html_e('Choose an Email Template', 'omnimail'); ?></span>
       </h3>
       <button type="button" class="omnimail-modal-close" id="omnimail-flow-templates-close" aria-label="<?php esc_attr_e('Close', 'omnimail'); ?>">
         <span class="dashicons dashicons-no"></span>
       </button>
     </div>
     <div class="omnimail-modal-body">
-      <p class="description"><?php _e('Select a template for this email flow. Preview a template before choosing it.', 'omnimail'); ?></p>
+      <p class="description"><?php esc_html_e('Select a template for this email flow. Preview a template before choosing it.', 'omnimail'); ?></p>
       <div class="omnimail-flow-template-actions">
         <a id="omnimail-flow-create-template" class="button button-secondary" href="#" target="_blank" rel="noopener noreferrer">
           <span class="dashicons dashicons-plus-alt2"></span>
-          <?php _e('Create a Template', 'omnimail'); ?>
+          <?php esc_html_e('Create a Template', 'omnimail'); ?>
         </a>
         <button type="button" class="button button-secondary" id="omnimail-flow-templates-refresh">
           <span class="dashicons dashicons-update"></span>
-          <?php _e('Refresh', 'omnimail'); ?>
+          <?php esc_html_e('Refresh', 'omnimail'); ?>
         </button>
       </div>
       <div id="omnimail-flow-templates-loading" style="display:none;text-align:center;padding:20px;">
         <span class="spinner is-active" style="float:none;margin:0;"></span>
-        <p><?php _e('Loading templates...', 'omnimail'); ?></p>
+        <p><?php esc_html_e('Loading templates...', 'omnimail'); ?></p>
       </div>
       <p id="omnimail-flow-templates-error" class="omnimail-flow-template-error" style="display:none;"></p>
       <div id="omnimail-flow-templates-list" class="omnimail-flow-templates-list"></div>
       <div id="omnimail-flow-template-preview" class="omnimail-flow-template-preview" style="display:none;">
         <div>
           <strong id="omnimail-flow-template-preview-name"></strong>
-          <button type="button" class="button-link" id="omnimail-flow-template-preview-close"><?php _e('Close preview', 'omnimail'); ?></button>
+          <button type="button" class="button-link" id="omnimail-flow-template-preview-close"><?php esc_html_e('Close preview', 'omnimail'); ?></button>
         </div>
         <iframe title="<?php esc_attr_e('Email template preview', 'omnimail'); ?>" sandbox=""></iframe>
       </div>
       <div class="omnimail-enhance-actions">
         <button type="button" class="button button-secondary button-large" id="omnimail-flow-templates-cancel">
-          <?php _e('Cancel', 'omnimail'); ?>
+          <?php esc_html_e('Cancel', 'omnimail'); ?>
         </button>
         <button type="button" class="button button-primary button-large" id="omnimail-flow-template-use" disabled>
           <span class="dashicons dashicons-yes"></span>
-          <?php _e('Use Selected Template', 'omnimail'); ?>
+          <?php esc_html_e('Use Selected Template', 'omnimail'); ?>
         </button>
       </div>
     </div>
@@ -392,7 +392,7 @@ $flows = array(
     <div class="omnimail-modal-header">
       <h3 id="omnimail-enhance-flow-title">
         <span class="dashicons dashicons-star-filled"></span>
-        <?php _e('Enhance Your Flow', 'omnimail'); ?>
+        <?php esc_html_e('Enhance Your Flow', 'omnimail'); ?>
       </h3>
       <button type="button" class="omnimail-modal-close" id="omnimail-enhance-flow-close" aria-label="<?php esc_attr_e('Close', 'omnimail'); ?>">
         <span class="dashicons dashicons-no"></span>
@@ -400,27 +400,27 @@ $flows = array(
     </div>
     <div class="omnimail-modal-body">
       <p class="omnimail-enhance-lead">
-        <?php _e('We offer pre-built follow-up sequences that can automatically engage with your recipients based on their behavior.', 'omnimail'); ?>
+        <?php esc_html_e('We offer pre-built follow-up sequences that can automatically engage with your recipients based on their behavior.', 'omnimail'); ?>
       </p>
       <div class="omnimail-enhance-benefits">
-        <h4><?php _e("What you'll get:", 'omnimail'); ?></h4>
+        <h4><?php esc_html_e("What you'll get:", 'omnimail'); ?></h4>
         <ul>
-          <li><span class="omnimail-enhance-check">✓</span> <?php _e('Professional follow-up sequences (No Engagement Recovery, Engaged Lead, No Response Recovery)', 'omnimail'); ?></li>
-          <li><span class="omnimail-enhance-check">✓</span> <?php _e('Behavior-based triggers (opened, clicked, not opened)', 'omnimail'); ?></li>
-          <li><span class="omnimail-enhance-check">✓</span> <?php _e('Automated email sending and tagging', 'omnimail'); ?></li>
-          <li><span class="omnimail-enhance-check">✓</span> <?php _e('Proven templates that drive engagement', 'omnimail'); ?></li>
+          <li><span class="omnimail-enhance-check">✓</span> <?php esc_html_e('Professional follow-up sequences (No Engagement Recovery, Engaged Lead, No Response Recovery)', 'omnimail'); ?></li>
+          <li><span class="omnimail-enhance-check">✓</span> <?php esc_html_e('Behavior-based triggers (opened, clicked, not opened)', 'omnimail'); ?></li>
+          <li><span class="omnimail-enhance-check">✓</span> <?php esc_html_e('Automated email sending and tagging', 'omnimail'); ?></li>
+          <li><span class="omnimail-enhance-check">✓</span> <?php esc_html_e('Proven templates that drive engagement', 'omnimail'); ?></li>
         </ul>
       </div>
       <p class="omnimail-enhance-question">
-        <?php _e('Would you like to add a pre-built follow-up sequence to this flow?', 'omnimail'); ?>
+        <?php esc_html_e('Would you like to add a pre-built follow-up sequence to this flow?', 'omnimail'); ?>
       </p>
       <div class="omnimail-enhance-actions">
         <button type="button" class="button button-secondary button-large" id="omnimail-enhance-flow-later">
-          <?php _e('Maybe Later', 'omnimail'); ?>
+          <?php esc_html_e('Maybe Later', 'omnimail'); ?>
         </button>
         <button type="button" class="button button-primary button-large" id="omnimail-enhance-flow-yes">
           <span class="dashicons dashicons-star-filled"></span>
-          <?php _e('Yes, Show Me', 'omnimail'); ?>
+          <?php esc_html_e('Yes, Show Me', 'omnimail'); ?>
         </button>
       </div>
     </div>
@@ -433,7 +433,7 @@ $flows = array(
     <div class="omnimail-modal-header">
       <h3 id="omnimail-followups-title">
         <span class="dashicons dashicons-randomize"></span>
-        <span id="omnimail-followups-title-text"><?php _e('Follow-up Sequences', 'omnimail'); ?></span>
+        <span id="omnimail-followups-title-text"><?php esc_html_e('Follow-up Sequences', 'omnimail'); ?></span>
       </h3>
       <button type="button" class="omnimail-modal-close" id="omnimail-followups-close" aria-label="<?php esc_attr_e('Close', 'omnimail'); ?>">
         <span class="dashicons dashicons-no"></span>
@@ -441,48 +441,48 @@ $flows = array(
     </div>
     <div class="omnimail-modal-body">
       <p class="omnimail-enhance-question" style="margin-top:0;">
-        <?php _e('Automatically send follow-up emails based on recipient behavior.', 'omnimail'); ?>
+        <?php esc_html_e('Automatically send follow-up emails based on recipient behavior.', 'omnimail'); ?>
       </p>
 
       <div class="omnimail-followups-banner" id="omnimail-followups-banner" style="display:none;">
         <div>
-          <strong><?php _e('Choose a follow-up sequence for this flow', 'omnimail'); ?></strong>
-          <p><?php _e('Pick None, a pre-built sequence, or build a custom sequence with your own steps.', 'omnimail'); ?></p>
+          <strong><?php esc_html_e('Choose a follow-up sequence for this flow', 'omnimail'); ?></strong>
+          <p><?php esc_html_e('Pick None, a pre-built sequence, or build a custom sequence with your own steps.', 'omnimail'); ?></p>
         </div>
         <button type="button" class="button button-primary" id="omnimail-browse-prebuilt-btn">
           <span class="dashicons dashicons-star-filled"></span>
-          <?php _e('Choose Sequence', 'omnimail'); ?>
+          <?php esc_html_e('Choose Sequence', 'omnimail'); ?>
         </button>
       </div>
 
       <div id="omnimail-followups-loading" style="text-align:center;padding:28px;display:none;">
         <span class="spinner is-active" style="float:none;margin:0;"></span>
-        <p><?php _e('Loading follow-ups...', 'omnimail'); ?></p>
+        <p><?php esc_html_e('Loading follow-ups...', 'omnimail'); ?></p>
       </div>
 
       <div id="omnimail-followups-empty" class="omnimail-followups-empty" style="display:none;">
         <span class="dashicons dashicons-email-alt"></span>
-        <p><strong><?php _e('No follow-ups configured yet', 'omnimail'); ?></strong></p>
-        <p class="description"><?php _e('Pick None, a pre-built sequence, or build a custom sequence.', 'omnimail'); ?></p>
+        <p><strong><?php esc_html_e('No follow-ups configured yet', 'omnimail'); ?></strong></p>
+        <p class="description"><?php esc_html_e('Pick None, a pre-built sequence, or build a custom sequence.', 'omnimail'); ?></p>
         <button type="button" class="button button-primary" id="omnimail-followups-get-started">
           <span class="dashicons dashicons-star-filled"></span>
-          <?php _e('Choose a Sequence', 'omnimail'); ?>
+          <?php esc_html_e('Choose a Sequence', 'omnimail'); ?>
         </button>
         <button type="button" class="button button-secondary" id="omnimail-followups-build-custom" style="margin-left:8px;">
           <span class="dashicons dashicons-edit"></span>
-          <?php _e('Build Custom', 'omnimail'); ?>
+          <?php esc_html_e('Build Custom', 'omnimail'); ?>
         </button>
       </div>
 
       <div id="omnimail-followups-list-wrap" style="display:none;">
         <div class="omnimail-followups-list-header">
-          <strong id="omnimail-followups-count"><?php _e('Active Follow-ups', 'omnimail'); ?></strong>
+          <strong id="omnimail-followups-count"><?php esc_html_e('Active Follow-ups', 'omnimail'); ?></strong>
           <div>
             <button type="button" class="button button-secondary" id="omnimail-edit-custom-btn">
-              <?php _e('Edit as Custom', 'omnimail'); ?>
+              <?php esc_html_e('Edit as Custom', 'omnimail'); ?>
             </button>
             <button type="button" class="button button-secondary" id="omnimail-replace-prebuilt-btn">
-              <?php _e('Change Sequence', 'omnimail'); ?>
+              <?php esc_html_e('Change Sequence', 'omnimail'); ?>
             </button>
           </div>
         </div>
@@ -498,7 +498,7 @@ $flows = array(
     <div class="omnimail-modal-header">
       <h3 id="omnimail-prebuilt-title">
         <span class="dashicons dashicons-star-filled"></span>
-        <span><?php _e('Choose Follow-up Sequence', 'omnimail'); ?></span>
+        <span><?php esc_html_e('Choose Follow-up Sequence', 'omnimail'); ?></span>
       </h3>
       <button type="button" class="omnimail-modal-close" id="omnimail-prebuilt-close" aria-label="<?php esc_attr_e('Close', 'omnimail'); ?>">
         <span class="dashicons dashicons-no"></span>
@@ -514,15 +514,15 @@ $flows = array(
       </div>
       <div class="omnimail-enhance-actions">
         <button type="button" class="button button-secondary button-large" id="omnimail-prebuilt-cancel">
-          <?php _e('Cancel', 'omnimail'); ?>
+          <?php esc_html_e('Cancel', 'omnimail'); ?>
         </button>
         <button type="button" class="button button-secondary button-large" id="omnimail-prebuilt-customize" style="display:none;">
           <span class="dashicons dashicons-edit"></span>
-          <?php _e('Customize Steps', 'omnimail'); ?>
+          <?php esc_html_e('Customize Steps', 'omnimail'); ?>
         </button>
         <button type="button" class="button button-primary button-large" id="omnimail-prebuilt-apply" disabled>
           <span class="dashicons dashicons-yes"></span>
-          <span id="omnimail-prebuilt-apply-label"><?php _e('Use This Sequence', 'omnimail'); ?></span>
+          <span id="omnimail-prebuilt-apply-label"><?php esc_html_e('Use This Sequence', 'omnimail'); ?></span>
         </button>
       </div>
     </div>
@@ -535,7 +535,7 @@ $flows = array(
     <div class="omnimail-modal-header">
       <h3 id="omnimail-custom-title">
         <span class="dashicons dashicons-edit"></span>
-        <span><?php _e('Custom Follow-up Sequence', 'omnimail'); ?></span>
+        <span><?php esc_html_e('Custom Follow-up Sequence', 'omnimail'); ?></span>
       </h3>
       <button type="button" class="omnimail-modal-close" id="omnimail-custom-close" aria-label="<?php esc_attr_e('Close', 'omnimail'); ?>">
         <span class="dashicons dashicons-no"></span>
@@ -543,20 +543,20 @@ $flows = array(
     </div>
     <div class="omnimail-modal-body">
       <p class="omnimail-enhance-question" style="margin-top:0;">
-        <?php _e('Add steps that send after the default behavioral email based on open/click behavior.', 'omnimail'); ?>
+        <?php esc_html_e('Add steps that send after the default behavioral email based on open/click behavior.', 'omnimail'); ?>
       </p>
       <div id="omnimail-custom-steps" class="omnimail-custom-steps"></div>
       <button type="button" class="button button-secondary" id="omnimail-custom-add-step">
         <span class="dashicons dashicons-plus-alt2"></span>
-        <?php _e('Add Step', 'omnimail'); ?>
+        <?php esc_html_e('Add Step', 'omnimail'); ?>
       </button>
       <div class="omnimail-enhance-actions" style="margin-top:20px;">
         <button type="button" class="button button-secondary button-large" id="omnimail-custom-cancel">
-          <?php _e('Cancel', 'omnimail'); ?>
+          <?php esc_html_e('Cancel', 'omnimail'); ?>
         </button>
         <button type="button" class="button button-primary button-large" id="omnimail-custom-save">
           <span class="dashicons dashicons-yes"></span>
-          <?php _e('Save Custom Sequence', 'omnimail'); ?>
+          <?php esc_html_e('Save Custom Sequence', 'omnimail'); ?>
         </button>
       </div>
     </div>

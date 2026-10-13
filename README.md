@@ -84,7 +84,7 @@ For support, visit:
 
 ## Author
 
-**Naveed**  
+**OmniNext Plugins**
 Website: https://omninexttech.com
 
 ## License
@@ -93,4 +93,4 @@ GPL-2.0+
 
 ## Version
 
-1.0.0
+1.0.1

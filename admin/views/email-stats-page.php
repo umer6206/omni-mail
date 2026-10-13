@@ -11,29 +11,29 @@ if (!defined('WPINC')) {
   die;
 }
 
-$connection_id = get_option('omnimail_connection_id', '');
-$api_key = get_option('omnimail_api_key', '');
-$is_configured = !empty($connection_id) && !empty($api_key);
+$omnimail_connection_id = get_option('omnimail_connection_id', '');
+$omnimail_api_key = get_option('omnimail_api_key', '');
+$omnimail_is_configured = !empty($omnimail_connection_id) && !empty($omnimail_api_key);
 ?>
 
 <div class="wrap omnimail-settings">
   <div class="omnimail-page-wrapper">
-    <h1><?php _e('Email Statistics', 'omnimail'); ?></h1>
+    <h1><?php esc_html_e('Email Statistics', 'omnimail'); ?></h1>
 
-    <?php if (!$is_configured): ?>
+    <?php if (!$omnimail_is_configured): ?>
       <div class="omnimail-card omnimail-empty-state">
         <span class="dashicons dashicons-chart-bar"></span>
-        <h2><?php _e('Connect OmniMail to see stats', 'omnimail'); ?></h2>
-        <p><?php _e('Paste your Connection ID and API Key from the OmniMail app, then come back here.', 'omnimail'); ?></p>
+        <h2><?php esc_html_e('Connect OmniMail to see stats', 'omnimail'); ?></h2>
+        <p><?php esc_html_e('Paste your Connection ID and API Key from the OmniMail app, then come back here.', 'omnimail'); ?></p>
         <div class="omnimail-quick-actions">
           <a href="<?php echo esc_url(defined('OMNIMAIL_CONNECTIONS_URL') ? OMNIMAIL_CONNECTIONS_URL : 'https://omninextmail-app.omninexttech.com/dashboard/email-plugin-connection'); ?>"
             target="_blank" rel="noopener noreferrer" class="button button-secondary button-large">
             <span class="dashicons dashicons-external"></span>
-            <?php _e('Get credentials', 'omnimail'); ?>
+            <?php esc_html_e('Get credentials', 'omnimail'); ?>
           </a>
           <a href="<?php echo esc_url(admin_url('admin.php?page=omnimail-settings')); ?>" class="button button-primary button-large">
             <span class="dashicons dashicons-admin-settings"></span>
-            <?php _e('Open Settings', 'omnimail'); ?>
+            <?php esc_html_e('Open Settings', 'omnimail'); ?>
           </a>
         </div>
       </div>
@@ -42,7 +42,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
     <!-- Loading State -->
     <div id="stats-loading" style="text-align: center; padding: 40px;">
       <span class="spinner is-active" style="float: none; margin: 0;"></span>
-      <p><?php _e('Loading email statistics...', 'omnimail'); ?></p>
+      <p><?php esc_html_e('Loading email statistics...', 'omnimail'); ?></p>
     </div>
 
     <!-- Error State -->
@@ -62,7 +62,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-email-alt"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Total Sent', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Total Sent', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number" id="stat-total-sent">0</p>
           </div>
         </div>
@@ -72,7 +72,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-calendar-alt"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Sent Today', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Sent Today', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number" id="stat-sent-today">0</p>
           </div>
         </div>
@@ -82,7 +82,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-chart-line"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('This Week', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('This Week', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number" id="stat-sent-week">0</p>
           </div>
         </div>
@@ -92,7 +92,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-chart-bar"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('This Month', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('This Month', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number" id="stat-sent-month">0</p>
           </div>
         </div>
@@ -102,7 +102,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-visibility"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Opened', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Opened', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number" id="stat-opened">0</p>
           </div>
         </div>
@@ -112,7 +112,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-admin-links"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Clicked', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Clicked', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number" id="stat-clicked">0</p>
           </div>
         </div>
@@ -122,7 +122,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-chart-area"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Open Rate', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Open Rate', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number"><span id="stat-open-rate">0</span>%</p>
           </div>
         </div>
@@ -132,7 +132,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-performance"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Click Rate', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Click Rate', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number"><span id="stat-click-rate">0</span>%</p>
           </div>
         </div>
@@ -142,7 +142,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-warning"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Bounced', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Bounced', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number" id="stat-bounced">0</p>
           </div>
         </div>
@@ -152,7 +152,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-dismiss"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Unsubscribed', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Unsubscribed', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number" id="stat-unsubscribed">0</p>
           </div>
         </div>
@@ -162,7 +162,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-flag"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Bounce Rate', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Bounce Rate', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number"><span id="stat-bounce-rate">0</span>%</p>
           </div>
         </div>
@@ -172,7 +172,7 @@ $is_configured = !empty($connection_id) && !empty($api_key);
             <span class="dashicons dashicons-no-alt"></span>
           </div>
           <div class="omnimail-status-card-content">
-            <h3><?php _e('Unsubscribe Rate', 'omnimail'); ?></h3>
+            <h3><?php esc_html_e('Unsubscribe Rate', 'omnimail'); ?></h3>
             <p class="omnimail-stat-number"><span id="stat-unsubscribe-rate">0</span>%</p>
           </div>
         </div>
@@ -180,18 +180,18 @@ $is_configured = !empty($connection_id) && !empty($api_key);
 
       <!-- Email Types Breakdown -->
       <div class="omnimail-card">
-        <h2><?php _e('Emails by Type', 'omnimail'); ?></h2>
+        <h2><?php esc_html_e('Emails by Type', 'omnimail'); ?></h2>
         <table class="wp-list-table widefat fixed striped">
           <thead>
             <tr>
-              <th><?php _e('Email Type', 'omnimail'); ?></th>
-              <th><?php _e('Count', 'omnimail'); ?></th>
-              <th><?php _e('Percentage', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Email Type', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Count', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Percentage', 'omnimail'); ?></th>
             </tr>
           </thead>
           <tbody id="email-types-tbody">
             <tr>
-              <td colspan="3" style="text-align: center;"><?php _e('Loading...', 'omnimail'); ?></td>
+              <td colspan="3" style="text-align: center;"><?php esc_html_e('Loading...', 'omnimail'); ?></td>
             </tr>
           </tbody>
         </table>
@@ -199,24 +199,24 @@ $is_configured = !empty($connection_id) && !empty($api_key);
 
       <!-- Recent Emails -->
       <div class="omnimail-card">
-        <h2><?php _e('Recent Behavioral Emails', 'omnimail'); ?></h2>
+        <h2><?php esc_html_e('Recent Behavioral Emails', 'omnimail'); ?></h2>
         <table class="wp-list-table widefat fixed striped">
           <thead>
             <tr>
-              <th><?php _e('Type', 'omnimail'); ?></th>
-              <th><?php _e('Subject', 'omnimail'); ?></th>
-              <th><?php _e('Recipient', 'omnimail'); ?></th>
-              <th><?php _e('Sent At', 'omnimail'); ?></th>
-              <th><?php _e('Opened', 'omnimail'); ?></th>
-              <th><?php _e('Clicked', 'omnimail'); ?></th>
-              <th><?php _e('Bounced', 'omnimail'); ?></th>
-              <th><?php _e('Unsubscribed', 'omnimail'); ?></th>
-              <th><?php _e('Status', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Type', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Subject', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Recipient', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Sent At', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Opened', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Clicked', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Bounced', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Unsubscribed', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Status', 'omnimail'); ?></th>
             </tr>
           </thead>
           <tbody id="recent-emails-tbody">
             <tr>
-              <td colspan="9" style="text-align: center;"><?php _e('Loading...', 'omnimail'); ?></td>
+              <td colspan="9" style="text-align: center;"><?php esc_html_e('Loading...', 'omnimail'); ?></td>
             </tr>
           </tbody>
         </table>
@@ -225,31 +225,31 @@ $is_configured = !empty($connection_id) && !empty($api_key);
       <!-- AI Auto-Replies -->
       <div class="omnimail-card">
         <h2>
-          <?php _e('AI Auto-Replies', 'omnimail'); ?>
+          <?php esc_html_e('AI Auto-Replies', 'omnimail'); ?>
           <span id="auto-reply-total-badge" class="omnimail-badge" style="margin-left:8px;display:none;"></span>
         </h2>
         <p class="description" style="margin-top:0;">
-          <?php _e('Outbound replies sent by OmniMail AI from your linked knowledge-base inboxes.', 'omnimail'); ?>
+          <?php esc_html_e('Outbound replies sent by OmniMail AI from your linked knowledge-base inboxes.', 'omnimail'); ?>
         </p>
         <div id="auto-replies-loading" style="text-align: center; padding: 16px; display: none;">
           <span class="spinner is-active" style="float: none; margin: 0;"></span>
-          <p><?php _e('Loading AI auto-replies...', 'omnimail'); ?></p>
+          <p><?php esc_html_e('Loading AI auto-replies...', 'omnimail'); ?></p>
         </div>
         <table class="wp-list-table widefat fixed striped">
           <thead>
             <tr>
-              <th><?php _e('Subject', 'omnimail'); ?></th>
-              <th><?php _e('To (Customer)', 'omnimail'); ?></th>
-              <th><?php _e('From (Inbox)', 'omnimail'); ?></th>
-              <th><?php _e('Sent At', 'omnimail'); ?></th>
-              <th><?php _e('Opened', 'omnimail'); ?></th>
-              <th><?php _e('Clicked', 'omnimail'); ?></th>
-              <th><?php _e('Status', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Subject', 'omnimail'); ?></th>
+              <th><?php esc_html_e('To (Customer)', 'omnimail'); ?></th>
+              <th><?php esc_html_e('From (Inbox)', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Sent At', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Opened', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Clicked', 'omnimail'); ?></th>
+              <th><?php esc_html_e('Status', 'omnimail'); ?></th>
             </tr>
           </thead>
           <tbody id="auto-replies-tbody">
             <tr>
-              <td colspan="7" style="text-align: center;"><?php _e('Loading...', 'omnimail'); ?></td>
+              <td colspan="7" style="text-align: center;"><?php esc_html_e('Loading...', 'omnimail'); ?></td>
             </tr>
           </tbody>
         </table>
@@ -258,13 +258,13 @@ $is_configured = !empty($connection_id) && !empty($api_key);
 
       <!-- View All Emails Button -->
       <p class="submit">
-        <a href="<?php echo admin_url('admin.php?page=omnimail-all-emails'); ?>" class="button button-primary button-large">
+        <a href="<?php echo esc_url(admin_url('admin.php?page=omnimail-all-emails')); ?>" class="button button-primary button-large">
           <span class="dashicons dashicons-list-view"></span>
-          <?php _e('View All Emails', 'omnimail'); ?>
+          <?php esc_html_e('View All Emails', 'omnimail'); ?>
         </a>
         <button type="button" class="button button-secondary button-large" id="refresh-stats-btn">
           <span class="dashicons dashicons-update"></span>
-          <?php _e('Refresh', 'omnimail'); ?>
+          <?php esc_html_e('Refresh', 'omnimail'); ?>
         </button>
       </p>
 
@@ -343,14 +343,14 @@ jQuery(document).ready(function($) {
     let typesHtml = '';
 
     const typeLabels = {
-      cart_abandonment: '<?php _e('Cart Abandonment', 'omnimail'); ?>',
-      browse_abandonment: '<?php _e('Browse Abandonment', 'omnimail'); ?>',
-      checkout_abandonment: '<?php _e('Checkout Abandonment', 'omnimail'); ?>',
-      wishlist_reminder: '<?php _e('Wishlist Reminder', 'omnimail'); ?>',
-      post_purchase: '<?php _e('Post-Purchase', 'omnimail'); ?>',
-      re_engagement: '<?php _e('Re-engagement', 'omnimail'); ?>',
-      back_in_stock: '<?php _e('Back in Stock', 'omnimail'); ?>',
-      price_drop: '<?php _e('Price Drop', 'omnimail'); ?>'
+      cart_abandonment: '<?php echo esc_js( __( 'Cart Abandonment', 'omnimail' ) ); ?>',
+      browse_abandonment: '<?php echo esc_js( __( 'Browse Abandonment', 'omnimail' ) ); ?>',
+      checkout_abandonment: '<?php echo esc_js( __( 'Checkout Abandonment', 'omnimail' ) ); ?>',
+      wishlist_reminder: '<?php echo esc_js( __( 'Wishlist Reminder', 'omnimail' ) ); ?>',
+      post_purchase: '<?php echo esc_js( __( 'Post-Purchase', 'omnimail' ) ); ?>',
+      re_engagement: '<?php echo esc_js( __( 'Re-engagement', 'omnimail' ) ); ?>',
+      back_in_stock: '<?php echo esc_js( __( 'Back in Stock', 'omnimail' ) ); ?>',
+      price_drop: '<?php echo esc_js( __( 'Price Drop', 'omnimail' ) ); ?>'
     };
 
     for (const [type, count] of Object.entries(emailTypes)) {
@@ -367,7 +367,7 @@ jQuery(document).ready(function($) {
     }
 
     if (typesHtml === '') {
-      typesHtml = '<tr><td colspan="3" style="text-align: center;"><?php _e('No emails sent yet', 'omnimail'); ?></td></tr>';
+      typesHtml = '<tr><td colspan="3" style="text-align: center;"><?php echo esc_js( __( 'No emails sent yet', 'omnimail' ) ); ?></td></tr>';
     }
 
     $('#email-types-tbody').html(typesHtml);
@@ -413,7 +413,7 @@ jQuery(document).ready(function($) {
         `;
       });
     } else {
-      emailsHtml = '<tr><td colspan="9" style="text-align: center;"><?php _e('No recent emails', 'omnimail'); ?></td></tr>';
+      emailsHtml = '<tr><td colspan="9" style="text-align: center;"><?php echo esc_js( __( 'No recent emails', 'omnimail' ) ); ?></td></tr>';
     }
 
     $('#recent-emails-tbody').html(emailsHtml);
@@ -441,7 +441,7 @@ jQuery(document).ready(function($) {
 
         if (!response.success || !response.data) {
           $('#auto-replies-tbody').html(
-            '<tr><td colspan="7" style="text-align: center;"><?php _e('Failed to load AI auto-replies', 'omnimail'); ?></td></tr>'
+            '<tr><td colspan="7" style="text-align: center;"><?php echo esc_js( __( 'Failed to load AI auto-replies', 'omnimail' ) ); ?></td></tr>'
           );
           $('#auto-replies-pagination').empty();
           return;
@@ -490,7 +490,7 @@ jQuery(document).ready(function($) {
             `;
           });
         } else {
-          autoHtml = '<tr><td colspan="7" style="text-align: center;"><?php _e('No AI auto-replies sent yet', 'omnimail'); ?></td></tr>';
+          autoHtml = '<tr><td colspan="7" style="text-align: center;"><?php echo esc_js( __( 'No AI auto-replies sent yet', 'omnimail' ) ); ?></td></tr>';
         }
         $('#auto-replies-tbody').html(autoHtml);
         displayAutoReplyPagination(data.pagination || data.autoReplyPagination || {});
@@ -498,7 +498,7 @@ jQuery(document).ready(function($) {
       error: function() {
         $('#auto-replies-loading').hide();
         $('#auto-replies-tbody').html(
-          '<tr><td colspan="7" style="text-align: center;"><?php _e('Failed to load AI auto-replies', 'omnimail'); ?></td></tr>'
+          '<tr><td colspan="7" style="text-align: center;"><?php echo esc_js( __( 'Failed to load AI auto-replies', 'omnimail' ) ); ?></td></tr>'
         );
         $('#auto-replies-pagination').empty();
       }
@@ -523,22 +523,22 @@ jQuery(document).ready(function($) {
     const to = Math.min(pagination.page * pagination.limit, pagination.total);
     const html = `
       <div>
-        <?php _e('Showing', 'omnimail'); ?> ${from} - ${to}
-        <?php _e('of', 'omnimail'); ?> ${pagination.total} <?php _e('auto-replies', 'omnimail'); ?>
+        <?php echo esc_js( __( 'Showing', 'omnimail' ) ); ?> ${from} - ${to}
+        <?php echo esc_js( __( 'of', 'omnimail' ) ); ?> ${pagination.total} <?php echo esc_js( __( 'auto-replies', 'omnimail' ) ); ?>
       </div>
       <div>
         <button type="button" class="button" id="ar-first-page-btn" ${pagination.page === 1 ? 'disabled' : ''}>
-          <?php _e('First', 'omnimail'); ?>
+          <?php echo esc_js( __( 'First', 'omnimail' ) ); ?>
         </button>
         <button type="button" class="button" id="ar-prev-page-btn" ${!pagination.hasPrev ? 'disabled' : ''}>
-          <?php _e('Previous', 'omnimail'); ?>
+          <?php echo esc_js( __( 'Previous', 'omnimail' ) ); ?>
         </button>
-        <span style="margin: 0 10px;"><?php _e('Page', 'omnimail'); ?> ${pagination.page} <?php _e('of', 'omnimail'); ?> ${pagination.totalPages}</span>
+        <span style="margin: 0 10px;"><?php echo esc_js( __( 'Page', 'omnimail' ) ); ?> ${pagination.page} <?php echo esc_js( __( 'of', 'omnimail' ) ); ?> ${pagination.totalPages}</span>
         <button type="button" class="button" id="ar-next-page-btn" ${!pagination.hasNext ? 'disabled' : ''}>
-          <?php _e('Next', 'omnimail'); ?>
+          <?php echo esc_js( __( 'Next', 'omnimail' ) ); ?>
         </button>
         <button type="button" class="button" id="ar-last-page-btn" ${pagination.page === pagination.totalPages ? 'disabled' : ''}>
-          <?php _e('Last', 'omnimail'); ?>
+          <?php echo esc_js( __( 'Last', 'omnimail' ) ); ?>
         </button>
       </div>
     `;
@@ -573,7 +573,7 @@ jQuery(document).ready(function($) {
   });
 
   // Load stats on page load
-  <?php if ($is_configured): ?>
+  <?php if ($omnimail_is_configured): ?>
     loadEmailStats();
     loadAutoReplies(1);
   <?php else: ?>

@@ -3,17 +3,13 @@
  * Plugin Name: OmniNextMail
  * Plugin URI: https://omninextmail-app.omninexttech.com
  * Description: Integrate WooCommerce with OmniNextMail for intelligent email automation, SMTP configuration, and event tracking.
- * Version: 1.0.37
- * Author: Naveed
+ * Version: 1.0.1
+ * Author: OmniNext Plugins
  * Author URI: https://omninextmail-app.omninexttech.com
  * License: GPL-2.0+
- * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: omnimail
- * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4
- * WC requires at least: 5.0
- * WC tested up to: 8.0
  */
 
 // If this file is called directly, abort.
@@ -24,7 +20,7 @@ if (!defined('WPINC')) {
 /**
  * Current plugin version.
  */
-define('OMNIMAIL_VERSION', '1.0.37');
+define('OMNIMAIL_VERSION', '1.0.1');
 define('OMNIMAIL_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('OMNIMAIL_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('OMNIMAIL_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -40,7 +36,7 @@ define('OMNIMAIL_LOGO_URL', OMNIMAIL_PLUGIN_URL . 'assets/images/omni-mail-logo.
 /**
  * The code that runs during plugin activation.
  */
-function activate_omnimail()
+function omnimail_activate()
 {
     require_once OMNIMAIL_PLUGIN_DIR . 'includes/class-omnimail-activator.php';
     OmniMail_Activator::activate();
@@ -49,14 +45,14 @@ function activate_omnimail()
 /**
  * The code that runs during plugin deactivation.
  */
-function deactivate_omnimail()
+function omnimail_deactivate()
 {
     require_once OMNIMAIL_PLUGIN_DIR . 'includes/class-omnimail-deactivator.php';
     OmniMail_Deactivator::deactivate();
 }
 
-register_activation_hook(__FILE__, 'activate_omnimail');
-register_deactivation_hook(__FILE__, 'deactivate_omnimail');
+register_activation_hook(__FILE__, 'omnimail_activate');
+register_deactivation_hook(__FILE__, 'omnimail_deactivate');
 
 /**
  * Declare WooCommerce HPOS compatibility
@@ -68,20 +64,9 @@ add_action('before_woocommerce_init', function() {
 });
 
 /**
- * Add custom cron schedule for cart abandonment checks
- */
-add_filter('cron_schedules', function($schedules) {
-    $schedules['omnimail_15min'] = array(
-        'interval' => 900, // 15 minutes in seconds
-        'display'  => __('Every 15 Minutes', 'omnimail')
-    );
-    return $schedules;
-});
-
-/**
  * Begin execution of the plugin.
  */
-function run_omnimail()
+function omnimail_run()
 {
     // Load core classes (needed everywhere)
     require_once OMNIMAIL_PLUGIN_DIR . 'admin/class-omnimail-settings.php';
@@ -115,7 +100,7 @@ function omnimail_add_cron_schedules($schedules)
 }
 add_filter('cron_schedules', 'omnimail_add_cron_schedules');
 
-add_action('plugins_loaded', 'run_omnimail');
+add_action('init', 'omnimail_run');
 
 /**
  * Enqueue storefront SMS contact modal for OmniMail.

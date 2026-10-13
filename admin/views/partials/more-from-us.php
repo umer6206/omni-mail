@@ -2,9 +2,9 @@
 /**
  * "More From Us" suite promo section.
  *
- * Set $omni_suite_exclude before including:
+ * Set $omnimail_suite_exclude before including:
  *   'mail' | 'seo' | 'tracking'
- * Set $omni_suite_assets_url to the plugin assets base URL ending with /assets/
+ * Set $omnimail_suite_assets_url to the plugin assets base URL ending with /assets/
  *
  * @package OmniNext
  */
@@ -13,15 +13,15 @@ if (!defined('WPINC')) {
   die;
 }
 
-if (empty($omni_suite_assets_url) || empty($omni_suite_exclude)) {
+if (empty($omnimail_suite_assets_url) || empty($omnimail_suite_exclude)) {
   return;
 }
 
-$omni_suite_exclude = sanitize_key($omni_suite_exclude);
-$suite_base = trailingslashit($omni_suite_assets_url) . 'images/suite/';
-$suite_ver = defined('OMNIMAIL_VERSION') ? OMNIMAIL_VERSION : (defined('OMNISEO_VERSION') ? OMNISEO_VERSION : (defined('OMNITRACKING_VERSION') ? OMNITRACKING_VERSION : '1'));
+$omnimail_suite_exclude = sanitize_key($omnimail_suite_exclude);
+$omnimail_suite_base = trailingslashit($omnimail_suite_assets_url) . 'images/suite/';
+$omnimail_suite_version = defined('OMNIMAIL_VERSION') ? OMNIMAIL_VERSION : (defined('OMNISEO_VERSION') ? OMNISEO_VERSION : (defined('OMNITRACKING_VERSION') ? OMNITRACKING_VERSION : '1'));
 
-$all_products = array(
+$omnimail_suite_all_products = array(
   'chat' => array(
     'id' => 'chat',
     'label' => 'OmniNextChat',
@@ -73,14 +73,14 @@ $all_products = array(
 );
 
 // Default order matches the design; current product is replaced by Omni Voice.
-$order = array('chat', 'seo', 'mail', 'tracking', 'pay');
-$products = array();
-foreach ($order as $key) {
-  if ($key === $omni_suite_exclude) {
-    $products[] = $all_products['voice'];
+$omnimail_suite_order = array('chat', 'seo', 'mail', 'tracking', 'pay');
+$omnimail_suite_products = array();
+foreach ($omnimail_suite_order as $omnimail_suite_key) {
+  if ($omnimail_suite_key === $omnimail_suite_exclude) {
+    $omnimail_suite_products[] = $omnimail_suite_all_products['voice'];
     continue;
   }
-  $products[] = $all_products[$key];
+  $omnimail_suite_products[] = $omnimail_suite_all_products[$omnimail_suite_key];
 }
 ?>
 
@@ -231,34 +231,34 @@ foreach ($order as $key) {
   <div class="omni-suite-header">
     <h2 id="omni-suite-heading" class="omni-suite-title">
       <span class="dashicons dashicons-screenoptions" aria-hidden="true"></span>
-      <?php echo esc_html__('More From Us', 'omninext'); ?>
+      <?php echo esc_html__('More From Us', 'omnimail'); ?>
     </h2>
     <p class="omni-suite-sub">
-      <?php echo esc_html__('Explore the full Omni suite — powerful tools built to grow your business end-to-end.', 'omninext'); ?>
+      <?php echo esc_html__('Explore the full Omni suite — powerful tools built to grow your business end-to-end.', 'omnimail'); ?>
     </p>
   </div>
   <div class="omni-suite-grid">
-    <?php foreach ($products as $product) : ?>
+    <?php foreach ($omnimail_suite_products as $omnimail_suite_product) : ?>
       <article class="omni-suite-card">
         <div class="omni-suite-brand">
           <span class="omni-suite-logo-wrap">
             <img
-              src="<?php echo esc_url($suite_base . $product['logo'] . '?v=' . rawurlencode($suite_ver)); ?>"
-              alt="<?php echo esc_attr($product['label']); ?>"
+              src="<?php echo esc_url($omnimail_suite_base . $omnimail_suite_product['logo'] . '?v=' . rawurlencode($omnimail_suite_version)); ?>"
+              alt="<?php echo esc_attr($omnimail_suite_product['label']); ?>"
               loading="lazy"
             >
           </span>
-          <span class="omni-suite-brand-label"><?php echo esc_html($product['label']); ?></span>
+          <span class="omni-suite-brand-label"><?php echo esc_html($omnimail_suite_product['label']); ?></span>
         </div>
-        <h3><?php echo esc_html($product['title']); ?></h3>
-        <p><?php echo esc_html($product['description']); ?></p>
+        <h3><?php echo esc_html($omnimail_suite_product['title']); ?></h3>
+        <p><?php echo esc_html($omnimail_suite_product['description']); ?></p>
         <a
           class="omni-suite-cta"
-          href="<?php echo esc_url($product['url']); ?>"
+          href="<?php echo esc_url($omnimail_suite_product['url']); ?>"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <?php echo esc_html__('Learn More', 'omninext'); ?>
+          <?php echo esc_html__('Learn More', 'omnimail'); ?>
           <span aria-hidden="true">&gt;</span>
         </a>
       </article>

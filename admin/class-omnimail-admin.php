@@ -56,7 +56,7 @@ class OmniMail_Admin
       'omnimail-admin',
       OMNIMAIL_PLUGIN_URL . 'assets/js/admin-script.js',
       array('jquery', 'omnimail-prebuilt-followups'),
-      OMNIMAIL_VERSION,
+      filemtime(OMNIMAIL_PLUGIN_DIR . 'assets/js/admin-script.js'),
       true
     );
 

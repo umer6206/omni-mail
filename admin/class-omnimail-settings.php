@@ -20,6 +20,9 @@ class OmniMail_Settings
     add_action('wp_ajax_omnimail_sync_products', array($this, 'ajax_sync_products'));
     add_action('wp_ajax_omnimail_generate_wc_keys', array($this, 'ajax_generate_wc_keys'));
     add_action('wp_ajax_omnimail_save_woocommerce_credentials', array($this, 'ajax_save_woocommerce_credentials'));
+    add_action('wp_ajax_omnimail_get_shippo_status', array($this, 'ajax_get_shippo_status'));
+    add_action('wp_ajax_omnimail_save_shippo_api_key', array($this, 'ajax_save_shippo_api_key'));
+    add_action('wp_ajax_omnimail_disconnect_shippo', array($this, 'ajax_disconnect_shippo'));
     add_action('wp_ajax_omnimail_test_email', array($this, 'ajax_test_email'));
     add_action('wp_ajax_omnimail_get_behavioral_flows', array($this, 'ajax_get_behavioral_flows'));
     add_action('wp_ajax_omnimail_get_behavioral_flow_templates', array($this, 'ajax_get_behavioral_flow_templates'));
@@ -120,6 +123,123 @@ class OmniMail_Settings
     } else {
       wp_send_json_error($result);
     }
+  }
+
+  /**
+   * AJAX: Get Shippo connection status and its masked API key.
+   */
+  public function ajax_get_shippo_status()
+  {
+    check_ajax_referer('omnimail_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+      wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
+    }
+
+    if (!self::is_configured()) {
+      wp_send_json_error(array('message' => __('Save an API Key and Connection ID before configuring shipping.', 'omnimail')));
+    }
+
+    $result = (new OmniMail_API())->get_shippo_connection();
+    if (empty($result['success'])) {
+      wp_send_json_error(array(
+        'message' => isset($result['message']) ? $result['message'] : __('Could not retrieve connection status.', 'omnimail'),
+      ));
+    }
+
+    $data = isset($result['data']) && is_array($result['data']) ? $result['data'] : array();
+    $masked_key = '';
+    foreach (array('maskedApiKey', 'maskedKey', 'apiKeyMasked', 'apiKey') as $key_name) {
+      if (!isset($data[$key_name]) || !is_string($data[$key_name])) {
+        continue;
+      }
+      $candidate = sanitize_text_field($data[$key_name]);
+      if (false !== strpos($candidate, '*') || false !== strpos($candidate, '…')) {
+        $masked_key = $candidate;
+        break;
+      }
+    }
+
+    $connected = false;
+    foreach (array('connected', 'isConnected', 'hasApiKey', 'configured') as $status_name) {
+      if (isset($data[$status_name])) {
+        $status_value = $data[$status_name];
+        $connected = true === $status_value
+          || 1 === $status_value
+          || '1' === $status_value
+          || (is_string($status_value) && 'true' === strtolower($status_value));
+        break;
+      }
+    }
+    if (!$connected && '' !== $masked_key) {
+      $connected = true;
+    }
+
+    wp_send_json_success(array(
+      'connected' => $connected,
+      'maskedApiKey' => $masked_key,
+    ));
+  }
+
+  /**
+   * AJAX: Save the Shippo API key.
+   */
+  public function ajax_save_shippo_api_key()
+  {
+    check_ajax_referer('omnimail_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+      wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
+    }
+
+    if (!self::is_configured()) {
+      wp_send_json_error(array('message' => __('Save an API Key and Connection ID before configuring shipping.', 'omnimail')));
+    }
+
+    $api_key = isset($_POST['apiKey'])
+      ? trim(sanitize_text_field(wp_unslash($_POST['apiKey'])))
+      : '';
+    if ('' === $api_key) {
+      wp_send_json_error(array('message' => __('Enter a Shipping API key.', 'omnimail')));
+    }
+
+    $result = (new OmniMail_API())->save_shippo_api_key($api_key);
+    if (empty($result['success'])) {
+      wp_send_json_error(array(
+        'message' => isset($result['message']) ? $result['message'] : __('The Omni backend rejected the Shipping API key.', 'omnimail'),
+      ));
+    }
+
+    wp_send_json_success(array(
+      'message' => isset($result['message']) ? $result['message'] : __('Shipping was connected successfully.', 'omnimail'),
+    ));
+  }
+
+  /**
+   * AJAX: Disconnect Shippo.
+   */
+  public function ajax_disconnect_shippo()
+  {
+    check_ajax_referer('omnimail_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+      wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
+    }
+
+    if (!self::is_configured()) {
+      wp_send_json_error(array('message' => __('Save an API Key and Connection ID before configuring shipping.', 'omnimail')));
+    }
+
+    $result = (new OmniMail_API())->disconnect_shippo();
+    if (empty($result['success'])) {
+      wp_send_json_error(array(
+        'message' => isset($result['message']) ? $result['message'] : __('Could not disconnect Shipping.', 'omnimail'),
+      ));
+    }
+
+    wp_send_json_success(array(
+      'message' => isset($result['message']) ? $result['message'] : __('Shipping was disconnected.', 'omnimail'),
+    ));
   }
 
   /**

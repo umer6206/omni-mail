@@ -154,6 +154,134 @@
             });
         });
 
+        var $shippoStatus = $('#omnimail-shippo-status');
+        var $shippoForm = $('#omnimail-shippo-form');
+        var $shippoKey = $('#omnimail-shippo-api-key');
+        var $saveShippoBtn = $('#omnimail-save-shippo');
+        var $changeShippoKeyBtn = $('#omnimail-change-shippo-key');
+        var $disconnectShippoBtn = $('#omnimail-disconnect-shippo');
+        var shippoConnected = false;
+        var shippoEditingKey = false;
+
+        function setShippoStatus(message, connected, maskedKey, isError) {
+            if (typeof connected === 'boolean') {
+                shippoConnected = connected;
+                shippoEditingKey = false;
+            }
+            $shippoStatus
+                .text(message)
+                .toggleClass('omnimail-shippo-connected', shippoConnected && !isError)
+                .toggleClass('omnimail-shippo-error', !!isError);
+            $shippoForm.toggle(!shippoConnected || shippoEditingKey);
+            $saveShippoBtn
+                .toggle(!shippoConnected || shippoEditingKey)
+                .text(shippoConnected ? 'Update Shipping Key' : 'Connect Shipping');
+            $changeShippoKeyBtn.toggle(shippoConnected && !shippoEditingKey);
+            $disconnectShippoBtn.toggle(shippoConnected);
+            if (shippoConnected && maskedKey) {
+                $shippoStatus.text(message + ' (' + maskedKey + ')');
+            }
+        }
+
+        $changeShippoKeyBtn.on('click', function () {
+            shippoEditingKey = true;
+            $shippoForm.show();
+            $saveShippoBtn.text('Update Shipping Key').show();
+            $changeShippoKeyBtn.hide();
+            $shippoKey.trigger('focus');
+        });
+
+        function loadShippoStatus() {
+            $.ajax({
+                url: omnimailAjax.ajaxurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'omnimail_get_shippo_status',
+                    nonce: omnimailAjax.nonce
+                }
+            }).done(function (response) {
+                if (!response.success) {
+                    setShippoStatus((response.data && response.data.message) || 'Could not check Shipping connection.', undefined, undefined, true);
+                    return;
+                }
+                if (response.data.connected) {
+                    setShippoStatus('Connected.', true, response.data.maskedApiKey);
+                } else {
+                    setShippoStatus('Not connected yet.', false);
+                }
+            }).fail(function (xhr) {
+                var message = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message;
+                setShippoStatus(message || 'Could not check connection.', undefined, undefined, true);
+            });
+        }
+
+        $saveShippoBtn.on('click', function () {
+            var apiKey = $.trim($shippoKey.val());
+            if (!apiKey) {
+                setShippoStatus('Enter a Shipping API key to connect.', undefined, undefined, true);
+                $shippoKey.trigger('focus');
+                return;
+            }
+
+            var $button = $(this);
+            var original = $button.text();
+            $button.prop('disabled', true).text('Connecting...');
+            $.ajax({
+                url: omnimailAjax.ajaxurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'omnimail_save_shippo_api_key',
+                    nonce: omnimailAjax.nonce,
+                    apiKey: apiKey
+                }
+            }).done(function (response) {
+                if (!response.success) {
+                    setShippoStatus((response.data && response.data.message) || 'Could not connect Shipping.', undefined, undefined, true);
+                    return;
+                }
+                $shippoKey.val('');
+                setShippoStatus((response.data && response.data.message) || 'Shipping connected successfully.', true);
+                loadShippoStatus();
+            }).fail(function (xhr) {
+                var message = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message;
+                setShippoStatus(message || 'Could not connect Shipping.', undefined, undefined, true);
+            }).always(function () {
+                $button.prop('disabled', false).text(original);
+            });
+        });
+
+        $disconnectShippoBtn.on('click', function () {
+            var $button = $(this);
+            var original = $button.text();
+            $button.prop('disabled', true).text('Disconnecting...');
+            $.ajax({
+                url: omnimailAjax.ajaxurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'omnimail_disconnect_shippo',
+                    nonce: omnimailAjax.nonce
+                }
+            }).done(function (response) {
+                if (!response.success) {
+                    setShippoStatus((response.data && response.data.message) || 'Could not disconnect Shipping.', undefined, undefined, true);
+                    return;
+                }
+                setShippoStatus((response.data && response.data.message) || 'Shipping disconnected.', false);
+            }).fail(function (xhr) {
+                var message = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message;
+                setShippoStatus(message || 'Could not disconnect Shipping.', undefined, undefined, true);
+            }).always(function () {
+                $button.prop('disabled', false).text(original);
+            });
+        });
+
+        if ($shippoStatus.length) {
+            loadShippoStatus();
+        }
+
         // Sync Products (batched, same flow as OmniVoice)
         $('#sync-products-btn').on('click', function () {
             var btn = $(this);

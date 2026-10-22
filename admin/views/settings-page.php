@@ -401,6 +401,36 @@ $omnimail_platform_host = preg_replace('#^https?://#', '', $omnimail_platform_ur
                 <div class="omnimail-setup-step">
                     <div class="omnimail-setup-step-num">8</div>
                     <div class="omnimail-setup-step-body">
+                        <h3><?php esc_html_e('Configure Your Shipping', 'omnimail'); ?></h3>
+                        <p><?php esc_html_e('Connect your Shippo or ShipStation account by adding your API key. Once connected, we’ll automatically generate shipping labels whenever a customer makes a purchase through our platform.', 'omnimail'); ?></p>
+                        <div id="omnimail-shippo-form" class="omnimail-field-grid" style="display:none; margin-top:14px;">
+                            <div class="omnimail-field">
+                                <label for="omnimail-shippo-api-key"><?php esc_html_e('Shipping API Key', 'omnimail'); ?></label>
+                                <input type="password" id="omnimail-shippo-api-key" class="regular-text"
+                                    autocomplete="new-password" placeholder="shipping_test_..." aria-describedby="omnimail-shippo-key-hint">
+                                <p id="omnimail-shippo-key-hint" class="description"><?php esc_html_e('Your key is sent securely to Omni and is never stored in this WordPress site.', 'omnimail'); ?></p>
+                            </div>
+                        </div>
+                        <p class="omnimail-setup-step-actions">
+                            <button type="button" class="button button-primary" id="omnimail-save-shippo" style="display:none;">
+                                <span class="dashicons dashicons-admin-links"></span>
+                                <?php esc_html_e('Connect', 'omnimail'); ?>
+                            </button>
+                            <button type="button" class="button button-secondary" id="omnimail-change-shippo-key" style="display:none;">
+                                <?php esc_html_e('Change API Key', 'omnimail'); ?>
+                            </button>
+                            <button type="button" class="button button-secondary" id="omnimail-disconnect-shippo" style="display:none;">
+                                <?php esc_html_e('Disconnect', 'omnimail'); ?>
+                            </button>
+                        </p>
+                        <p id="omnimail-shippo-status" class="description" aria-live="polite"><?php esc_html_e('Checking connection…', 'omnimail'); ?></p>
+                    </div>
+                </div>
+
+                <!-- Step 9 -->
+                <div class="omnimail-setup-step">
+                    <div class="omnimail-setup-step-num">9</div>
+                    <div class="omnimail-setup-step-body">
                         <h3><?php esc_html_e('Check Email Statistics', 'omnimail'); ?></h3>
                         <p><?php esc_html_e('After customers abandon carts or place orders, review sent emails, opens, clicks, and delivery stats here.', 'omnimail'); ?></p>
                         <p class="omnimail-setup-step-actions">

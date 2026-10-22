@@ -1333,6 +1333,24 @@
     line-height: 1.55;
 }
 
+#omnimail-shippo-status.omnimail-shippo-connected {
+    color: #16a34a !important;
+    font-weight: 600 !important;
+}
+
+#omnimail-shippo-status.omnimail-shippo-error {
+    color: #ff3b5c !important;
+    font-weight: 600 !important;
+}
+
+.omnimail-settings .omnimail-setup-step-body #omnimail-shippo-status.omnimail-shippo-connected {
+    color: #16a34a !important;
+}
+
+.omnimail-settings .omnimail-setup-step-body #omnimail-shippo-status.omnimail-shippo-error {
+    color: #ff3b5c !important;
+}
+
 .omnimail-setup-step-body a {
     color: var(--color-cyan);
 }

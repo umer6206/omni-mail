@@ -113,6 +113,100 @@ class OmniMail_API
   }
 
   /**
+   * Get the Shippo connection status for this OmniMail connection.
+   */
+  public function get_shippo_connection()
+  {
+    return $this->request_shippo_connection('GET');
+  }
+
+  /**
+   * Save the Shippo API key for this OmniMail connection.
+   *
+   * @param string $api_key Shippo API key.
+   * @return array
+   */
+  public function save_shippo_api_key($api_key)
+  {
+    return $this->request_shippo_connection('PUT', $api_key);
+  }
+
+  /**
+   * Remove the Shippo API key for this OmniMail connection.
+   */
+  public function disconnect_shippo()
+  {
+    return $this->request_shippo_connection('DELETE');
+  }
+
+  /**
+   * Send a request for the Shippo integration.
+   *
+   * @param string $method HTTP method.
+   * @param string $api_key Optional Shippo API key.
+   * @return array
+   */
+  private function request_shippo_connection($method, $api_key = '')
+  {
+    if (empty($this->api_key) || empty($this->connection_id)) {
+      return array(
+        'success' => false,
+        'message' => 'API Key and Connection ID are required',
+      );
+    }
+
+    $endpoint = '/api/integrations/omnimail/connections/'
+      . rawurlencode($this->connection_id)
+      . '/shippo';
+    $args = array(
+      'method' => $method,
+      'headers' => array(
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/json',
+        'X-API-Key' => $this->api_key,
+      ),
+      'timeout' => 30,
+    );
+
+    if ('PUT' === $method) {
+      $args['body'] = wp_json_encode(array('apiKey' => $api_key));
+    }
+
+    $response = wp_remote_request($this->api_base_url . $endpoint, $args);
+    if (is_wp_error($response)) {
+      return array(
+        'success' => false,
+        'message' => $response->get_error_message(),
+      );
+    }
+
+    $status_code = wp_remote_retrieve_response_code($response);
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    $application_error = is_array($body)
+      && ((isset($body['success']) && false === $body['success'])
+        || (isset($body['responseCode']) && (int) $body['responseCode'] >= 4000));
+
+    if ($status_code < 200 || $status_code > 299 || $application_error) {
+      return array(
+        'success' => false,
+        'message' => is_array($body) && isset($body['message'])
+          ? sanitize_text_field($body['message'])
+          : sprintf('Backend returned HTTP %d', $status_code),
+      );
+    }
+
+    return array(
+      'success' => true,
+      'message' => is_array($body) && isset($body['message'])
+        ? sanitize_text_field($body['message'])
+        : 'Shippo connection updated.',
+      'data' => is_array($body) && isset($body['data']) && is_array($body['data'])
+        ? $body['data']
+        : (is_array($body) ? $body : array()),
+    );
+  }
+
+  /**
    * Save a visitor phone number for SMS behavioral flows.
    */
   public function save_sms_contact($phone_number, $uuid, $browser_details = array())

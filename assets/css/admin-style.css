@@ -196,6 +196,145 @@
     margin-bottom: 20px;
 }
 
+.omnimail-shared-status[hidden] {
+    display: none !important;
+}
+
+.omnimail-shared-pro-banner[hidden] {
+    display: none !important;
+}
+
+.omnimail-shared-status {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.omnimail-shared-plugins-banner,
+.omnimail-shared-pro-banner {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 22px;
+    border-radius: 12px;
+}
+
+.omnimail-shared-plugins-banner {
+    border: 1px solid rgba(34, 211, 238, .35);
+    background: rgba(15, 42, 59, .78);
+    color: #e5e7eb;
+}
+
+.omnimail-shared-plugin-icons {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.omnimail-shared-plugin-icon {
+    display: flex;
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+}
+
+.omnimail-shared-plugin-icon .dashicons {
+    font-size: 24px;
+}
+
+.omnimail-shared-plugin-mail {
+    color: #22d3ee;
+}
+
+.omnimail-shared-plugin-voice {
+    color: #7aa2ff;
+}
+
+.omnimail-shared-plugin-link {
+    display: flex;
+    width: 40px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -2px;
+    border-top: 2px solid #22d3ee;
+    border-bottom: 2px solid #7aa2ff;
+    color: #7aa2ff;
+}
+
+.omnimail-shared-banner-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.omnimail-shared-banner-copy strong {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 16px;
+}
+
+.omnimail-shared-banner-copy p,
+.omnimail-shared-pro-copy p {
+    margin: 6px 0 0;
+    color: #b7c4d5;
+    line-height: 1.5;
+}
+
+.omnimail-both-plugins-badge {
+    padding: 4px 10px;
+    border: 1px solid rgba(34, 197, 94, .5);
+    border-radius: 20px;
+    background: rgba(34, 197, 94, .1);
+    color: #4ade80;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.omnimail-shared-plugin-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border: 1px solid #22d3ee;
+    border-radius: 9px;
+    color: #22d3ee !important;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.omnimail-shared-pro-banner {
+    border: 1px solid rgba(34, 197, 94, .38);
+    background: rgba(9, 44, 27, .78);
+    color: #e5e7eb;
+}
+
+.omnimail-shared-pro-banner > .dashicons {
+    color: #4ade80;
+    font-size: 25px;
+}
+
+.omnimail-shared-pro-copy {
+    flex: 1;
+}
+
+.omnimail-shared-pro-copy strong {
+    font-size: 16px;
+}
+
+.omnimail-shared-pro-banner > a {
+    color: #4ade80;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
 .omnimail-banner-icon {
     width: 28px;
     height: 28px;
@@ -724,6 +863,17 @@
 }
 
 @media (max-width: 782px) {
+    .omnimail-shared-plugins-banner,
+    .omnimail-shared-pro-banner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .omnimail-shared-plugin-button,
+    .omnimail-shared-pro-banner > a {
+        margin-left: 66px;
+    }
+
     .omnimail-behavioral-overview,
     .omnimail-behavioral-layout {
         grid-template-columns: 1fr;

@@ -20,33 +20,67 @@ class OmniMail_API
   }
 
   /**
-   * Check whether the connected OmniMail account has an active PRO subscription.
+   * Retrieve the shared OmniMail/OmniVoice subscription and connection status.
    *
-   * IMPORTANT: This used to call a separate OmniVoice subscription endpoint
-   * (/stripe/connect/omnivoice-subscription). It no longer does that — SMS
-   * behavioral flows are now gated by the exact same "isPro" flag returned by
-   * the Email Behavioral Flows endpoint (/api/behavioral-flows/{connectionId}).
-   * In other words: if the OmniMail account has a PRO plan, SMS behavioral
-   * flows are unlocked too, no separate OmniVoice plan required.
+   * @return array|WP_Error
+   */
+  public function get_subscription_status()
+  {
+    if (empty($this->connection_id) || empty($this->api_key)) {
+      return new WP_Error('missing_configuration', __('API Key and Connection ID are required.', 'omnimail'));
+    }
+
+    $url = $this->api_base_url . '/omnivoice-subscriptions/subscription-status?'
+      . http_build_query(array('connectionId' => $this->connection_id));
+    $response = wp_remote_get($url, array(
+      'timeout' => 20,
+      'headers' => array(
+        'Accept' => 'application/json',
+        'Authorization' => 'Bearer ' . $this->api_key,
+      ),
+    ));
+
+    if (is_wp_error($response)) {
+      return $response;
+    }
+
+    $status_code = wp_remote_retrieve_response_code($response);
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    if ($status_code < 200 || $status_code >= 300 || !is_array($body)) {
+      return new WP_Error(
+        'subscription_status_request_failed',
+        sprintf(__('Subscription status API returned HTTP %d.', 'omnimail'), $status_code),
+        array('status' => $status_code)
+      );
+    }
+
+    $data = isset($body['data']) && is_array($body['data']) ? $body['data'] : $body;
+    $keys = array(
+      'hasEmailProSubscription',
+      'hasVoiceProSubscription',
+      'hasActiveOmniVoiceConnection',
+      'hasActiveOmniEmailConnection',
+    );
+    foreach ($keys as $key) {
+      if (!array_key_exists($key, $data) || !is_bool($data[$key])) {
+        return new WP_Error('invalid_subscription_status', __('Subscription status API returned an invalid response.', 'omnimail'));
+      }
+    }
+
+    return $data;
+  }
+
+  /**
+   * Check access to OmniMail behavioral flows.
    *
    * @return bool
    */
   public static function has_pro_subscription()
   {
-    $connection_id = get_option('omnimail_connection_id', '');
-
-    if (empty($connection_id)) {
-      return false;
-    }
-
-    $api = new self();
-    $result = $api->get_behavioral_flows();
-
-    if (empty($result['success']) || empty($result['data']) || !is_array($result['data'])) {
-      return false;
-    }
-
-    return !empty($result['data']['isPro']);
+    $status = (new self())->get_subscription_status();
+    return !is_wp_error($status)
+      && !empty($status['hasActiveOmniEmailConnection'])
+      && (!empty($status['hasEmailProSubscription']) || !empty($status['hasVoiceProSubscription']));
   }
 
   /**
@@ -214,7 +248,7 @@ class OmniMail_API
     if (!self::has_pro_subscription()) {
       return array(
         'success' => false,
-        'message' => 'An active PRO OmniMail plan is required for SMS behavioral flows.'
+        'message' => 'Behavioral flows require an active PRO subscription on either plugin and an active OmniNextMail connection.'
       );
     }
 
@@ -1129,27 +1163,38 @@ class OmniMail_API
       return false;
     }
 
+    $is_anonymous_product_event = in_array($event_type, array(
+      'product.back_in_stock',
+      'product.out_of_stock',
+    ), true);
+
     $email = '';
-    foreach (array('customerEmail', 'email', 'user_email') as $email_key) {
-      if (!empty($event_data[$email_key])) {
-        $email = $event_data[$email_key];
-        break;
+    if (!$is_anonymous_product_event) {
+      foreach (array('customerEmail', 'email', 'user_email') as $email_key) {
+        if (!empty($event_data[$email_key])) {
+          $email = $event_data[$email_key];
+          break;
+        }
+      }
+
+      if (!$email && is_user_logged_in()) {
+        $user = wp_get_current_user();
+        $email = $user->user_email;
+      }
+
+      if (!$email && function_exists('WC')) {
+        $wc = WC();
+        if (isset($wc->customer) && is_object($wc->customer) && method_exists($wc->customer, 'get_email')) {
+          $email = $wc->customer->get_email();
+        }
       }
     }
 
-    if (!$email && is_user_logged_in()) {
-      $user = wp_get_current_user();
-      $email = $user->user_email;
+    if ($is_anonymous_product_event) {
+      unset($event_data['customerEmail'], $event_data['email'], $event_data['user_email']);
+    } else {
+      $event_data['customerEmail'] = $email;
     }
-
-    if (!$email && function_exists('WC')) {
-      $wc = WC();
-      if (isset($wc->customer) && is_object($wc->customer) && method_exists($wc->customer, 'get_email')) {
-        $email = $wc->customer->get_email();
-      }
-    }
-
-    $event_data['customerEmail'] = $email;
 
     $url = $this->api_base_url . "/api/integrations/wordpress/events/{$this->connection_id}";
 
@@ -1157,15 +1202,20 @@ class OmniMail_API
       'event_type' => $event_type,
       'data' => $event_data,
       'source_id' => $event_data['orderId'] ?? $event_data['productId'] ?? null,
-      'user_email' => $email,
       'timestamp' => current_time('mysql'),
       'site_url' => get_site_url()
     );
 
-    $contact_id = $this->get_sms_contact_id_from_cookie();
-    if ($contact_id !== '') {
-      $payload['contact_id'] = $contact_id;
-      $payload['data']['contact_id'] = $contact_id;
+    if (!$is_anonymous_product_event) {
+      $payload['user_email'] = $email;
+    }
+
+    if (!$is_anonymous_product_event) {
+      $contact_id = $this->get_sms_contact_id_from_cookie();
+      if ($contact_id !== '') {
+        $payload['contact_id'] = $contact_id;
+        $payload['data']['contact_id'] = $contact_id;
+      }
     }
 
     $args = array(

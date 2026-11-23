@@ -25,6 +25,7 @@ class OmniMail_Settings
     add_action('wp_ajax_omnimail_disconnect_shippo', array($this, 'ajax_disconnect_shippo'));
     add_action('wp_ajax_omnimail_test_email', array($this, 'ajax_test_email'));
     add_action('wp_ajax_omnimail_get_behavioral_flows', array($this, 'ajax_get_behavioral_flows'));
+    add_action('wp_ajax_omnimail_get_subscription_status', array($this, 'ajax_get_subscription_status'));
     add_action('wp_ajax_omnimail_get_behavioral_flow_templates', array($this, 'ajax_get_behavioral_flow_templates'));
     add_action('wp_ajax_omnimail_update_behavioral_flows', array($this, 'ajax_update_behavioral_flows'));
     add_action('wp_ajax_omnimail_save_sms_contact', array($this, 'ajax_save_sms_contact'));
@@ -412,6 +413,26 @@ class OmniMail_Settings
   }
 
   /**
+   * AJAX: Get shared subscription and connection status for the flow page.
+   */
+  public function ajax_get_subscription_status()
+  {
+    check_ajax_referer('omnimail_nonce', 'nonce');
+    if (!current_user_can('manage_options')) {
+      wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')), 403);
+    }
+
+    $status = (new OmniMail_API())->get_subscription_status();
+    if (is_wp_error($status)) {
+      wp_send_json_error(array('message' => $status->get_error_message()), 502);
+    }
+
+    $status['canUseBehavioralFlows'] = !empty($status['hasActiveOmniEmailConnection'])
+      && (!empty($status['hasEmailProSubscription']) || !empty($status['hasVoiceProSubscription']));
+    wp_send_json_success($status);
+  }
+
+  /**
    * AJAX: Get behavioral flows
    */
   public function ajax_get_behavioral_flows()
@@ -442,6 +463,7 @@ class OmniMail_Settings
     if (!current_user_can('manage_options')) {
       wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
     }
+    $this->check_behavioral_subscription_access();
 
     $event_type = isset($_POST['eventType']) ? sanitize_text_field(wp_unslash($_POST['eventType'])) : '';
     $allowed_event_types = array(
@@ -479,7 +501,7 @@ class OmniMail_Settings
     }
 
     if (!OmniMail_API::has_pro_subscription()) {
-      wp_send_json_error(array('message' => __('An active PRO OmniMail plan is required for SMS behavioral flows.', 'omnimail')), 403);
+      wp_send_json_error(array('message' => __('Behavioral flows require an active PRO subscription on either plugin and an active OmniNextMail connection.', 'omnimail')), 403);
     }
 
     $phone_number = isset($_POST['phoneNumber']) ? sanitize_text_field(wp_unslash($_POST['phoneNumber'])) : '';
@@ -516,6 +538,7 @@ class OmniMail_Settings
     if (!current_user_can('manage_options')) {
       wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
     }
+    $this->check_behavioral_subscription_access();
 
     $settings_json = isset($_POST['settings']) && is_string($_POST['settings'])
       ? wp_unslash($_POST['settings']) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON is decoded and allow-listed by sanitize_behavioral_flow_settings().
@@ -707,6 +730,7 @@ class OmniMail_Settings
     if (!current_user_can('manage_options')) {
       wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
     }
+    $this->check_behavioral_subscription_access();
 
     $api = new OmniMail_API();
     $result = $api->enable_all_flows();
@@ -728,6 +752,7 @@ class OmniMail_Settings
     if (!current_user_can('manage_options')) {
       wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
     }
+    $this->check_behavioral_subscription_access();
 
     $api = new OmniMail_API();
     $result = $api->disable_all_flows();
@@ -749,6 +774,7 @@ class OmniMail_Settings
     if (!current_user_can('manage_options')) {
       wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
     }
+    $this->check_behavioral_subscription_access();
 
     $flow_type = isset($_POST['flow_type']) ? sanitize_text_field(wp_unslash($_POST['flow_type'])) : '';
     if ($flow_type === '') {
@@ -775,6 +801,7 @@ class OmniMail_Settings
     if (!current_user_can('manage_options')) {
       wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
     }
+    $this->check_behavioral_subscription_access();
 
     $followup_id = isset($_POST['followup_id']) ? sanitize_text_field(wp_unslash($_POST['followup_id'])) : '';
     if ($followup_id === '') {
@@ -801,6 +828,7 @@ class OmniMail_Settings
     if (!current_user_can('manage_options')) {
       wp_send_json_error(array('message' => __('Insufficient permissions', 'omnimail')));
     }
+    $this->check_behavioral_subscription_access();
 
     $flow_type = isset($_POST['flow_type']) ? sanitize_text_field(wp_unslash($_POST['flow_type'])) : '';
     $followups_raw = isset($_POST['followups']) && is_string($_POST['followups'])
@@ -828,6 +856,26 @@ class OmniMail_Settings
       wp_send_json_success($result);
     } else {
       wp_send_json_error($result);
+    }
+  }
+
+  /**
+   * Stop behavioral-flow AJAX actions when the shared subscription or this
+   * plugin's connection is inactive.
+   */
+  private function check_behavioral_subscription_access()
+  {
+    $status = (new OmniMail_API())->get_subscription_status();
+    if (is_wp_error($status)) {
+      wp_send_json_error(array('message' => $status->get_error_message()), 502);
+    }
+
+    $has_pro = !empty($status['hasEmailProSubscription']) || !empty($status['hasVoiceProSubscription']);
+    if (empty($status['hasActiveOmniEmailConnection']) || !$has_pro) {
+      wp_send_json_error(
+        array('message' => __('Behavioral flows require an active PRO subscription on either plugin and an active OmniNextMail connection.', 'omnimail')),
+        403
+      );
     }
   }
 

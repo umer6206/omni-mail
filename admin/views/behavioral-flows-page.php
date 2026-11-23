@@ -127,7 +127,7 @@ $omnimail_flows = array(
                 echo wp_kses(
                     sprintf(
                         /* translators: %s: subscription upgrade URL */
-                        __('These emails also need: (1) email/SMTP configured on your OmniNextMail connection, and (2) a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniNextMail plan</a>.', 'omnimail'),
+                        __('These emails also need: (1) email/SMTP configured on your OmniNextMail connection, and (2) a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO plan on either plugin</a>.', 'omnimail'),
                         esc_url($omnimail_pro_url)
                     ),
                     array(
@@ -144,7 +144,7 @@ $omnimail_flows = array(
 
             <div id="omnimail-pro-locked-banner" class="omnimail-callout omnimail-callout-pro" style="display:none;margin-top:12px;">
                 <strong><?php esc_html_e('PRO required', 'omnimail'); ?></strong>
-                <?php esc_html_e('Your plan does not include behavioral flows. Upgrade to PRO to enable them.', 'omnimail'); ?>
+                <?php esc_html_e('Behavioral flows require an active PRO subscription on either plugin and an active OmniNextMail connection.', 'omnimail'); ?>
                 <a href="<?php echo esc_url($omnimail_pro_url); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary" style="margin-left:10px;">
                     <?php esc_html_e('Upgrade to PRO', 'omnimail'); ?>
                 </a>
@@ -156,18 +156,33 @@ $omnimail_flows = array(
             </div>
 
             <div id="behavioral-flows-content" style="display: none;" data-pro-url="<?php echo esc_url($omnimail_pro_url); ?>">
-
-                <div class="omnimail-behavioral-banner">
-                    <div class="omnimail-banner-icon">
-                        <span class="dashicons dashicons-info-outline"></span>
+                <div class="omnimail-shared-status" id="omnimail-shared-status" hidden>
+                    <div class="omnimail-shared-plugins-banner">
+                        <div class="omnimail-shared-plugin-icons" aria-hidden="true">
+                            <span class="omnimail-shared-plugin-icon omnimail-shared-plugin-mail"><span class="dashicons dashicons-email-alt"></span></span>
+                            <span class="omnimail-shared-plugin-link"><span class="dashicons dashicons-admin-links"></span></span>
+                            <span class="omnimail-shared-plugin-icon omnimail-shared-plugin-voice"><span class="dashicons dashicons-format-audio"></span></span>
+                        </div>
+                        <div class="omnimail-shared-banner-copy">
+                            <strong>
+                                <?php esc_html_e('Shared with OmniNextVoice', 'omnimail'); ?>
+                                <span class="omnimail-both-plugins-badge"><?php esc_html_e('Both plugins active', 'omnimail'); ?></span>
+                            </strong>
+                            <p><?php esc_html_e('Behavioral Flows are one set of settings used by both plugins. A change you save here also applies in OmniNextVoice, and the other way around.', 'omnimail'); ?></p>
+                        </div>
+                        <a class="omnimail-shared-plugin-button" href="<?php echo esc_url(admin_url('admin.php?page=omnivoice-sms-flows')); ?>">
+                            <?php esc_html_e('Open in OmniNextVoice', 'omnimail'); ?>
+                            <span class="dashicons dashicons-arrow-right-alt2" aria-hidden="true"></span>
+                        </a>
                     </div>
-                    <div class="omnimail-banner-text">
-                        <?php esc_html_e('Use Email flows, SMS flows, or both together to create a comprehensive communication strategy.', 'omnimail'); ?>
+                    <div class="omnimail-shared-pro-banner" hidden>
+                        <span class="dashicons dashicons-shield" aria-hidden="true"></span>
+                        <div class="omnimail-shared-pro-copy">
+                            <strong class="omnimail-pro-source"></strong>
+                            <p><?php esc_html_e("Behavioral Flows need a PRO plan on either plugin, so you don't need PRO on OmniNextVoice as well. Email flows also need SMTP set up on your OmniNextMail connection.", 'omnimail'); ?></p>
+                        </div>
+                        <a href="<?php echo esc_url($omnimail_pro_url); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Manage plans', 'omnimail'); ?></a>
                     </div>
-                    <a href="<?php echo esc_url($omnimail_pro_url); ?>" target="_blank" rel="noopener noreferrer" class="omnimail-banner-button">
-                        <?php esc_html_e('Learn More', 'omnimail'); ?>
-                        <span class="dashicons dashicons-external"></span>
-                    </a>
                 </div>
 
                 <div class="omnimail-behavioral-layout">
@@ -279,7 +294,7 @@ $omnimail_flows = array(
                 echo wp_kses(
                     sprintf(
                         /* translators: %s: subscription upgrade URL */
-                        __('Behavioral flows (Email and SMS) require a <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">PRO OmniNextMail plan</a>.', 'omnimail'),
+                        __('Behavioral flows require an active PRO subscription on either plugin and an active OmniNextMail connection. <a href="%s" target="_blank" rel="noopener noreferrer" class="omnimail-pro-link">Manage plans</a>.', 'omnimail'),
                         esc_url($omnimail_pro_url)
                     ),
                     array(

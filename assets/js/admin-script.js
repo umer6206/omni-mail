@@ -631,12 +631,9 @@
         // BEHAVIORAL FLOWS PAGE
         // ========================================
 
-        // omnimailFlowsIsPro now drives BOTH the Email panel and the SMS panel.
-        // It comes exclusively from the Email Behavioral Flows response
-        // (omnimail_get_behavioral_flows -> data.isPro). There is no separate
-        // OmniVoice/SMS subscription check anymore — one OmniMail PRO plan
-        // unlocks both Email and SMS behavioral flows.
-        var omnimailFlowsIsPro = true;
+        // Both flow panels use the shared subscription status, but OmniMail
+        // also requires its own active connection.
+        var omnimailFlowsIsPro = false;
         var omnimailProUpgradeUrl = ($('#behavioral-flows-content').data('pro-url')) ||
             'https://omnimail-app.omninexttech.com/dashboard/mail-blaze/subscription';
         var flowsIgnoreToggleChange = false;
@@ -658,8 +655,46 @@
 
         // Load behavioral flows on page load
         if ($('#behavioral-flows-content').length) {
-            loadBehavioralFlows();
+            loadBehavioralSubscriptionStatus();
             // loadOmniVoiceSmsFlows is called inside loadBehavioralFlows once content is visible
+        }
+
+        function loadBehavioralSubscriptionStatus() {
+            $.ajax({
+                url: omnimailAjax.ajaxurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'omnimail_get_subscription_status',
+                    nonce: omnimailAjax.nonce
+                }
+            }).done(function (response) {
+                if (!response.success || !response.data) {
+                    $('#behavioral-flows-loading').hide();
+                    showFlowError((response.data && response.data.message) || 'Unable to check subscription status.');
+                    return;
+                }
+
+                var status = response.data;
+                omnimailFlowsIsPro = status.canUseBehavioralFlows === true;
+                var bothConnectionsActive = status.hasActiveOmniVoiceConnection === true
+                    && status.hasActiveOmniEmailConnection === true;
+                if (omnimailFlowsIsPro && bothConnectionsActive) {
+                    $('#omnimail-shared-status').prop('hidden', false);
+                    if (status.hasVoiceProSubscription === true && status.hasEmailProSubscription !== true) {
+                        $('#omnimail-shared-status .omnimail-shared-pro-banner')
+                            .prop('hidden', false)
+                            .find('.omnimail-pro-source')
+                            .text('PRO is active through OmniNextVoice');
+                    }
+                }
+
+                loadBehavioralFlows();
+            }).fail(function (xhr) {
+                $('#behavioral-flows-loading').hide();
+                var message = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message;
+                showFlowError(message || 'Unable to check subscription status.');
+            });
         }
 
         function applyFlowProGate(isPro) {
@@ -709,20 +744,15 @@
                     if (response.success && response.data && response.data.data) {
                         var payload = response.data.data;
                         var flows = payload.flows || {};
-                        var isPro = false;
+                        var isPro = omnimailFlowsIsPro;
 
                         // Unwrap one more nest if present (WP/API double wrap)
                         if (payload.data && payload.data.flows) {
-                            if (typeof payload.data.isPro === 'boolean') {
-                                isPro = payload.data.isPro;
-                            }
                             if (payload.data.upgradeUrl) {
                                 omnimailProUpgradeUrl = payload.data.upgradeUrl;
                             }
                             flows = payload.data.flows;
                         } else {
-                            // Fail closed: only unlock when API explicitly says isPro === true
-                            isPro = payload.isPro === true;
                             if (payload.upgradeUrl) {
                                 omnimailProUpgradeUrl = payload.upgradeUrl;
                             }
@@ -791,7 +821,7 @@
         $(document).on('click', '#behavioral-flows-content.is-pro-locked .omnimail-email-panel .omnimail-toggle', function (e) {
             e.preventDefault();
             e.stopPropagation();
-            showNotification('Behavioral flows require a PRO OmniMail plan. Upgrade to unlock.', 'error');
+            showNotification('Behavioral flows require PRO on either plugin and an active OmniNextMail connection.', 'error');
             window.open(omnimailProUpgradeUrl, '_blank');
             return false;
         });
@@ -1473,7 +1503,7 @@
         $(document).on('click', '.omnimail-manage-followups-btn', function (e) {
             e.preventDefault();
             if (!omnimailFlowsIsPro) {
-                showNotification('Behavioral flows require a PRO OmniMail plan. Upgrade to unlock.', 'error');
+                showNotification('Behavioral flows require PRO on either plugin and an active OmniNextMail connection.', 'error');
                 window.open(omnimailProUpgradeUrl, '_blank');
                 return;
             }
@@ -1718,7 +1748,7 @@
             e.preventDefault();
 
             if (!omnimailFlowsIsPro) {
-                showNotification('Behavioral flows require a PRO OmniMail plan. Upgrade to unlock.', 'error');
+                showNotification('Behavioral flows require PRO on either plugin and an active OmniNextMail connection.', 'error');
                 window.open(omnimailProUpgradeUrl, '_blank');
                 return;
             }
@@ -1742,7 +1772,7 @@
             e.preventDefault();
 
             if (!omnimailFlowsIsPro) {
-                showNotification('Behavioral flows require a PRO OmniMail plan. Upgrade to unlock.', 'error');
+                showNotification('Behavioral flows require PRO on either plugin and an active OmniNextMail connection.', 'error');
                 window.open(omnimailProUpgradeUrl, '_blank');
                 return;
             }

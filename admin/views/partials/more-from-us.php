@@ -36,7 +36,7 @@ $omnimail_suite_all_products = array(
     'title' => 'Omni Next SEO',
     'description' => 'Smart SEO automation that optimizes your content, tracks rankings, and boosts organic traffic with zero guesswork.',
     'logo' => 'omniseo-logo.png',
-    'url' => 'https://platform.omninexttech.com/dashboard/omni-seo',
+    'url' => 'https://omninextseo-app.omninexttech.com/dashboard/omni-seo',
   ),
   'mail' => array(
     'id' => 'mail',
@@ -68,7 +68,7 @@ $omnimail_suite_all_products = array(
     'title' => 'Omni Next Voice',
     'description' => 'AI voice agents that answer calls, qualify leads, and book appointments automatically — so you never miss a conversation.',
     'logo' => 'omnivoice-logo.png',
-    'url' => 'https://omnivoice-app.omninexttech.com/',
+    'url' => 'https://omninextvoice-app.omninexttech.com/',
   ),
 );
 

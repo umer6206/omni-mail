@@ -49,6 +49,7 @@ class OmniMail_WooCommerce
 
     // Product events
     add_action('woocommerce_product_set_stock',            array($this, 'handle_stock_change'), 10, 1);
+    add_action('woocommerce_variation_set_stock',           array($this, 'handle_stock_change'), 10, 1);
     add_action('woocommerce_before_product_object_save',   array($this, 'capture_pre_save_state'), 10, 2);
     add_action('woocommerce_product_object_updated_props', array($this, 'handle_price_change'), 10, 2);
     add_action('woocommerce_product_object_updated_props', array($this, 'handle_stock_status_prop_change'), 10, 2);
@@ -153,16 +154,19 @@ class OmniMail_WooCommerce
     $product = wc_get_product($variation_id ?: $product_id);
     if (!$product) return;
 
+    $cart = WC()->cart;
+    $cart->calculate_totals();
+
     // Email flow event for logged-in users
     if (is_user_logged_in()) {
       $user = wp_get_current_user();
-      $cart = WC()->cart;
       $this->api->send_event('cart.item_added', array_merge(
         $this->get_product_identity($product, $variation_id),
         array(
           'productName'   => $product->get_name(),
           'quantity'      => $quantity,
           'customerEmail' => $user->user_email,
+          'url'           => get_permalink($product->get_id()),
           'cartTotal'     => $cart->get_cart_contents_total(),
           'cartItemCount' => $cart->get_cart_contents_count(),
         )
@@ -175,8 +179,9 @@ class OmniMail_WooCommerce
         array(
           'productName' => $product->get_name(),
           'quantity' => $quantity,
-          'cartTotal' => WC()->cart->get_cart_contents_total(),
-          'cartItemCount' => WC()->cart->get_cart_contents_count(),
+          'url' => get_permalink($product->get_id()),
+          'cartTotal' => $cart->get_cart_contents_total(),
+          'cartItemCount' => $cart->get_cart_contents_count(),
         )
       ));
     }
@@ -390,7 +395,17 @@ class OmniMail_WooCommerce
   public function capture_pre_save_state($product, $data_store)
   {
     $this->prices_before_save[$product->get_id()]       = $product->get_price();
-    $this->stock_status_before_save[$product->get_id()] = $product->get_stock_status();
+    $product_id = $product->get_id();
+    $previous_status = get_post_meta($product_id, '_stock_status', true);
+    $this->stock_status_before_save[$product_id] = $previous_status !== ''
+      ? $previous_status
+      : $product->get_stock_status();
+
+    foreach (array_keys($this->stock_events_processed) as $dedupe_key) {
+      if (strpos($dedupe_key, $product_id . ':') === 0) {
+        unset($this->stock_events_processed[$dedupe_key]);
+      }
+    }
   }
 
   /**
@@ -401,7 +416,9 @@ class OmniMail_WooCommerce
     if (!$this->api) return;
 
     $product_id      = $product->get_id();
-    $previous_status = get_post_meta($product_id, '_previous_stock_status', true);
+    $previous_status = isset($this->stock_status_before_save[$product_id])
+      ? $this->stock_status_before_save[$product_id]
+      : get_post_meta($product_id, '_previous_stock_status', true);
 
     $this->evaluate_stock_transition($product, $previous_status);
   }
@@ -438,14 +455,17 @@ class OmniMail_WooCommerce
 
     update_post_meta($product_id, '_previous_stock_status', $stock_status);
 
-    // Dedupe: only fire once per product per status per save cycle
-    $dedupe_key = $product_id . ':' . $stock_status;
+    if ($previous_status === '' || $previous_status === $stock_status) {
+      return;
+    }
+
+    $dedupe_key = $product_id . ':' . $previous_status . '>' . $stock_status;
     if (isset($this->stock_events_processed[$dedupe_key])) {
       return;
     }
-    $this->stock_events_processed[$dedupe_key] = true;
 
     if ($stock_status === 'outofstock' && $previous_status !== 'outofstock') {
+      $this->stock_events_processed[$dedupe_key] = true;
       $this->api->send_event('product.out_of_stock', array_merge(
         $this->get_product_identity($product),
         array(
@@ -456,6 +476,7 @@ class OmniMail_WooCommerce
         )
       ));
     } elseif ($stock_status === 'instock' && $previous_status === 'outofstock') {
+      $this->stock_events_processed[$dedupe_key] = true;
       $this->api->send_event('product.back_in_stock', array_merge(
         $this->get_product_identity($product),
         array(
@@ -492,11 +513,13 @@ class OmniMail_WooCommerce
       $price_change_percent = (($previous_price - $current_price) / $previous_price) * 100;
 
       if ($price_change_percent >= 5) {
+         $parent_id = $product->get_parent_id() ?: $product_id;
         $this->api->send_event('product.price_dropped', array_merge(
           $this->get_product_identity($product),
           array(
             'productName'        => $product->get_name(),
             'sku'                => $product->get_sku(),
+            'url'                => get_permalink($parent_id),
             'currentPrice'       => $current_price,
             'previousPrice'      => $previous_price,
             'priceChangePercent' => round($price_change_percent, 2),
